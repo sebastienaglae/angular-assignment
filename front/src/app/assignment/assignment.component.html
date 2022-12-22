@@ -1,0 +1,20 @@
+<mat-card
+  *ngFor="let assignment of assignments"
+  (click)="onSelect(assignment)"
+  routerLink="assignement/{{ assignment._id }}"
+>
+  <mat-card-header>
+    <mat-card-title>{{ assignment.nom }}</mat-card-title>
+    <mat-card-subtitle>{{ assignment.dateDeRendu | date }} </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p *ngIf="assignment.rendu; else nonsoumis">Devoir rendu</p>
+    <ng-template #nonsoumis> Devoir non rendu </ng-template>
+  </mat-card-content>
+</mat-card>
+<mat-card color="warn" *ngIf="assignments.length === 0">
+  <h1>Il n'y a pas de devoir a afficher !</h1>
+</mat-card>
+<app-assignment-detail
+  [assignmentTarget]="selectedAssignment"
+></app-assignment-detail>

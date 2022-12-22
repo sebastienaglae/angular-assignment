@@ -1,0 +1,8 @@
+<mat-card>
+  <button mat-raised-button color="primary" (click)="onGen()">
+    Generer des données
+  </button>
+  <p *ngFor="let assignment of assignmentsAdded">
+    {{ assignment }}
+  </p>
+</mat-card>

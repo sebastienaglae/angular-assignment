@@ -1,0 +1,33 @@
+<mat-card *ngIf="assignmentTarget">
+  <h1>Details :</h1>
+  <mat-card-header>
+    <mat-card-title>{{ assignmentTarget.nom }}</mat-card-title>
+    <mat-card-subtitle
+      >{{ assignmentTarget.dateDeRendu | date }}
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p *ngIf="assignmentTarget.rendu; else nonsoumis">Devoir rendu</p>
+    <ng-template #nonsoumis> Devoir non rendu </ng-template>
+    <p>UUID : {{ assignmentTarget._id }}</p>
+  </mat-card-content>
+  <mat-checkbox
+    *ngIf="!assignmentTarget.rendu"
+    (input)="onChange($event)"
+    name="rendu"
+    >Est rendu</mat-checkbox
+  >
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="onEdit()"
+    [disabled]="!isAdmin()"
+  >
+    Modifier
+  </button>
+  <button mat-raised-button color="warn" (click)="onDelete()">Supprimer</button>
+</mat-card>
+
+<mat-card color="warn" *ngIf="assignmentTarget === undefined">
+  <h1>Oops, il a quitté notre monde.</h1>
+</mat-card>

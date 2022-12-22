@@ -1,0 +1,30 @@
+<mat-card *ngIf="currentAssignment">
+  <mat-card-title>Modifier un devoir</mat-card-title>
+  <form ngForm>
+    <mat-form-field appearance="fill">
+      <mat-label>Nom du devoir</mat-label>
+      <input matInput [(ngModel)]="currentAssignment.nom" name="nom" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="currentAssignment.rendu"
+        name="date"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-checkbox [(ngModel)]="currentAssignment.rendu" name="rendu"
+      >Est rendu</mat-checkbox
+    >
+    <button mat-raised-button color="primary" type="submit" (click)="onEdit()">
+      Modifier
+    </button>
+  </form>
+</mat-card>
+
+<mat-card color="warn" *ngIf="currentAssignment === undefined">
+  <h1>Oops, il a quitté notre monde.</h1>
+</mat-card>
