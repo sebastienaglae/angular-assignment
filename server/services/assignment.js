@@ -55,9 +55,12 @@ class AssignmentService {
 
         const items = await query.exec();
         const result = new SearchResult();
+        const totalDocuments = await this.countDocuments(filter);
+
         result.items = items.slice(0, options.limit);
         result.page = options.page;
-        result.totalPages = Math.ceil(await this.countDocuments(filter) / options.limit);
+        result.totalPages = Math.max(Math.ceil(totalDocuments / options.limit), 1)
+        result.totalItems = totalDocuments;
         result.hasNext = items.length > options.limit;
         result.hasPrevious = options.page > 1;
 
@@ -101,6 +104,7 @@ class SearchResult {
     constructor() {
         this.page = 1;
         this.totalPages = 1;
+        this.totalItems = 0;
         this.items = [];
         this.hasNext = false;
         this.hasPrevious = false;
