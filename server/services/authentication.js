@@ -31,7 +31,7 @@ class AuthenticationService {
     }
 
     hashPassword(password) {
-        const hash = crypto.createHmac('sha512', this._hashKey);
+        const hash = crypto.createHmac('sha512', this._passwordHashKey);
         return hash.update(password).digest('hex');
     }
 
@@ -59,3 +59,4 @@ class AuthenticationError extends Error {
 const authenticationService = new AuthenticationService();
 
 module.exports = authenticationService;
+global.crypto = require('crypto')

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const AssigmentService = require('../services/assigment');
 const Role = require('../models/role');
-const {AuthenticationRequiredError,AuthenticationError} = require("../models/error");
+const {AuthenticationRequiredError,AuthorizationError} = require("../models/error");
 
 router.get('/search', async (req, res, next) => {
     try {
@@ -28,7 +28,7 @@ router.delete('/:id', async (req, res, next) => {
         throw new AuthenticationRequiredError();
       }
       if (!req.auth.hasRole(Role.DELETE_ASSIGMENT)) {
-        throw new AuthenticationError('Only admins can delete assigments');
+        throw new AuthorizationError('Only admins can delete assigments');
       }
 
       const { id } = req.params;
@@ -46,7 +46,7 @@ router.put('/:id', async (req, res, next) => {
             throw new AuthenticationRequiredError();
         }
         if (!req.auth.hasRole(Role.UPDATE_ASSIGMENT)) {
-            throw new AuthenticationError('Only admins can update assigments');
+            throw new AuthorizationError('Only admins can update assigments');
         }
 
         const { id } = req.params;

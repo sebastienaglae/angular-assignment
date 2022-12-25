@@ -3,12 +3,12 @@ const AuthenticationService = require('../services/authentication');
 const middleware = (req, res, next) => {
     // get the Authorization header
     const authHeader = req.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.toLowerCase().startsWith('bearer ')) {
         // get the token
         const token = authHeader.substring(7);
         const {id, roles} = AuthenticationService.parseToken(token);
 
-        res.auth = {
+        req.auth = {
             id,
             roles,
 
@@ -17,7 +17,7 @@ const middleware = (req, res, next) => {
             }
         }
     } else {
-        res.auth = null;
+        req.auth = null;
     }
 
     next();

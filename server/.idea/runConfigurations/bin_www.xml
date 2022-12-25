@@ -2,6 +2,8 @@
   <configuration default="false" name="bin/www" type="NodeJSConfigurationType" path-to-js-file="bin/www" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="DEBUG" value="server:*" />
+      <env name="PASSWORD_HASH_KEY" value="alxA8UnVTatHQuNn" />
+      <env name="TOKEN_SIGNATURE_KEY" value="54ajcwNitjgsisv8" />
     </envs>
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeStartBrowserRunConfigurationExtension">
       <browser url="http://localhost:3000/" />
