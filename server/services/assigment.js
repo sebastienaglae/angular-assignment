@@ -1,6 +1,6 @@
-const {Assigment} = require('../models/db');
+const {Assignment} = require('../models/db');
 
-class AssigmentService {
+class AssignmentService {
     static _maxSearchLimit = 1000;
     static _orderOptions = {
         'created-asc': { createdAt: 1 },
@@ -8,18 +8,18 @@ class AssigmentService {
     };
 
     async create(title, description, dueDate) {
-        const assigment = new Assigment({
+        const assignment = new Assignment({
             title,
             description,
             dueDate
         });
-        await assigment.save();
+        await assignment.save();
 
-        return assigment;
+        return assignment;
     }
 
     async update(id, title, description, dueDate) {
-        const result = await Assigment.updateOne({ _id: id }, {
+        const result = await Assignment.updateOne({ _id: id }, {
             title,
             description,
             dueDate
@@ -29,12 +29,12 @@ class AssigmentService {
     }
 
     async delete(id) {
-        const result = await Assigment.deleteOne({ _id: id });
+        const result = await Assignment.deleteOne({ _id: id });
         return result.deletedCount === 1;
     }
 
     async find(id) {
-        return Assigment.findById(id);
+        return Assignment.findById(id);
     }
 
     async search(options) {
@@ -48,7 +48,7 @@ class AssigmentService {
         }
 
         const filter = {};
-        const query = Assigment.find(filter);
+        const query = Assignment.find(filter);
 
         if (options.page > 1) {
             query.skip((options.page - 1) * options.limit - 1);
@@ -57,7 +57,7 @@ class AssigmentService {
             query.limit(options.limit + 1); // +1 for the next page element
         }
 
-        query.sort(AssigmentService._orderOptions[options.order]);
+        query.sort(AssignmentService._orderOptions[options.order]);
         const items = await query.exec();
         const result = new SearchResult();
         result.items = items.slice(0, options.limit);
@@ -68,17 +68,17 @@ class AssigmentService {
     }
 
     countDocuments(filter) {
-        return Assigment.countDocuments(filter);
+        return Assignment.countDocuments(filter);
     }
 
     checkOptions(options) {
         if (options.page < 1) {
             return new SearchBadRequestError('Invalid page number');
         }
-        if (options.limit < 1 || options.limit > AssigmentService._maxSearchLimit) {
+        if (options.limit < 1 || options.limit > AssignmentService._maxSearchLimit) {
             return new SearchBadRequestError('Invalid limit');
         }
-        if (!AssigmentService._orderOptions.hasOwnProperty(options.order)) {
+        if (!AssignmentService._orderOptions.hasOwnProperty(options.order)) {
             return new SearchBadRequestError('Invalid order');
         }
     }
@@ -110,6 +110,6 @@ class SearchResult {
     }
 }
 
-const assigmentService = new AssigmentService();
+const assignmentService = new AssignmentService();
 
-module.exports = assigmentService;
+module.exports = assignmentService;

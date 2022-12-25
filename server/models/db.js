@@ -24,12 +24,12 @@ const UserSchema = new mongoose.Schema({
     },
     roles: {
         type: [Number],
-        default: [role.CREATE_ASSIGMENT, role.UPDATE_ASSIGMENT]
+        default: [role.CREATE_ASSIGNMENT, role.UPDATE_ASSIGNMENT]
     }
 });
 const User = mongoose.model('User', UserSchema);
 
-const AssigmentSchema = new mongoose.Schema({
+const AssignmentSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -47,6 +47,6 @@ const AssigmentSchema = new mongoose.Schema({
         required: true
     }
 });
-const Assigment = mongoose.model('Assigment', AssigmentSchema);
+const Assignment = mongoose.model('Assignment', AssignmentSchema);
 
-module.exports = { User, Assigment };
+module.exports = { User, Assignment };

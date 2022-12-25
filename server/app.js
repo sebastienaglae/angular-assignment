@@ -3,7 +3,7 @@ const path = require('path');
 const logger = require('morgan');
 
 const authenticationRouter = require('./routes/authentication');
-const assigmentsRouter = require('./routes/assigments');
+const assignmentsRouter = require('./routes/assignments');
 
 const authenticationMiddleware = require('./middlewares/auth');
 const errorMiddleware = require('./middlewares/error');
@@ -20,11 +20,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authenticationMiddleware);
 
 app.use('/auth', authenticationRouter);
-app.use('/assigments', assigmentsRouter);
+app.use('/assignments', assignmentsRouter);
 
 app.use(errorMiddleware);
 
-mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/assigment', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/assignment', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to MongoDB');
     }).catch(err => {

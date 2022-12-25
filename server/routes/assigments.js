@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const AssigmentService = require('../services/assigment');
+const AssignmentService = require('../services/assignment');
 const Role = require('../models/role');
 const {AuthenticationRequiredError,AuthorizationError} = require("../models/error");
 
@@ -14,7 +14,7 @@ router.get('/search', async (req, res, next) => {
           order: order || 'created-asc'
       };
 
-      const searchResult = await AssigmentService.search(options);
+      const searchResult = await AssignmentService.search(options);
 
       res.json(searchResult);
     } catch (error) {
@@ -27,12 +27,12 @@ router.delete('/:id', async (req, res, next) => {
       if (!req.auth) {
         throw new AuthenticationRequiredError();
       }
-      if (!req.auth.hasRole(Role.DELETE_ASSIGMENT)) {
-        throw new AuthorizationError('Only admins can delete assigments');
+      if (!req.auth.hasRole(Role.DELETE_ASSIGNMENT)) {
+        throw new AuthorizationError('Only admins can delete assignments');
       }
 
       const { id } = req.params;
-      await AssigmentService.delete(id);
+      await AssignmentService.delete(id);
 
       res.json({ success: true });
     } catch (error) {
@@ -45,14 +45,14 @@ router.put('/:id', async (req, res, next) => {
         if (!req.auth) {
             throw new AuthenticationRequiredError();
         }
-        if (!req.auth.hasRole(Role.UPDATE_ASSIGMENT)) {
-            throw new AuthorizationError('Only admins can update assigments');
+        if (!req.auth.hasRole(Role.UPDATE_ASSIGNMENT)) {
+            throw new AuthorizationError('Only admins can update assignments');
         }
 
         const { id } = req.params;
         const { title, description, dueDate } = req.body;
 
-        const success = await AssigmentService.update(id, title, description, dueDate);
+        const success = await AssignmentService.update(id, title, description, dueDate);
 
         res.json({ success });
     } catch (error) {
@@ -63,10 +63,10 @@ router.put('/:id', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const { id } = req.params;
-        const result = await AssigmentService.find(id);
+        const result = await AssignmentService.find(id);
 
         if (!result) {
-            throw new ObjectNotFoundError('Assigment not found');
+            throw new ObjectNotFoundError('Assignment not found');
         }
 
         res.json({ result });
@@ -80,14 +80,14 @@ router.post('/create', async (req, res, next) => {
       if (!req.auth) {
         throw new AuthenticationRequiredError();
       }
-      if (!req.auth.hasRole(Role.CREATE_ASSIGMENT)) {
-        throw new AuthenticationError('Only admins can update assigments');
+      if (!req.auth.hasRole(Role.CREATE_ASSIGNMENT)) {
+        throw new AuthenticationError('Only admins can update assignments');
       }
 
       const { title, description, dueDate } = req.body;
-      const assigment = await AssigmentService.create(title, description, dueDate);
+      const assignment = await AssignmentService.create(title, description, dueDate);
 
-      res.json(assigment);
+      res.json(assignment);
     } catch (error) {
         next(error);
     }
