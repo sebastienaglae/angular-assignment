@@ -50,14 +50,9 @@ class AssignmentService {
         const filter = {};
         const query = Assignment.find(filter);
 
-        if (options.page > 1) {
-            query.skip((options.page - 1) * options.limit - 1);
-            query.limit(options.limit + 2); // +1 for the last previous element page, +1 for the next page element
-        } else {
-            query.limit(options.limit + 1); // +1 for the next page element
-        }
-
         query.sort(AssignmentService._orderOptions[options.order]);
+        query.limit(options.limit + 1); // +1 to check if there is a next page
+
         const items = await query.exec();
         const result = new SearchResult();
         result.items = items.slice(0, options.limit);
@@ -65,6 +60,8 @@ class AssignmentService {
         result.totalPages = Math.ceil(await this.countDocuments(filter) / options.limit);
         result.hasNext = items.length > options.limit;
         result.hasPrevious = options.page > 1;
+
+        return result;
     }
 
     countDocuments(filter) {
