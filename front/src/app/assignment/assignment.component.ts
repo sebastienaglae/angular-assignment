@@ -1,49 +1,99 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssignmentService } from '../assignment.service';
 import { Assignment } from '../shared/assignment.model';
-
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { Utils } from '../shared/tools/Utils';
+import { MatSort, Sort } from '@angular/material/sort';
+import { merge, Observable, of as observableOf } from 'rxjs';
+import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
   styleUrls: ['./assignment.component.css'],
 })
 export class AssignmentComponent implements OnInit {
-  titre = 'Mon app sur les assignments';
-  selectedAssignment: Assignment | undefined = undefined;
-  // formVisible = false;
   assignments: Assignment[] = [];
+  searchText: string = '';
+  filterRendu: string = 'all';
+  //@ts-ignore
+  @ViewChild('paginator') paginator: MatPaginator;
+  //@ts-ignore
+  @ViewChild(MatSort) sort: MatSort;
+  //@ts-ignore
+  datasource: MatTableDataSource<Assignment>;
+  displayedColumns: string[] = ['nom', 'dateDeRendu', 'actions'];
 
   constructor(private assignementService: AssignmentService) {}
 
-  ngOnInit(): void {
-    this.getAssignments();
+  ngOnInit(): void {}
+
+  ngAfterViewInit() {
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(
+        startWith({}),
+        switchMap(() => {
+          return this.assignementService.getAssignments();
+        }),
+        map((data) => {
+          this.assignments = data;
+          this.datasource = new MatTableDataSource(data);
+          this.datasource.filterPredicate = this.getFilterPredicate();
+          this.datasource.paginator = this.paginator;
+          this.datasource.sort = this.sort;
+          // filter on the nom column only using the searchText
+          return data;
+        }),
+        catchError(() => {
+          return observableOf([]);
+        })
+      )
+      .subscribe((data) => {
+        this.assignments = data;
+        this.datasource = new MatTableDataSource(data as Assignment[]);
+        this.datasource.filterPredicate = this.getFilterPredicate();
+        this.datasource.paginator = this.paginator;
+        this.datasource.sort = this.sort;
+      });
   }
 
-  getAssignments() {
-    this.assignementService
-      .getAssignments()
-      .subscribe((data) => (this.assignments = data));
+  onSearch() {
+    this.datasource.filter = this.searchText.trim().toLowerCase();
   }
 
-  onSelect(assignment: Assignment) {
-    this.selectedAssignment = assignment;
+  onFilter() {
+    if (this.filterRendu === 'all') {
+      this.datasource.filter = '';
+    } else if (this.filterRendu === 'rendu') {
+      this.datasource.filter = 'true';
+    } else {
+      this.datasource.filter = 'false';
+    }
   }
 
-  onAddAssignment() {
-    // this.formVisible = true;
+  applyFilter() {
+    const nomFilter = this.searchText.trim().toLowerCase();
+    let renduFilter = '';
+    if (this.filterRendu === 'all') {
+      renduFilter = '';
+    } else if (this.filterRendu === 'rendu') {
+      renduFilter = 'true';
+    } else {
+      renduFilter = 'false';
+    }
+
+    this.datasource.filter = nomFilter + '$' + renduFilter;
   }
 
-  onNewAssignment(assignment: Assignment) {
-    // this.assignementService
-    //   .addAssignment(assignment)
-    //   .subscribe((message) => console.log(message));
-    // this.formVisible = false;
-  }
-
-  onModifyAssignment(assignment: Assignment) {
-    this.assignementService
-      .updateAssignment(assignment)
-      .subscribe((message) => console.log(message));
-    // this.formVisible = false;
+  getFilterPredicate() {
+    return (data: Assignment, filter: string) => {
+      const nomFilter = filter.split('$')[0];
+      const renduFilter = filter.split('$')[1];
+      const nomMatch = data.nom.toLowerCase().includes(nomFilter);
+      const renduMatch =
+        renduFilter === '' || data.rendu === (renduFilter === 'true');
+      return nomMatch && renduMatch;
+    };
   }
 }

@@ -24,7 +24,14 @@ import { AssignmentModifyComponent } from './assignment/assignment-modify/assign
 import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-gen.component';
 import { AssignmentListComponent } from './assignment/assignment-list/assignment-list.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,6 +62,14 @@ import { HttpClientModule } from '@angular/common/http';
     RouterModule,
     FormsModule,
     HttpClientModule,
+    MatIconModule,
+    MatDividerModule,
+    MatListModule,
+    MatSlideToggleModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

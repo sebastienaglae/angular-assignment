@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -36,6 +36,19 @@ export class AssignmentService {
       return of('No assignment deleted, empty assignment');
     this.loggingService.log('AssignmentService', 'DELETE');
     return this.http.delete<string>(`${this.url}/${assignment._id}`);
+  }
+
+  deleteAll(): Observable<string> {
+    //Get all assignments
+    this.getAssignments().subscribe((assignments) => {
+      //Delete all assignments
+      assignments.forEach((assignment) => {
+        this.deleteAssignment(assignment).subscribe((data) => {
+          console.log(data);
+        });
+      });
+    });
+    return of('All assignments deleted');
   }
 
   updateAssignment(assignment?: Assignment): Observable<string> {

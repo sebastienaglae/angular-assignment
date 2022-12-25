@@ -17,7 +17,7 @@ const routes: Routes = [
     path: 'add',
     component: AssignmentAddComponent,
   },
-  { path: 'detail/:id', component: AssignmentDetailComponent },
+  { path: 'assignment/:id', component: AssignmentDetailComponent },
   { path: 'gen', component: AssignmentGenComponent },
   { path: 'list', component: AssignmentListComponent },
   {

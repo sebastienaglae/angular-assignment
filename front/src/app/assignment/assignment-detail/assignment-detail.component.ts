@@ -27,9 +27,9 @@ export class AssignmentDetailComponent implements OnInit {
   getAssignment() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.assignementService
-        .getAssignment(id)
-        .subscribe((data) => (this.assignmentTarget = data));
+      this.assignementService.getAssignment(id).subscribe((data) => {
+        if (data) this.assignmentTarget = data;
+      });
     }
   }
 
@@ -57,11 +57,21 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   onDelete() {
+    if (!this.assignmentTarget) return;
     this.assignementService
       .deleteAssignment(this.assignmentTarget)
       .subscribe((data) => {
         console.log(data);
       });
     this.assignmentTarget = undefined;
+  }
+
+  isLate(): boolean {
+    if (this.assignmentTarget) {
+      let today = new Date();
+      let rendu = new Date(this.assignmentTarget.dateDeRendu);
+      return today > rendu;
+    }
+    return false;
   }
 }

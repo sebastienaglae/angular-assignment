@@ -8,7 +8,8 @@ mongoose.Promise = global.Promise;
 //mongoose.set('debug', true);
 
 // remplacer toute cette chaine par l'URI de connexion à votre propre base dans le cloud s
-const uri = 'mongodb+srv://seb:ixtrq2tx2IMbfzk0@cluster0.9k52ucc.mongodb.net/assignments?retryWrites=true&w=majority';
+//const uri = 'mongodb+srv://mb:P7zM3VePm0caWA1L@cluster0.zqtee.mongodb.net/assignments?retryWrites=true&w=majority';
+const uri = 'mongodb+srv://seb:ixtrq2tx2IMbfzk0@cluster0.9k52ucc.mongodb.net/angularProject?retryWrites=true&w=majority';
 
 const options = {
   useNewUrlParser: true,

@@ -10,18 +10,21 @@ import { Assignment } from 'src/app/shared/assignment.model';
 export class AssignmentGenComponent implements OnInit {
   constructor(private assignementService: AssignmentService) {}
   assignmentsAdded: string[] = [];
+  agtCount: number = 10;
 
   ngOnInit(): void {}
 
   onGen() {
-    for (let i = 0; i < 10; i++) {
-      let tmp = new Assignment();
-      tmp.nom = 'Assignment';
-      tmp.dateDeRendu = new Date();
-      tmp.rendu = false;
-      this.assignementService.addAssignment(tmp).subscribe((data) => {
-        this.assignmentsAdded.push((data as any).message);
-      });
+    for (let i = 0; i < this.agtCount; i++) {
+      this.assignementService
+        .addAssignment(Assignment.random())
+        .subscribe((data) => {
+          this.assignmentsAdded.push((data as any).message);
+        });
     }
+  }
+
+  deleteAll() {
+    this.assignementService.deleteAll();
   }
 }

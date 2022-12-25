@@ -1,10 +1,10 @@
-import {Assigment} from "../models/db";
+import { Assigment } from "../models/db";
 
 class AssigmentService {
     static _maxSearchLimit = 1000;
     static _orderOptions = {
-        'created-asc': {createdAt: 1},
-        'created-desc': {createdAt: -1},
+        'created-asc': { createdAt: 1 },
+        'created-desc': { createdAt: -1 },
     };
 
     async create(title, description, dueDate) {
@@ -19,7 +19,7 @@ class AssigmentService {
     }
 
     async update(id, title, description, dueDate) {
-        const result = await Assigment.updateOne({_id: id}, {
+        const result = await Assigment.updateOne({ _id: id }, {
             title,
             description,
             dueDate
@@ -29,7 +29,7 @@ class AssigmentService {
     }
 
     async delete(id) {
-        const result = await Assigment.deleteOne({_id: id});
+        const result = await Assigment.deleteOne({ _id: id });
         return result.deletedCount === 1;
     }
 
@@ -112,4 +112,4 @@ class SearchResult {
 
 const assigmentService = new AssigmentService();
 
-module.exports = {assigmentService};
+module.exports = { assigmentService };
