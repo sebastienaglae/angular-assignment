@@ -10,19 +10,35 @@ import { AssignmentService } from 'src/app/assignment.service';
 })
 export class AssignmentAddComponent implements OnInit {
   @Output() newAssignment = new EventEmitter<Assignment>();
-
   name: string = '';
-  submitDate: Date = new Date();
+  author: string = '';
+  subject: string = '';
+  subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'History'];
+  submitDate?: Date;
+  messageError: string = '';
   constructor(private assignmentService: AssignmentService) {}
 
   ngOnInit(): void {}
 
   onSubmit(event: any) {
-    let tmp = new Assignment();
-    tmp.nom = this.name;
-    tmp.dateDeRendu = this.submitDate;
-    tmp.rendu = false;
+    event.preventDefault();
+    if (this.name === '') {
+      this.messageError = 'Please enter a name';
+      return;
+    }
+    if (this.submitDate === undefined) {
+      this.messageError = 'Please enter a date';
+      return;
+    }
+    this.messageError = '';
+    this.assignmentService.addAssignment(
+      new Assignment(this.name, this.submitDate)
+    );
+    this.reset();
+  }
 
-    this.assignmentService.addAssignment(tmp);
+  reset() {
+    this.name = '';
+    this.submitDate = undefined;
   }
 }

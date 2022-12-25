@@ -24,7 +24,7 @@ app.use('/assigments', assigmentsRouter);
 
 app.use(errorMiddleware);
 
-mongoose.connect(process.env.DB_CONNECTION_STRING || 'mongodb://localhost:27017/assigment', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/assigment', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to MongoDB');
     }).catch(err => {

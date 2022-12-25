@@ -1,31 +1,44 @@
+<h1>Details :</h1>
 <mat-card *ngIf="assignmentTarget">
-  <h1>Details :</h1>
+  <mat-card-title>{{ assignmentTarget.nom }}</mat-card-title>
   <mat-card-header>
-    <mat-card-title>{{ assignmentTarget.nom }}</mat-card-title>
     <mat-card-subtitle
       >{{ assignmentTarget.dateDeRendu | date }}
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <p *ngIf="assignmentTarget.rendu; else nonsoumis">Devoir rendu</p>
-    <ng-template #nonsoumis> Devoir non rendu </ng-template>
-    <p>UUID : {{ assignmentTarget._id }}</p>
+    <p>id : {{ assignmentTarget._id }}</p>
+    <p *ngIf="!assignmentTarget.rendu; else soumis">Devoir non rendu</p>
+    <ng-template #soumis>
+      <p *ngIf="isLate(); else notLate">Devoir rendu avec du retard</p>
+      <ng-template #notLate> Devoir rendu </ng-template>
+    </ng-template>
+    <p>Remarque : {{ assignmentTarget.remarque }}</p>
+    <p *ngIf="assignmentTarget.rendu">Note : {{ assignmentTarget.note }}/20</p>
+    <div>
+      <img
+        src="https://picsum.photos/200/300"
+        alt="Photo de la matiere"
+        width="70px"
+        height="100%"
+      />
+      <img
+        src="https://picsum.photos/200/300"
+        alt="Photo de la matiere"
+        width="70px"
+        height="100%"
+      />
+    </div>
   </mat-card-content>
-  <mat-checkbox
-    *ngIf="!assignmentTarget.rendu"
-    (input)="onChange($event)"
-    name="rendu"
-    >Est rendu</mat-checkbox
-  >
-  <button
-    mat-raised-button
-    color="warn"
-    (click)="onEdit()"
-    [disabled]="!isAdmin()"
-  >
-    Modifier
-  </button>
-  <button mat-raised-button color="warn" (click)="onDelete()">Supprimer</button>
+  <!-- [disabled]="!isAdmin()" -->
+  <div>
+    <button mat-raised-button color="secondary" (click)="onEdit()">
+      Modifier
+    </button>
+    <button mat-raised-button color="warn" (click)="onDelete()">
+      Supprimer
+    </button>
+  </div>
 </mat-card>
 
 <mat-card color="warn" *ngIf="assignmentTarget === undefined">

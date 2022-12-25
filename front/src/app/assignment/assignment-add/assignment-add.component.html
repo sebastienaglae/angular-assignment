@@ -1,19 +1,64 @@
 <mat-card>
-    <mat-card-title>Ajouter un devoir</mat-card-title>
-    <form ngForm (submit)="onSubmit($event); assignmentForm.reset()" #assignmentForm>
-        <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Nom du devoir</mat-label>
-            <input matInput placeholder="Ex. TD2 - Math" [(ngModel)]="name" name="nom" />
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Choose a date</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="submitDate" name="dateDeRendu" />
-            <mat-hint>MM/DD/YYYY</mat-hint>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+  <mat-card-title>Ajouter un devoir</mat-card-title>
+  <form ngForm (submit)="onSubmit($event)" #assignmentForm>
+    <mat-form-field>
+      <mat-label>Nom du devoir</mat-label>
+      <input
+        matInput
+        placeholder="Ex. TD2 - Math"
+        [(ngModel)]="name"
+        name="nom"
+        required
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Auteur</mat-label>
+      <input
+        matInput
+        placeholder="Ex. John Doe"
+        [(ngModel)]="author"
+        name="auteur"
+        required
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <!-- Photo de la matiere -->
+      <mat-label>Matiere</mat-label>
+      <mat-select [(ngModel)]="subject" name="matiere" required>
+        <mat-option *ngFor="let subject of subjects" [value]="subject">
+          {{ subject }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div>
+      <img
+        src="https://picsum.photos/200/300"
+        alt="Photo de la matiere"
+        width="70px"
+        height="100%"
+      />
+      <img
+        src="https://picsum.photos/200/300"
+        alt="Photo de la matiere"
+        width="70px"
+        height="100%"
+      />
+    </div>
 
-        <p>Le nom du devoir '{{ name }}'</p>
-        <button mat-stroked-button color="primary">Ajouter un devoir</button>
-    </form>
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="submitDate"
+        name="dateDeRendu"
+        required
+      />
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-error> {{ messageError }} </mat-error>
+    <button mat-stroked-button color="primary">Ajouter un devoir</button>
+  </form>
 </mat-card>

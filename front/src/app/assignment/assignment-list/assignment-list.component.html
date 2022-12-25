@@ -6,12 +6,12 @@
   <mat-card-content>
     <p *ngIf="assignment.rendu; else nonsoumis">Devoir rendu</p>
     <ng-template #nonsoumis> Devoir non rendu </ng-template>
-    <p>UUID : {{ assignment._id }}</p>
+    <p>UUID : {{ assignment.id }}</p>
   </mat-card-content>
   <button
     mat-raised-button
     color="primary"
-    routerLink="/detail/{{ assignment._id }}"
+    routerLink="/detail/{{ assignment.id }}"
   >
     Détails
   </button>

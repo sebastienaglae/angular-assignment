@@ -12,3 +12,9 @@ mat-card {
   align-items: center;
   justify-content: center;
 }
+
+.mat-paginator-sticky {
+  bottom: 0px;
+  position: sticky;
+  z-index: 10;
+}

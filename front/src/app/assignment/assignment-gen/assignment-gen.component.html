@@ -1,8 +1,23 @@
 <mat-card>
+  <mat-form-field class="example-full-width">
+    <mat-label>Nombre de devoir</mat-label>
+    <input
+      matInput
+      #assignmentCount
+      maxlength="4"
+      placeholder="Ex. 42"
+      value="1000"
+      [(ngModel)]="agtCount"
+    />
+    <mat-hint align="end">{{ assignmentCount.value.length }} / 4</mat-hint>
+  </mat-form-field>
   <button mat-raised-button color="primary" (click)="onGen()">
     Generer des données
   </button>
-  <p *ngFor="let assignment of assignmentsAdded">
-    {{ assignment }}
-  </p>
+</mat-card>
+
+<mat-card>
+  <button mat-raised-button color="primary" (click)="deleteAll()">
+    Supprimer toutes les données
+  </button>
 </mat-card>
