@@ -19,6 +19,8 @@ const middleware = (req, res, next) => {
     } else {
         res.auth = null;
     }
+
+    next();
 }
 
 module.exports = middleware;

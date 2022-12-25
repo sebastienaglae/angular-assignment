@@ -1,4 +1,4 @@
-import {Assigment} from "../models/db";
+const {Assigment} = require('../models/db');
 
 class AssigmentService {
     static _maxSearchLimit = 1000;
@@ -112,4 +112,4 @@ class SearchResult {
 
 const assigmentService = new AssigmentService();
 
-module.exports = {assigmentService};
+module.exports = assigmentService;
