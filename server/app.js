@@ -4,6 +4,7 @@ const logger = require('morgan');
 
 const authenticationRouter = require('./routes/authentication');
 const assignmentsRouter = require('./routes/assignments');
+const subjectsRouter = require('./routes/subjects');
 
 const authenticationMiddleware = require('./middlewares/auth');
 const errorMiddleware = require('./middlewares/error');
@@ -23,6 +24,7 @@ app.use(authenticationMiddleware);
 
 app.use('/auth', authenticationRouter);
 app.use('/assignments', assignmentsRouter);
+app.use('/subjects', subjectsRouter);
 
 app.use(errorMiddleware);
 

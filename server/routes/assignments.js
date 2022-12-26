@@ -7,6 +7,7 @@ const SubjectService = require('../services/subject');
 const Role = require('../models/role');
 const {AuthenticationRequiredError,AuthorizationError,ObjectNotFoundError} = require("../models/error");
 const {StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator} = require('../util/validator');
+const {AssignmentDto} = require("../models/dto/assignment");
 
 router.get('/search', async (req, res, next) => {
     try {
@@ -22,6 +23,8 @@ router.get('/search', async (req, res, next) => {
           order: order
       };
       const searchResult = await AssignmentService.search(options);
+
+      searchResult.items = searchResult.items.map(AssignmentDto);
 
       res.json(searchResult);
     } catch (error) {
@@ -41,9 +44,9 @@ router.delete('/:id', async (req, res, next) => {
       const { id } = req.params;
       ObjectIdValidator('id', id);
 
-      await AssignmentService.delete(id);
+      const success = await AssignmentService.delete(id);
 
-      res.json({ success: true });
+      res.json({ success });
     } catch (error) {
         next(error);
     }
@@ -87,7 +90,7 @@ router.get('/:id', async (req, res, next) => {
             throw new ObjectNotFoundError('Assignment not found');
         }
 
-        res.json({ result });
+        res.json(AssignmentDto(result));
     } catch (error) {
         next(error);
     }
@@ -112,7 +115,7 @@ router.post('/create', async (req, res, next) => {
       const ownerId = req.auth.id;
       const assignment = await AssignmentService.create(ownerId, subjectId, title, description, dueDate);
 
-      res.json(assignment);
+      res.json(AssignmentDto(assignment));
     } catch (error) {
         next(error);
     }
