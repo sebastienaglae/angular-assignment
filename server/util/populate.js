@@ -52,7 +52,7 @@ class DatabasePopulate {
                 dueDate = new Date(year, month, day);
             }
 
-            await AssignmentService.create(user._id, subject._id, `Test Assignment ${i}`, `This is a test assignment for user ${user.username}. Random number: ${Math.random()}`, dueDate);
+            await AssignmentService.create(user._id, subject._id, `Test Assignment ${i}`, `This is a test assignment for user id ${user}. Random number: ${Math.random()}`, dueDate);
         }
     }
 }
