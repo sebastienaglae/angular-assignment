@@ -44,6 +44,21 @@ const SubjectSchema = new mongoose.Schema({
 const Subject = mongoose.model('Subject', SubjectSchema);
 
 // Declare the schema of Assignment, which is the assignment itself
+const AssignmentSubmissionSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        required: true,
+    },
+    content: {
+        type: Buffer,
+        required: true,
+    },
+    submittedAt: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    }
+});
 const AssignmentRatingSchema = new mongoose.Schema({
     rating: {
         type: Number,
@@ -90,6 +105,9 @@ const AssignmentSchema = new mongoose.Schema({
     dueDate: {
         type: Date,
         required: false
+    },
+    submission: {
+        type: AssignmentSubmissionSchema,
     },
     rating: {
         type: AssignmentRatingSchema

@@ -11,7 +11,8 @@ const AssignmentDto = assignment => {
         createdAt: assignment.createdAt,
         updatedAt: assignment.updatedAt,
         dueDate: assignment.dueDate,
-        rating: assignment.rating
+        submission: assignment.submission || null,
+        rating: assignment.rating || null
     };
 }
 
@@ -25,7 +26,8 @@ const AssignmentFullDto = assignment => {
         createdAt: assignment.createdAt,
         updatedAt: assignment.updatedAt,
         dueDate: assignment.dueDate,
-        rating: assignment.rating
+        submission: assignment.submission || null,
+        rating: assignment.rating || null
     };
 }
 
