@@ -8,6 +8,8 @@ const assignmentsRouter = require('./routes/assignments');
 const authenticationMiddleware = require('./middlewares/auth');
 const errorMiddleware = require('./middlewares/error');
 
+const PopulateUtil = require('./util/populate');
+
 const mongoose = require("mongoose");
 
 const app = express();
@@ -27,6 +29,9 @@ app.use(errorMiddleware);
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/assignment', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Connected to MongoDB');
+        PopulateUtil.populate().then(() => {
+            console.log('Populated MongoDB');
+        });
     }).catch(err => {
         console.error(err);
     });

@@ -1,4 +1,4 @@
-const { User } = require('../models/db');
+const {Account} = require('../models/db');
 const jwt = require("jsonwebtoken");
 
 class AuthenticationService {
@@ -12,22 +12,31 @@ class AuthenticationService {
 
     async login(username, password) {
         const passwordHash = this.hashPassword(password);
-        const user = await User.findOne({ username, passwordHash });
-        if (!user) {
+        const account = await Account.findOne({ username, passwordHash });
+        if (!account) {
             throw new AuthenticationError('Invalid username or password');
         }
 
-        return this.generateToken(user);
+        return this.generateToken(account);
     }
 
     async register(username, password, email) {
         const passwordHash = this.hashPassword(password);
-        const user = new User({
+        const account = new Account({
             username,
             passwordHash,
             email
         });
-        await user.save();
+
+        try {
+            await account.save();
+            return account._id;
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new RegistrationError('Username or email already in use');
+            }
+            throw error;
+        }
     }
 
     hashPassword(password) {
@@ -35,10 +44,10 @@ class AuthenticationService {
         return hash.update(password).digest('hex');
     }
 
-    generateToken(user) {
+    generateToken(account) {
         const token = jwt.sign({
-            id: user._id,
-            roles: user.roles
+            id: account._id,
+            roles: account.roles
         }, this._tokenSignatureKey, { expiresIn: '24d' });
         return token;
     }
@@ -56,7 +65,15 @@ class AuthenticationError extends Error {
     }
 }
 
+class RegistrationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'RegistrationError';
+        this.code = 401;
+    }
+}
+
 const authenticationService = new AuthenticationService();
 
 module.exports = authenticationService;
-global.crypto = require('crypto')
+global.crypto = require('crypto');

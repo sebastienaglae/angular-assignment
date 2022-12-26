@@ -14,7 +14,16 @@ class AuthorizationError extends Error {
     }
 }
 
+class ObjectNotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ObjectNotFoundError';
+        this.code = 404;
+    }
+}
+
 module.exports = {
     AuthenticationRequiredError,
-    AuthorizationError
+    AuthorizationError,
+    ObjectNotFoundError
 }

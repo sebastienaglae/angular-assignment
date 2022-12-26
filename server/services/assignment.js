@@ -7,8 +7,19 @@ class AssignmentService {
         'created-desc': { createdAt: -1 },
     };
 
-    async create(title, description, dueDate) {
+    get maxSearchLimit() {
+        return AssignmentService._maxSearchLimit;
+    }
+
+    isValidOrder(order) {
+        return AssignmentService._orderOptions.hasOwnProperty(order);
+    }
+
+    async create(ownerId, subjectId, title, description, dueDate) {
         const assignment = new Assignment({
+            owner: ownerId,
+            subject: subjectId,
+
             title,
             description,
             dueDate
@@ -18,11 +29,15 @@ class AssignmentService {
         return assignment;
     }
 
-    async update(id, title, description, dueDate) {
+    async update(id, subjectId, title, description, dueDate) {
         const result = await Assignment.updateOne({ _id: id }, {
+            subject: subjectId,
+
             title,
             description,
-            dueDate
+            dueDate,
+
+            updatedAt: Date.now()
         });
 
         return result.nModified === 1;
@@ -75,10 +90,10 @@ class AssignmentService {
         if (options.page < 1) {
             return new SearchBadRequestError('Invalid page number');
         }
-        if (options.limit < 1 || options.limit > AssignmentService._maxSearchLimit) {
+        if (options.limit < 1 || options.limit > this.maxSearchLimit) {
             return new SearchBadRequestError('Invalid limit');
         }
-        if (!AssignmentService._orderOptions.hasOwnProperty(options.order)) {
+        if (!this.isValidOrder(options.order)) {
             return new SearchBadRequestError('Invalid order');
         }
     }
