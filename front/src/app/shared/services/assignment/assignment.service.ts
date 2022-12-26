@@ -2,12 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Assignment } from './shared/assignment.model';
-import { LoggingService } from './shared/logging.service';
-import { SearchAssignment } from './shared/api/assignment/search.model';
-import { ResultAssignment } from './shared/api/assignment/result.model';
-import { CreateAssignment } from './shared/api/assignment/create.model';
-import { DeleteAssignment } from './shared/api/assignment/delete.model';
+import { Assignment } from '../../assignment.model';
+import { LoggingService } from '../logging/logging.service';
+import { SearchAssignment } from '../../api/assignment/search.model';
+import { ResultAssignment } from '../../api/assignment/result.model';
+import { CreateAssignment } from '../../api/assignment/create.model';
+import { DeleteAssignment } from '../../api/assignment/delete.model';
 
 @Injectable({
   providedIn: 'root',

@@ -1,5 +1,5 @@
-const {AccountDto} = require('./account');
-const {SubjectDto} = require('./subject');
+const { AccountDto } = require('./account');
+const { SubjectDto } = require('./subject');
 
 const AssignmentDto = assignment => {
     return {

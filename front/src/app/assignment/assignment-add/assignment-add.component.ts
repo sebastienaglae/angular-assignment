@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Assignment } from 'src/app/shared/assignment.model';
 import { Router } from '@angular/router';
-import { AssignmentService } from 'src/app/assignment.service';
+import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { Utils } from 'src/app/shared/tools/Utils';
 import { FormBuilder, Validators } from '@angular/forms';
 

@@ -8,7 +8,7 @@ import { AssignmentListComponent } from './assignment/assignment-list/assignment
 import { AssignmentAddComponent } from './assignment/assignment-add/assignment-add.component';
 import { AssignmentComponent } from './assignment/assignment.component';
 import { AssignmentDetailComponent } from './assignment/assignment-detail/assignment-detail.component';
-import { AuthGuard } from './shared/auth.guard';
+import { AuthGuard } from './shared/services/auth/auth.guard';
 import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-gen.component';
 
 const routes: Routes = [

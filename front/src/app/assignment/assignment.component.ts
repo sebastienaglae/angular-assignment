@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AssignmentService } from '../assignment.service';
+import { AssignmentService } from '../shared/services/assignment/assignment.service';
 import { Assignment } from '../shared/assignment.model';
 import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
 import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
@@ -23,7 +23,7 @@ export class AssignmentComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   //@ts-ignore
   datasource: MatTableDataSource<Assignment>;
-  displayedColumns: string[] = ['nom', 'dateDeRendu', 'actions'];
+  displayedColumns: string[] = ['ownerId', 'dueDate', 'actions'];
 
   constructor(private assignementService: AssignmentService) {}
 
@@ -99,7 +99,7 @@ export class AssignmentComponent implements OnInit {
       const renduFilter = filter.split('$')[1];
       const nomMatch = data.title.toLowerCase().includes(nomFilter);
       const renduMatch =
-        renduFilter === '' || data.rendu === (renduFilter === 'true');
+        renduFilter === '' || data.submission === (renduFilter === 'true');
       return nomMatch && renduMatch;
     };
   }

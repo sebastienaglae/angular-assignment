@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assignment } from 'src/app/shared/assignment.model';
-import { AuthService } from 'src/app/shared/auth.service';
-import { AssignmentService } from 'src/app/assignment.service';
+import { AuthService } from 'src/app/shared/services/auth/auth.service';
+import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 
 @Component({
   selector: 'app-assignment-detail',
@@ -51,7 +51,7 @@ export class AssignmentDetailComponent implements OnInit {
     // clone assignement
     let tmp = this.assignmentTarget;
     if (tmp) {
-      tmp.rendu = checkbox.checked;
+      tmp.submission = checkbox.checked;
       this.assignementService
         .updateAssignment(tmp)
         .subscribe((message) => console.log(message));
@@ -72,7 +72,7 @@ export class AssignmentDetailComponent implements OnInit {
   onDelete() {
     if (!this.assignmentTarget) return;
     this.assignementService
-      .deleteAssignment(this.assignmentTarget)
+      .deleteAssignment(this.assignmentTarget._id)
       .subscribe((data) => {
         console.log(data);
       });

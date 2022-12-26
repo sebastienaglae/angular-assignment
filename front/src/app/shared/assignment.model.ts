@@ -4,25 +4,18 @@ import { Rating } from './rating.model';
 export class Assignment {
   public _id!: string;
 
-  public owner!: string;
+  public ownerId!: string;
   public subject!: string;
   public title!: string;
   public description!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
   public dueDate!: Date;
+  public submission!: boolean;
   public rating!: Rating;
-  constructor(nom?: string, dateDeRendu?: Date, rendu?: boolean) {
-    if (nom !== undefined) this.title = nom;
-    if (dateDeRendu !== undefined) this.dueDate = dateDeRendu;
-    if (rendu !== undefined) this.rendu = rendu;
-  }
 
   public isValid(): boolean {
-    if (this.title === '') return false;
-    if (this.dueDate === undefined) return false;
-    if (this.owner === '') return false;
-    // if (this.matiere === undefined) return false;
+    // TODO: implement
 
     return true;
   }
@@ -54,7 +47,9 @@ export class Assignment {
     let assignment = new Assignment();
     assignment.title = 'Random Assignment ' + Math.floor(Math.random() * 1000);
     assignment.dueDate = Utils.randomDate(2018, 2024);
-    assignment.owner = 'Random Author';
+    assignment.ownerId = 'Random Author';
+
+    // TODO: implement
 
     return assignment;
   }
