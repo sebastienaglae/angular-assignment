@@ -1,64 +1,161 @@
-<mat-card>
-  <mat-card-title>Ajouter un devoir</mat-card-title>
-  <form ngForm (submit)="onSubmit($event)" #assignmentForm>
-    <mat-form-field>
-      <mat-label>Nom du devoir</mat-label>
-      <input
-        matInput
-        placeholder="Ex. TD2 - Math"
-        [(ngModel)]="name"
-        name="nom"
-        required
-      />
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Auteur</mat-label>
-      <input
-        matInput
-        placeholder="Ex. John Doe"
-        [(ngModel)]="author"
-        name="auteur"
-        required
-      />
-    </mat-form-field>
-    <mat-form-field>
-      <!-- Photo de la matiere -->
-      <mat-label>Matiere</mat-label>
-      <mat-select [(ngModel)]="subject" name="matiere" required>
-        <mat-option *ngFor="let subject of subjects" [value]="subject">
-          {{ subject }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <div>
-      <img
-        src="https://picsum.photos/200/300"
-        alt="Photo de la matiere"
-        width="70px"
-        height="100%"
-      />
-      <img
-        src="https://picsum.photos/200/300"
-        alt="Photo de la matiere"
-        width="70px"
-        height="100%"
-      />
-    </div>
+<!-- Composant : Ajout d'un devoir -->
+<!-- Description : Ce composant permet d'ajouter un devoir -->
 
-    <mat-form-field appearance="fill">
-      <mat-label>Choose a date</mat-label>
-      <input
-        matInput
-        [matDatepicker]="picker"
-        [(ngModel)]="submitDate"
-        name="dateDeRendu"
-        required
-      />
-      <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-    <mat-error> {{ messageError }} </mat-error>
-    <button mat-stroked-button color="primary">Ajouter un devoir</button>
-  </form>
+<mat-card>
+  <mat-vertical-stepper>
+    <!-- Etape 1 : Nom du devoir -->
+    <mat-step
+      #stepper
+      label="Nom du devoir"
+      errorMessage="Le nom est requis."
+      [stepControl]="formGroups.nameFormGroup"
+    >
+      <form [formGroup]="formGroups.nameFormGroup">
+        <h2>Entrez le nom du devoir</h2>
+        <mat-form-field>
+          <mat-label>Nom du devoir</mat-label>
+          <input
+            #nameInput
+            matInput
+            placeholder="Ex. TD2 - Math"
+            formControlName="nameCtrl"
+            name="nom"
+            required
+            (input)="updateUrl('name', nameInput.value)"
+          />
+          <mat-hint>Ex. TD2 - Math</mat-hint>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Etape 2 : La date de rendu with a calendar component -->
+    <mat-step
+      label="Date de rendu"
+      errorMessage="La date de rendu est requise."
+      [stepControl]="formGroups.dateFormGroup"
+    >
+      <form [formGroup]="formGroups.dateFormGroup">
+        <h2>Entrez la date de rendu du devoir</h2>
+        <mat-form-field>
+          <input
+            #dateInput
+            matInput
+            [ngxMatDatetimePicker]="picker"
+            placeholder="Choisissez une date et une heure"
+            formControlName="dateCtrl"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="$any(picker)"
+          ></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker
+            #picker
+            [showSpinners]="true"
+            [showSeconds]="true"
+            [stepHour]="1"
+            [stepMinute]="1"
+            [stepSecond]="1"
+            [touchUi]="false"
+            (closed)="updateUrl('date', dateInput.value)"
+          >
+          </ngx-mat-datetime-picker>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Etape 3 : L'auteur -->
+    <mat-step
+      label="Auteur"
+      errorMessage="L'auteur est requis."
+      [stepControl]="formGroups.authorFormGroup"
+    >
+      <form [formGroup]="formGroups.authorFormGroup">
+        <h2>Entrez l'auteur du devoir</h2>
+        <mat-form-field>
+          <mat-label>Auteur</mat-label>
+          <input
+            #authorInput
+            matInput
+            placeholder="Ex. John Doe"
+            formControlName="authorCtrl"
+            name="auteur"
+            required
+            (input)="updateUrl('author', authorInput.value)"
+          />
+          <mat-hint>Ex. John Doe</mat-hint>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Etape 4 : La matiere -->
+    <mat-step
+      label="Matière"
+      errorMessage="La matière est requise."
+      [stepControl]="formGroups.subjectFormGroup"
+    >
+      <form [formGroup]="formGroups.subjectFormGroup">
+        <h2>Entrez la matière du devoir</h2>
+        <div>
+          <img
+            *ngIf="formGroups.subjectValue"
+            src="subjectImgPath"
+            width="50"
+            height="50"
+          />
+          <mat-form-field>
+            <mat-label>Matière</mat-label>
+            <mat-select
+              #subjectInput
+              formControlName="subjectCtrl"
+              name="matiere"
+              required
+              (selectionChange)="updateUrl('subject', subjectInput.value)"
+            >
+              <mat-option *ngFor="let subject of subjects" [value]="subject">
+                {{ subject }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <img
+          *ngIf="formGroups.subjectValue"
+          src="{{ teacherImgPath }}"
+          width="100"
+          height="100"
+        />
+
+        <div>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Etape 5 : Recapitulatif avec un bouton pour envoyer -->
+    <mat-step label="Récapitulatif">
+      <h2>Récapitulatif</h2>
+      <p>Nom du devoir : {{ formGroups.nameValue }}</p>
+      <p>Date de rendu : {{ formGroups.dateValue }}</p>
+      <p>Auteur : {{ formGroups.authorValue }}</p>
+      <p>Matière : {{ formGroups.subjectValue }}</p>
+      <div>
+        <button mat-button matStepperPrevious>Précédent</button>
+        <button
+          #submitButton
+          mat-button
+          (click)="submitNewAssignment(); submitButton.disabled = true"
+          [disabled]="!stepper.completed"
+        >
+          {{ submitButtonText }}
+        </button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
 </mat-card>

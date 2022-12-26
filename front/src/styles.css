@@ -13,3 +13,11 @@ body {
 h1 {
   text-align: center;
 }
+mat-card {
+  width: 90%;
+  margin: 15px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

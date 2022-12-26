@@ -1,6 +1,18 @@
-import { SchoolSubject } from '../SchoolSubject';
-
 export abstract class Utils {
+  static getParams(): Map<string, string> {
+    let params = new Map<string, string>();
+    let url = window.location.href;
+    let urlParts = url.split('?');
+    if (urlParts.length > 1) {
+      let paramsParts = urlParts[1].split('&');
+      for (let i = 0; i < paramsParts.length; i++) {
+        let paramParts = paramsParts[i].split('=');
+        params.set(paramParts[0], paramParts[1]);
+      }
+    }
+    return params;
+  }
+
   public static compare(
     a: number | string,
     b: number | string,
@@ -22,10 +34,59 @@ export abstract class Utils {
     return date;
   }
 
-  public static randomSubject(): SchoolSubject {
-    let keys = Object.keys(SchoolSubject);
-    let randomKey = keys[Math.floor(Math.random() * keys.length)];
-    let randomSubject = SchoolSubject[randomKey as keyof typeof SchoolSubject];
-    return randomSubject;
+  public static updateParam(key: string, value: string) {
+    key = encodeURIComponent(key);
+    value = encodeURIComponent(value);
+    let params = new Map<string, string>();
+    let url = window.location.href;
+    let urlParts = url.split('?');
+    if (urlParts.length > 1) {
+      let paramsParts = urlParts[1].split('&');
+      for (let i = 0; i < paramsParts.length; i++) {
+        let paramParts = paramsParts[i].split('=');
+        params.set(paramParts[0], paramParts[1]);
+      }
+    }
+    params.set(key, value);
+    let newUrl = urlParts[0] + '?';
+    params.forEach((value, key) => {
+      if (value === '') return;
+      newUrl += key + '=' + value + '&';
+    });
+    newUrl = newUrl.substring(0, newUrl.length - 1);
+    window.history.replaceState({}, '', newUrl);
+  }
+
+  public static getParam(params: Map<string, string>, key: string): string {
+    let value = params.get(key);
+    if (value === undefined) return '';
+    return decodeURIComponent(value);
+  }
+
+  public static convertTimestampToTimeRemaining(date: number): string {
+    let hours = Math.floor(date / 3600000);
+    let minutes = Math.floor((date % 3600000) / 60000);
+    let result = '';
+    if (hours > 0) result += hours + ' heure' + (hours > 1 ? 's' : '') + ' ';
+    if (minutes > 0)
+      result += minutes + ' minute' + (minutes > 1 ? 's' : '') + ' ';
+    if (result === '') result = 'Terminé';
+    return result;
+  }
+
+  public static stringToDateFormat(date: string): Date {
+    let dateParts = date.split('/');
+    return new Date(
+      parseInt(dateParts[0]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[2])
+    );
+  }
+
+  public static decodeJWTToken(jwtToken: string): string {
+    let payload = jwtToken.split('.')[1];
+    let decodedPayload = atob(payload);
+    let decodedPayloadObject = JSON.parse(decodedPayload);
+    return decodedPayloadObject.username;
   }
 }

@@ -18,6 +18,6 @@ export class AssignmentListComponent implements OnInit {
   setupAssignment() {
     this.assignmentService
       .getAssignments()
-      .subscribe((data) => (this.assignments = data));
+      .subscribe((data) => (this.assignments = data.items));
   }
 }

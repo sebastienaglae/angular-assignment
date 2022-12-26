@@ -1,17 +1,17 @@
 <mat-card *ngFor="let assignment of assignments">
   <mat-card-header>
-    <mat-card-title>{{ assignment.nom }}</mat-card-title>
-    <mat-card-subtitle>{{ assignment.dateDeRendu | date }}</mat-card-subtitle>
+    <mat-card-title>{{ assignment.title }}</mat-card-title>
+    <mat-card-subtitle>{{ assignment.dueDate | date }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <p *ngIf="assignment.rendu; else nonsoumis">Devoir rendu</p>
     <ng-template #nonsoumis> Devoir non rendu </ng-template>
-    <p>UUID : {{ assignment.id }}</p>
+    <p>Id : {{ assignment._id }}</p>
   </mat-card-content>
   <button
     mat-raised-button
     color="primary"
-    routerLink="/detail/{{ assignment.id }}"
+    routerLink="/detail/{{ assignment._id }}"
   >
     Détails
   </button>

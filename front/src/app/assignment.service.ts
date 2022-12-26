@@ -4,46 +4,48 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Assignment } from './shared/assignment.model';
 import { LoggingService } from './shared/logging.service';
+import { SearchAssignment } from './shared/api/assignment/search.model';
+import { ResultAssignment } from './shared/api/assignment/result.model';
+import { CreateAssignment } from './shared/api/assignment/create.model';
+import { DeleteAssignment } from './shared/api/assignment/delete.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssignmentService {
-  url = 'http://localhost:8010/api/assignments';
+  apiUrl = 'http://localhost:3000/assignments';
   constructor(
     private loggingService: LoggingService,
     private http: HttpClient
   ) {}
 
-  getAssignments(): Observable<Assignment[]> {
-    this.loggingService.log('AssignmentService', 'GETS');
-
-    return this.http.get<Assignment[]>(this.url);
+  getAssignments(): Observable<SearchAssignment> {
+    this.loggingService.log('AssignmentService', 'GET ALL');
+    return this.http.get<SearchAssignment>(`${this.apiUrl}/search`);
   }
 
-  getAssignment(uuid: string): Observable<Assignment | undefined> {
-    this.loggingService.log('AssignmentService', 'GET');
-    return this.http.get<Assignment>(`${this.url}/${uuid}`);
+  getAssignment(id: string): Observable<ResultAssignment> {
+    this.loggingService.log('AssignmentService', `GET ${id}`);
+    return this.http.get<ResultAssignment>(`${this.apiUrl}/${id}`);
   }
 
-  addAssignment(assignment: Assignment): Observable<string> {
-    this.loggingService.log('AssignmentService', 'POST');
-    return this.http.post<string>(this.url, assignment);
+  addAssignment(assignment: Assignment): Observable<CreateAssignment> {
+    this.loggingService.log('AssignmentService', `POST ${assignment._id}`);
+    return this.http.post<CreateAssignment>(
+      `${this.apiUrl}/create`,
+      assignment
+    );
   }
 
-  deleteAssignment(assignment?: Assignment): Observable<string> {
-    if (assignment === undefined)
-      return of('No assignment deleted, empty assignment');
-    this.loggingService.log('AssignmentService', 'DELETE');
-    return this.http.delete<string>(`${this.url}/${assignment._id}`);
+  deleteAssignment(id: string): Observable<DeleteAssignment> {
+    this.loggingService.log('AssignmentService', `DELETE ${id}`);
+    return this.http.delete<DeleteAssignment>(`${this.apiUrl}/${id}`);
   }
 
   deleteAll(): Observable<string> {
-    //Get all assignments
     this.getAssignments().subscribe((assignments) => {
-      //Delete all assignments
-      assignments.forEach((assignment) => {
-        this.deleteAssignment(assignment).subscribe((data) => {
+      assignments.items.forEach((assignment) => {
+        this.deleteAssignment(assignment._id).subscribe((data) => {
           console.log(data);
         });
       });
@@ -55,7 +57,7 @@ export class AssignmentService {
     if (assignment === undefined)
       return of('No assignment deleted, empty assignment');
 
-    this.loggingService.log(assignment.nom, 'UPDATE');
-    return this.http.put<string>(`${this.url}`, assignment);
+    this.loggingService.log(assignment.title, `PUT ${assignment._id}`);
+    return this.http.put<string>(`${this.apiUrl}`, assignment);
   }
 }

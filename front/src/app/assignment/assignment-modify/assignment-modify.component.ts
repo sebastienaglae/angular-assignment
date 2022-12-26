@@ -20,11 +20,12 @@ export class AssignmentModifyComponent implements OnInit {
 
   getAssignment() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.assignementService
-        .getAssignment(id)
-        .subscribe((data) => (this.currentAssignment = data));
-    }
+    // if (id) {
+    //   this.assignementService
+    //     .getAssignment(id)
+    //     .subscribe((data) => (this.currentAssignment = data));
+    // }
+    //todo: get assignment from id
   }
 
   ngOnInit(): void {}

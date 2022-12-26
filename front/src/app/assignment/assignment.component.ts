@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssignmentService } from '../assignment.service';
 import { Assignment } from '../shared/assignment.model';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Utils } from '../shared/tools/Utils';
 import { MatSort, Sort } from '@angular/material/sort';
 import { merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
+import { SearchAssignment } from '../shared/api/assignment/search.model';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
@@ -37,8 +38,10 @@ export class AssignmentComponent implements OnInit {
           return this.assignementService.getAssignments();
         }),
         map((data) => {
-          this.assignments = data;
-          this.datasource = new MatTableDataSource(data);
+          console.log(data);
+          if (!(data instanceof SearchAssignment)) return;
+          this.assignments = data.items;
+          this.datasource = new MatTableDataSource(data.items);
           this.datasource.filterPredicate = this.getFilterPredicate();
           this.datasource.paginator = this.paginator;
           this.datasource.sort = this.sort;
@@ -50,8 +53,12 @@ export class AssignmentComponent implements OnInit {
         })
       )
       .subscribe((data) => {
-        this.assignments = data;
-        this.datasource = new MatTableDataSource(data as Assignment[]);
+        console.log(data);
+        //check if the data is SearchAssignment
+        if (!(data instanceof SearchAssignment)) return;
+
+        this.assignments = data.items;
+        this.datasource = new MatTableDataSource(data.items as Assignment[]);
         this.datasource.filterPredicate = this.getFilterPredicate();
         this.datasource.paginator = this.paginator;
         this.datasource.sort = this.sort;
@@ -90,7 +97,7 @@ export class AssignmentComponent implements OnInit {
     return (data: Assignment, filter: string) => {
       const nomFilter = filter.split('$')[0];
       const renduFilter = filter.split('$')[1];
-      const nomMatch = data.nom.toLowerCase().includes(nomFilter);
+      const nomMatch = data.title.toLowerCase().includes(nomFilter);
       const renduMatch =
         renduFilter === '' || data.rendu === (renduFilter === 'true');
       return nomMatch && renduMatch;

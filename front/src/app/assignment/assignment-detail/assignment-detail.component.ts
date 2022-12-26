@@ -13,6 +13,12 @@ export class AssignmentDetailComponent implements OnInit {
   @Input() assignmentTarget: Assignment | undefined;
   @Output() deleteAssignement = new EventEmitter<Assignment>();
 
+  isAssignmentLate: boolean = false;
+  assignmentTimeRemaining: string = '';
+
+  teacherImgPath!: string;
+  subjectImgPath!: string;
+
   constructor(
     private assignementService: AssignmentService,
     private route: ActivatedRoute,
@@ -28,7 +34,14 @@ export class AssignmentDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.assignementService.getAssignment(id).subscribe((data) => {
-        if (data) this.assignmentTarget = data;
+        if (data) {
+          //Todo in case of error
+          this.assignmentTarget = data.result;
+          this.isAssignmentLate = Assignment.isTooLate(data.result);
+          this.assignmentTimeRemaining = Assignment.getTimeRemaining(
+            data.result
+          );
+        }
       });
     }
   }
@@ -51,7 +64,7 @@ export class AssignmentDetailComponent implements OnInit {
 
   onEdit() {
     this.router.navigate(['/assignment', this.assignmentTarget?._id, 'edit'], {
-      queryParams: { name: this.assignmentTarget?.nom },
+      queryParams: { name: this.assignmentTarget?.title },
       fragment: 'edition',
     });
   }
@@ -64,14 +77,5 @@ export class AssignmentDetailComponent implements OnInit {
         console.log(data);
       });
     this.assignmentTarget = undefined;
-  }
-
-  isLate(): boolean {
-    if (this.assignmentTarget) {
-      let today = new Date();
-      let rendu = new Date(this.assignmentTarget.dateDeRendu);
-      return today > rendu;
-    }
-    return false;
   }
 }

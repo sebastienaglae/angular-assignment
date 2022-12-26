@@ -13,6 +13,7 @@ import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-g
 
 const routes: Routes = [
   { path: '', component: AssignmentComponent },
+  { path: 'home', component: AssignmentComponent },
   {
     path: 'add',
     component: AssignmentAddComponent,

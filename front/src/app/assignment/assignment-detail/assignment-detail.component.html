@@ -1,34 +1,44 @@
 <h1>Details :</h1>
 <mat-card *ngIf="assignmentTarget">
-  <mat-card-title>{{ assignmentTarget.nom }}</mat-card-title>
+  <mat-card-title>{{ assignmentTarget.title }}</mat-card-title>
   <mat-card-header>
     <mat-card-subtitle
-      >{{ assignmentTarget.dateDeRendu | date }}
+      >{{ assignmentTarget.dueDate | date }}
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <p>id : {{ assignmentTarget._id }}</p>
-    <p *ngIf="!assignmentTarget.rendu; else soumis">Devoir non rendu</p>
-    <ng-template #soumis>
-      <p *ngIf="isLate(); else notLate">Devoir rendu avec du retard</p>
-      <ng-template #notLate> Devoir rendu </ng-template>
-    </ng-template>
-    <p>Remarque : {{ assignmentTarget.remarque }}</p>
-    <p *ngIf="assignmentTarget.rendu">Note : {{ assignmentTarget.note }}/20</p>
-    <div>
-      <img
-        src="https://picsum.photos/200/300"
-        alt="Photo de la matiere"
-        width="70px"
-        height="100%"
-      />
-      <img
-        src="https://picsum.photos/200/300"
-        alt="Photo de la matiere"
-        width="70px"
-        height="100%"
-      />
+    <!-- Display the details of the assignment in an organized way en francais; Affiche la note que si il a été rendu. Affiche la note ou les remarques que si ils sont definis -->
+    <p><b>Auteur :</b> {{ assignmentTarget.owner }}</p>
+    <img
+      *ngIf="subjectImgPath"
+      src="{{ subjectImgPath }}"
+      width="100"
+      height="100"
+    />
+    <p><b>Matière :</b> {{ assignmentTarget.subject }}</p>
+    <div *ngIf="teacherImgPath">
+      <img src="{{ teacherImgPath }}" width="100" height="100" />
+      <p>Professeur</p>
     </div>
+    <p *ngIf="assignmentTarget.remarque">
+      <b>Remarques :</b> {{ assignmentTarget.remarque }}
+    </p>
+    <p *ngIf="assignmentTarget.note && assignmentTarget.rendu">
+      <b>Note :</b> {{ assignmentTarget.note }}
+    </p>
+    <p>
+      <b> Rendu :</b>
+      {{ assignmentTarget.rendu ? "Oui" : "Non" }}
+    </p>
+    <p>
+      <b> Etat :</b>
+      {{ isAssignmentLate ? "Retard" : "Dans les temps" }}
+    </p>
+
+    <p>
+      <b> Temps restant :</b>
+      {{ assignmentTimeRemaining }}
+    </p>
   </mat-card-content>
   <!-- [disabled]="!isAdmin()" -->
   <div>
