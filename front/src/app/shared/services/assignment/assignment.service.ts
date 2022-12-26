@@ -2,12 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Assignment } from '../../assignment.model';
+import { Assignment } from '../../models/assignment.model';
 import { LoggingService } from '../logging/logging.service';
-import { SearchAssignment } from '../../api/assignment/search.model';
-import { ResultAssignment } from '../../api/assignment/result.model';
-import { CreateAssignment } from '../../api/assignment/create.model';
-import { DeleteAssignment } from '../../api/assignment/delete.model';
+import { SearchAssignment } from '../../api/assignment/search.assignment.model';
+import { ResultAssignment } from '../../api/assignment/result.assignment.model';
+import { CreateAssignment } from '../../api/assignment/create.assignment.model';
+import { DeleteAssignment } from '../../api/assignment/delete.assignment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,17 +19,25 @@ export class AssignmentService {
     private http: HttpClient
   ) {}
 
-  getAssignments(): Observable<SearchAssignment> {
+  search(options: {
+    page: number;
+    pageOffset: number;
+    pageSize: number;
+  }): Observable<SearchAssignment> {
     this.loggingService.log('AssignmentService', 'GET ALL');
-    return this.http.get<SearchAssignment>(`${this.apiUrl}/search`);
+    return this.http.get<SearchAssignment>(
+      `${this.apiUrl}/search?page=${options.page + options.pageOffset}&limit=${
+        options.pageSize
+      }`
+    );
   }
 
-  getAssignment(id: string): Observable<ResultAssignment> {
+  get(id: string): Observable<ResultAssignment> {
     this.loggingService.log('AssignmentService', `GET ${id}`);
     return this.http.get<ResultAssignment>(`${this.apiUrl}/${id}`);
   }
 
-  addAssignment(assignment: Assignment): Observable<CreateAssignment> {
+  add(assignment: Assignment): Observable<CreateAssignment> {
     this.loggingService.log('AssignmentService', `POST ${assignment._id}`);
     return this.http.post<CreateAssignment>(
       `${this.apiUrl}/create`,
@@ -37,20 +45,13 @@ export class AssignmentService {
     );
   }
 
-  deleteAssignment(id: string): Observable<DeleteAssignment> {
+  delete(id: string): Observable<DeleteAssignment> {
     this.loggingService.log('AssignmentService', `DELETE ${id}`);
     return this.http.delete<DeleteAssignment>(`${this.apiUrl}/${id}`);
   }
 
   deleteAll(): Observable<string> {
-    this.getAssignments().subscribe((assignments) => {
-      assignments.items.forEach((assignment) => {
-        this.deleteAssignment(assignment._id).subscribe((data) => {
-          console.log(data);
-        });
-      });
-    });
-    return of('All assignments deleted');
+    throw new Error('Method not implemented.');
   }
 
   updateAssignment(assignment?: Assignment): Observable<string> {

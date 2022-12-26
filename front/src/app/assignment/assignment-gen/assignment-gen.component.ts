@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
-import { Assignment } from 'src/app/shared/assignment.model';
+import { Assignment } from 'src/app/shared/models/assignment.model';
 
 @Component({
   selector: 'app-assignment-gen',
@@ -16,11 +16,9 @@ export class AssignmentGenComponent implements OnInit {
 
   onGen() {
     for (let i = 0; i < this.agtCount; i++) {
-      this.assignementService
-        .addAssignment(Assignment.random())
-        .subscribe((data) => {
-          this.assignmentsAdded.push((data as any).message);
-        });
+      this.assignementService.add(Assignment.random()).subscribe((data) => {
+        this.assignmentsAdded.push((data as any).message);
+      });
     }
   }
 

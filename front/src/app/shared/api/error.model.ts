@@ -1,4 +1,4 @@
-export class ErrorAssignment {
+export class ErrorRequest {
   name!: string;
   message!: string;
 }

@@ -1,20 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AssignmentService } from '../shared/services/assignment/assignment.service';
-import { Assignment } from '../shared/assignment.model';
-import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
-import { Utils } from '../shared/tools/Utils';
+import { Assignment } from '../shared/models/assignment.model';
 import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
-import { SearchAssignment } from '../shared/api/assignment/search.model';
+import { SearchAssignment } from '../shared/api/assignment/search.assignment.model';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
   styleUrls: ['./assignment.component.css'],
 })
 export class AssignmentComponent implements OnInit {
-  assignments: Assignment[] = [];
+  searchAssignment!: SearchAssignment;
+  datasource: MatTableDataSource<Assignment> = new MatTableDataSource();
+
   searchText: string = '';
   filterRendu: string = 'all';
   //@ts-ignore
@@ -22,46 +22,42 @@ export class AssignmentComponent implements OnInit {
   //@ts-ignore
   @ViewChild(MatSort) sort: MatSort;
   //@ts-ignore
-  datasource: MatTableDataSource<Assignment>;
-  displayedColumns: string[] = ['ownerId', 'dueDate', 'actions'];
+  displayedColumns: string[] = ['title', 'dueDate', 'submission', 'actions'];
 
   constructor(private assignementService: AssignmentService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.datasource.sort = this.sort;
+    this.datasource.paginator = this.paginator;
+  }
 
   ngAfterViewInit() {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.datasource.filterPredicate = this.getFilterPredicate();
+    this.loadAssignments();
+  }
+
+  loadAssignments() {
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         switchMap(() => {
-          return this.assignementService.getAssignments();
+          return this.assignementService.search({
+            page: this.paginator.pageIndex,
+            pageSize: this.paginator.pageSize,
+            pageOffset: 1,
+          });
         }),
         map((data) => {
-          console.log(data);
-          if (!(data instanceof SearchAssignment)) return;
-          this.assignments = data.items;
-          this.datasource = new MatTableDataSource(data.items);
-          this.datasource.filterPredicate = this.getFilterPredicate();
-          this.datasource.paginator = this.paginator;
-          this.datasource.sort = this.sort;
-          // filter on the nom column only using the searchText
-          return data;
+          this.paginator.length = data.totalItems;
+          return data.items;
         }),
         catchError(() => {
           return observableOf([]);
         })
       )
       .subscribe((data) => {
-        console.log(data);
-        //check if the data is SearchAssignment
-        if (!(data instanceof SearchAssignment)) return;
-
-        this.assignments = data.items;
-        this.datasource = new MatTableDataSource(data.items as Assignment[]);
-        this.datasource.filterPredicate = this.getFilterPredicate();
-        this.datasource.paginator = this.paginator;
-        this.datasource.sort = this.sort;
+        this.datasource.data = data;
       });
   }
 

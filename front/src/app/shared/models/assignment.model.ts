@@ -1,11 +1,11 @@
-import { Utils } from './tools/Utils';
-import { Rating } from './rating.model';
+import { Utils } from '../tools/Utils';
+import { Rating } from '../rating.model';
 
 export class Assignment {
   public _id!: string;
 
   public ownerId!: string;
-  public subject!: string;
+  public subjectId!: string;
   public title!: string;
   public description!: string;
   public createdAt!: Date;
@@ -18,16 +18,6 @@ export class Assignment {
     // TODO: implement
 
     return true;
-  }
-
-  public getTeacherImgPath(): string {
-    //todo implement
-    throw new Error('Method not implemented.');
-  }
-
-  public getSubjectImgPath(): string {
-    //todo implement
-    throw new Error('Method not implemented.');
   }
 
   public static isTooLate(ass: Assignment): boolean {

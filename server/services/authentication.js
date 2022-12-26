@@ -1,4 +1,4 @@
-const {Account} = require('../models/db');
+const { Account } = require('../models/db');
 const jwt = require("jsonwebtoken");
 
 class AuthenticationService {

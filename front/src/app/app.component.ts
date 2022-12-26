@@ -12,13 +12,7 @@ export class AppComponent {
   title = 'mdr';
   opened: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {
-    console.log(
-      Utils.decodeJWTToken(
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYThkN2ZlYTNmNzYyYWVkYmNjOWE5YyIsInJvbGVzIjpbNCwyXSwiaWF0IjoxNjcyMDA5ODg0LCJleHAiOjE2NzQwODM0ODR9.m-Aj6B_kYvY9vCnWGtn96RNOAhTN3JnAT58W8ep931c'
-      )
-    );
-  }
+  constructor(private authService: AuthService, private router: Router) {}
 
   login() {
     if (!this.authService.loggedIn) {

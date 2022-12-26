@@ -34,18 +34,28 @@
   #agtTableSort="matSort"
   class="mat-elevation-z8"
 >
-  <ng-container matColumnDef="nom">
-    <mat-header-cell *matHeaderCellDef mat-sort-header="nom"
-      >Nom</mat-header-cell
-    >
-    <mat-cell *matCellDef="let assignment">{{ assignment.nom }}</mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="dateDeRendu">
-    <mat-header-cell *matHeaderCellDef mat-sort-header="dateDeRendu"
-      >Date de rendu</mat-header-cell
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef mat-sort-header="title"
+      >Titre</mat-header-cell
     >
     <mat-cell *matCellDef="let assignment">
-      {{ assignment.dateDeRendu | date }}
+      {{ assignment.title }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="dueDate">
+    <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate"
+      >Pour le</mat-header-cell
+    >
+    <mat-cell *matCellDef="let assignment">
+      {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="submission">
+    <mat-header-cell *matHeaderCellDef mat-sort-header="submission"
+      >Rendu</mat-header-cell
+    >
+    <mat-cell *matCellDef="let assignment">
+      {{ assignment.submission ? "Rendu" : "Non rendu" }}
     </mat-cell>
   </ng-container>
   <ng-container matColumnDef="actions">
@@ -55,7 +65,7 @@
         <a
           mat-raised-button
           color="primary"
-          [routerLink]="['/assignment', assignment._id]"
+          [routerLink]="['/assignment', assignment.id]"
         >
           Détails
         </a>

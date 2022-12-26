@@ -22,7 +22,6 @@ import { AssignmentDetailComponent } from './assignment/assignment-detail/assign
 import { AssignmentAddComponent } from './assignment/assignment-add/assignment-add.component';
 import { AssignmentModifyComponent } from './assignment/assignment-modify/assignment-modify.component';
 import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-gen.component';
-import { AssignmentListComponent } from './assignment/assignment-list/assignment-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -50,7 +49,6 @@ import {
     AssignmentAddComponent,
     AssignmentModifyComponent,
     AssignmentGenComponent,
-    AssignmentListComponent,
   ],
   imports: [
     BrowserModule,

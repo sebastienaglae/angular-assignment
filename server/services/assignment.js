@@ -1,4 +1,4 @@
-const {Assignment} = require('../models/db');
+const { Assignment } = require('../models/db');
 
 class AssignmentService {
     static _maxSearchLimit = 1000;
@@ -66,6 +66,7 @@ class AssignmentService {
         const query = Assignment.find(filter);
 
         query.sort(AssignmentService._orderOptions[options.order]);
+        query.skip((options.page - 1) * options.limit);
         query.limit(options.limit + 1); // +1 to check if there is a next page
 
         const items = await query.exec();

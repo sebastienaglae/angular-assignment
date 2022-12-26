@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggingService } from '../logging/logging.service';
 import { Observable } from 'rxjs';
-import { Subject } from '../../api/subject/subject.model';
+import { Subject } from '../../models/subject.model';
+import { ResultSubject } from '../../api/subject/result.subject.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +15,13 @@ export class SubjectsService {
     private http: HttpClient
   ) {}
 
-  getAssignments(): Observable<Subject[]> {
+  getAll(): Observable<Subject[]> {
     this.loggingService.log('SubjectsService', 'GET ALL');
     return this.http.get<Subject[]>(`${this.apiUrl}/`);
   }
 
-  getAssignment(id: string): Observable<Subject> {
+  get(id: string): Observable<ResultSubject> {
     this.loggingService.log('Subject', `GET ${id}`);
-    return this.http.get<Subject>(`${this.apiUrl}/${id}`);
+    return this.http.get<ResultSubject>(`${this.apiUrl}/${id}`);
   }
 }

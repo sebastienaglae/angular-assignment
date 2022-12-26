@@ -14,11 +14,13 @@ export class AuthService {
   register(
     username: string,
     password: string,
+    email: string,
     callback: (status: boolean) => void
   ) {
     const apiRequest = this.http.post(`${this.apiUrl}/register`, {
       username,
       password,
+      email,
     });
 
     apiRequest.subscribe((data: any) => {

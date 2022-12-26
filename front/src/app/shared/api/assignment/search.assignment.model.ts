@@ -1,4 +1,4 @@
-import { Assignment } from '../../assignment.model';
+import { Assignment } from '../../models/assignment.model';
 
 export class SearchAssignment {
   page!: number;

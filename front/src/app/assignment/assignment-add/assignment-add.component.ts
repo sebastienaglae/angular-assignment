@@ -5,7 +5,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Assignment } from 'src/app/shared/assignment.model';
+import { Assignment } from 'src/app/shared/models/assignment.model';
 import { Router } from '@angular/router';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { Utils } from 'src/app/shared/tools/Utils';
