@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
-import { ResultAssignment } from 'src/app/shared/api/assignment/result.assignment.model';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
 
@@ -39,15 +38,15 @@ export class AssignmentDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.assignementService.get(id).subscribe((data) => {
+        // TODO MANAGE ERROR
         if (!data) return;
-        if (data.error) return;
+
         const assResult = data as any as Assignment;
         this.assignmentTarget = assResult;
         this.isAssignmentLate = Assignment.isTooLate(assResult);
         this.assignmentTimeRemaining = Assignment.getTimeRemaining(assResult);
         this.subjectsService.get(assResult.subjectId).subscribe((data) => {
           if (!data) return;
-          if (data.error) return;
           this.subject = data as any as Subject;
           //todo : get teacher img path
           //this.subjectImgPath = subjectResult.imgPath;
@@ -56,20 +55,12 @@ export class AssignmentDetailComponent implements OnInit {
     }
   }
 
-  onChange(event: any) {
-    let checkbox = event.target as HTMLInputElement;
-    // clone assignement
-    let tmp = this.assignmentTarget;
-    if (tmp) {
-      tmp.submission = checkbox.checked;
-      this.assignementService
-        .updateAssignment(tmp)
-        .subscribe((message) => console.log(message));
-    }
-  }
-
   isAdmin(): boolean {
     throw new Error('Method not implemented.');
+  }
+
+  onSubmit() {
+    this.router.navigate(['/assignment', this.assignmentTarget?._id, 'submit']);
   }
 
   onEdit() {

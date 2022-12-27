@@ -6,7 +6,11 @@ import { Injectable } from '@angular/core';
 export class LoggingService {
   constructor() {}
 
-  log(name: string, action: string) {
+  log(name: string, action: string): void {
     console.log(`[LOG] '${name}': ${action}`);
+  }
+
+  event(name: string, action: string): void {
+    console.log(`[EVENT] '${name}': ${action}`);
   }
 }

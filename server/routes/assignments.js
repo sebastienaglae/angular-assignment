@@ -5,28 +5,28 @@ const AssignmentService = require('../services/assignment');
 const SubjectService = require('../services/subject');
 
 const Role = require('../models/role');
-const {AuthenticationRequiredError,AuthorizationError,ObjectNotFoundError} = require("../models/error");
-const {StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator} = require('../util/validator');
-const {AssignmentDto} = require("../models/dto/assignment");
+const { AuthenticationRequiredError, AuthorizationError, ObjectNotFoundError } = require("../models/error");
+const { StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator } = require('../util/validator');
+const { AssignmentDto } = require("../models/dto/assignment");
 
 router.get('/search', async (req, res, next) => {
     try {
-      const { page = 1, limit = 10, order = 'created-asc' } = req.query;
+        const { page = 1, limit = 10, order = 'created-asc' } = req.query;
 
-      NumberValidator('page', page, 1);
-      NumberValidator('limit', limit, 1, AssignmentService.maxSearchLimit);
-      CustomValidator('order', order, AssignmentService.isValidOrder);
+        NumberValidator('page', page, 1);
+        NumberValidator('limit', limit, 1, AssignmentService.maxSearchLimit);
+        CustomValidator('order', order, AssignmentService.isValidOrder);
 
-      const options = {
-          page: page,
-          limit: limit,
-          order: order
-      };
-      const searchResult = await AssignmentService.search(options);
+        const options = {
+            page: page,
+            limit: limit,
+            order: order
+        };
+        const searchResult = await AssignmentService.search(options);
 
-      searchResult.items = searchResult.items.map(AssignmentDto);
+        searchResult.items = searchResult.items.map(AssignmentDto);
 
-      res.json(searchResult);
+        res.json(searchResult);
     } catch (error) {
         next(error);
     }
@@ -34,19 +34,19 @@ router.get('/search', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
     try {
-      if (!req.auth) {
-        throw new AuthenticationRequiredError();
-      }
-      if (!req.auth.hasRole(Role.DELETE_ASSIGNMENT)) {
-        throw new AuthorizationError('Only admins can delete assignments');
-      }
+        if (!req.auth) {
+            throw new AuthenticationRequiredError();
+        }
+        if (!req.auth.hasRole(Role.DELETE_ASSIGNMENT)) {
+            throw new AuthorizationError('Only admins can delete assignments');
+        }
 
-      const { id } = req.params;
-      ObjectIdValidator('id', id);
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
 
-      const success = await AssignmentService.delete(id);
+        const success = await AssignmentService.delete(id);
 
-      res.json({ success });
+        res.json({ success });
     } catch (error) {
         next(error);
     }
@@ -71,7 +71,7 @@ router.put('/:id', async (req, res, next) => {
             throw new ObjectNotFoundError('Subject not found');
         }
 
-        const success = await AssignmentService.update(id, title, description, dueDate);
+        const success = await AssignmentService.update(id, subjectId, title, description, dueDate);
 
         res.json({ success });
     } catch (error) {
@@ -98,24 +98,24 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/create', async (req, res, next) => {
     try {
-      if (!req.auth) {
-        throw new AuthenticationRequiredError();
-      }
-      if (!req.auth.hasRole(Role.CREATE_ASSIGNMENT)) {
-        throw new AuthorizationError('Only admins can update assignments');
-      }
+        if (!req.auth) {
+            throw new AuthenticationRequiredError();
+        }
+        if (!req.auth.hasRole(Role.CREATE_ASSIGNMENT)) {
+            throw new AuthorizationError('Only admins can update assignments');
+        }
 
-      const { subjectId, title, description, dueDate } = req.body;
-      AssignmentPropertyValidator(title, description, dueDate);
+        const { subjectId, title, description, dueDate } = req.body;
+        AssignmentPropertyValidator(title, description, dueDate);
 
-      if (!await SubjectService.exists(subjectId)) {
-          throw new ObjectNotFoundError('Subject not found');
-      }
+        if (!await SubjectService.exists(subjectId)) {
+            throw new ObjectNotFoundError('Subject not found');
+        }
 
-      const ownerId = req.auth.id;
-      const assignment = await AssignmentService.create(ownerId, subjectId, title, description, dueDate);
+        const ownerId = req.auth.id;
+        const assignment = await AssignmentService.create(ownerId, subjectId, title, description, dueDate);
 
-      res.json(AssignmentDto(assignment));
+        res.json(AssignmentDto(assignment));
     } catch (error) {
         next(error);
     }

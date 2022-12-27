@@ -12,6 +12,7 @@ import { Utils } from 'src/app/shared/tools/Utils';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
+import { ErrorRequest } from 'src/app/shared/api/error.model';
 
 @Component({
   selector: 'app-assignment-add',
@@ -55,6 +56,7 @@ export class AssignmentAddComponent implements OnInit {
 
   initSubject() {
     this.subjectService.getAll().subscribe((res) => {
+      if (res instanceof ErrorRequest) return;
       this.subjects = res;
       const subjectId = Utils.getParam(Utils.getParams(), 'subject');
       if (subjectId) {

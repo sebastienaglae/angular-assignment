@@ -39,8 +39,7 @@ class AssignmentService {
 
             updatedAt: Date.now()
         });
-
-        return result.nModified === 1;
+        return result.modifiedCount === 1;
     }
 
     async delete(id) {

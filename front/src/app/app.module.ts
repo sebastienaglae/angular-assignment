@@ -38,6 +38,8 @@ import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
 } from '@angular-material-components/datetime-picker';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { AssignmentSubmitComponent } from './assignment/assignment-submit/assignment-submit.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,6 +50,7 @@ import {
     AssignmentAddComponent,
     AssignmentModifyComponent,
     AssignmentGenComponent,
+    AssignmentSubmitComponent,
   ],
   imports: [
     BrowserModule,
@@ -79,6 +82,7 @@ import {
     NgxMatTimepickerModule,
     NgxMatDatetimePickerModule,
     NgxMatNativeDateModule,
+    MatExpansionModule,
   ],
   providers: [
     {

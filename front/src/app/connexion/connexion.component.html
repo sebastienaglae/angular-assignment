@@ -2,6 +2,7 @@
   <mat-card-title>Se connecter</mat-card-title>
   <mat-card-content>
     <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <!-- Le nom d'utilisateur -->
       <mat-form-field>
         <input
           #username
@@ -19,10 +20,11 @@
         >
           <mat-icon>close</mat-icon>
         </button>
-        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+        <mat-error *ngIf="loginForm.isUsernameHasError('required')">
           Le nom d'utilisateur est <strong>requis</strong>
         </mat-error>
       </mat-form-field>
+      <!-- Le mot de passe -->
       <mat-form-field>
         <input
           #password
@@ -32,10 +34,11 @@
           type="password"
           required
         />
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+        <mat-error *ngIf="loginForm.isPasswordHasError('required')">
           Le mot de passe est <strong>requis</strong>
         </mat-error>
       </mat-form-field>
+      <!-- Se souvenir de moi -->
       <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
 
       <button

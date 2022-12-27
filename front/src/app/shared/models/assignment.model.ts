@@ -1,5 +1,6 @@
 import { Utils } from '../tools/Utils';
 import { Rating } from './rating.model';
+import { Submission } from './submission.model';
 
 export class Assignment {
   public _id!: string;
@@ -11,7 +12,7 @@ export class Assignment {
   public createdAt!: Date;
   public updatedAt!: Date;
   public dueDate!: Date;
-  public submission!: boolean;
+  public submission!: Submission;
   public rating!: Rating;
 
   public isValid(): boolean {
@@ -20,12 +21,14 @@ export class Assignment {
     return true;
   }
 
+  // Fonction qui retourne true si la date de rendu est dépassée
   public static isTooLate(ass: Assignment): boolean {
     let today = new Date();
     let rendu = new Date(ass.dueDate);
     return today > rendu;
   }
 
+  // Fonction qui retourne le temps restant avant la date de rendu
   public static getTimeRemaining(ass: Assignment): string {
     let today = new Date();
     let rendu = new Date(ass.dueDate);
@@ -34,12 +37,8 @@ export class Assignment {
   }
 
   public static random(): Assignment {
-    let assignment = new Assignment();
-    assignment.title = 'Random Assignment ' + Math.floor(Math.random() * 1000);
-    assignment.dueDate = Utils.randomDate(2018, 2024);
-    assignment.ownerId = 'Random Author';
-
     // TODO: implement
+    let assignment = new Assignment();
 
     return assignment;
   }

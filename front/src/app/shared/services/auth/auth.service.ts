@@ -1,45 +1,57 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ErrorRequest } from '../../api/error.model';
-import { BehaviorSubject, Observable, catchError, of, throwError } from 'rxjs';
-import { AuthRequest } from '../../api/auth/register.auth.model';
+import { BehaviorSubject, Observable, catchError } from 'rxjs';
 import { Utils } from '../../tools/Utils';
 import { TokenAuth } from '../../api/auth/token.auth.model';
 import { Config } from '../../tools/Config';
+import { User } from '../../models/user.model';
+import { LoggingService } from '../logging/logging.service';
+import { SuccessRequest } from '../../api/success.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  serverConf = Config.data.server;
+  apiUrl = `${Config.getServerUrl()}/${Config.auth.route}`;
+
+  // Token de l'utilisateur
   jwtToken: string | null = null;
-  apiUrl = `${Config.getServerUrl()}/${this.serverConf.authRoute}`;
-  // BehaviorSubject on the loggedIn state
+
+  // Etat de la connexion
+  // BehaviorSubject est un Observable qui permet de stocker une valeur et de la partager avec tous les abonnés
   loggedState = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private loggingService: LoggingService
+  ) {}
 
+  // Fonction qui permet de s'inscrire
   register(
     username: string,
     password: string,
     email: string
-  ): Observable<string> {
+  ): Observable<SuccessRequest | ErrorRequest> {
+    this.loggingService.log('AuthService', 'REGISTER');
     return this.http
-      .post<string>(`${this.apiUrl}/register`, {
+      .post<SuccessRequest>(`${this.apiUrl}/${Config.auth.register}`, {
         username,
         password,
         email,
       })
-      .pipe(catchError(Utils.handleError<string>('register')));
+      .pipe(catchError(Utils.handleError<ErrorRequest>('register')));
   }
 
+  // Fonction qui permet de se connecter
   login(
     username: string,
     password: string,
     rememberMe: boolean
   ): Observable<TokenAuth | ErrorRequest> {
+    this.loggingService.log('AuthService', 'LOGIN');
     const request = this.http
-      .post<TokenAuth>(`${this.apiUrl}/login`, {
+      .post<TokenAuth>(`${this.apiUrl}/${Config.auth.login}`, {
         username,
         password,
       })
@@ -54,41 +66,52 @@ export class AuthService {
     return request;
   }
 
+  // Fonction qui permet de modifier l'état de la connexion
   checkLogin(): boolean {
+    this.loggingService.log('AuthService', 'CHECK LOGIN');
     const token =
-      localStorage.getItem('token') || sessionStorage.getItem('token');
+      localStorage.getItem(Config.auth.token) ||
+      sessionStorage.getItem(Config.auth.token);
     if (!token) {
       this.setLoggedState(false);
-      console.log('No token');
+      this.loggingService.log('AuthService', 'CHECK LOGIN NO TOKEN FOUND');
       return false;
     }
     this.jwtToken = token;
     this.setLoggedState(true);
-    console.log('Token found');
+    this.loggingService.log('AuthService', 'CHECK LOGIN TOKEN FOUND');
     return true;
   }
 
-  saveToken(token: string, rememberMe: boolean) {
+  // Fonction qui permet de modifier l'état de la connexion
+  saveToken(token: string, rememberMe: boolean): void {
     if (rememberMe) {
-      localStorage.setItem('token', token);
+      localStorage.setItem(Config.auth.token, token);
+      this.loggingService.log('AuthService', 'SAVE TOKEN IN LOCAL STORAGE');
     } else {
-      sessionStorage.setItem('token', token);
+      sessionStorage.setItem(Config.auth.token, token);
+      this.loggingService.log('AuthService', 'SAVE TOKEN IN SESSION STORAGE');
     }
   }
 
-  getUser() {
-    // decodeJWTToken
+  // Fonction qui permet de récupérer l'utilisateur connecté
+  getUser(): User | undefined {
+    if (!this.getLoggedState()) return undefined;
+    if (!this.jwtToken) return undefined;
+    return Utils.decodeJWTToken(this.jwtToken) as User;
   }
 
-  logout() {
+  // Fonction qui permet de se déconnecter
+  logout(): void {
+    this.loggingService.log('AuthService', 'LOGOUT');
     this.jwtToken = null;
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+    localStorage.removeItem(Config.auth.token);
+    sessionStorage.removeItem(Config.auth.token);
     this.setLoggedState(false);
-    console.log('Logged out');
   }
 
   isAdmin() {
+    // TODO : Check if the user is admin
     const isUserAdmin = new Promise((resolve, reject) => {
       resolve(false);
     });
@@ -96,10 +119,12 @@ export class AuthService {
     return isUserAdmin;
   }
 
+  // Fonction qui permet de modifier l'état de la connexion
   setLoggedState(state: boolean): void {
     this.loggedState.next(state);
   }
 
+  // Fonction qui permet de récupérer l'état de la connexion
   getLoggedState(): Observable<boolean> {
     return this.loggedState.asObservable();
   }

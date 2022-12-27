@@ -3,37 +3,41 @@
 <!-- Add a filter for the table on assignment.rendu and add search bar -->
 <mat-card>
   <div>
+    <!-- Filtre de recherche -->
     <mat-form-field>
       <mat-label>Rechercher</mat-label>
       <input
         matInput
         #search
         placeholder="Ex. Devoir 1"
-        [(ngModel)]="searchText"
+        [(ngModel)]="filterOptions.searchText"
         (keyup)="applyFilter()"
       />
     </mat-form-field>
+    <!-- Filtre de rendu -->
     <mat-form-field>
-      <mat-label>Filter</mat-label>
+      <mat-label>Rendu</mat-label>
       <mat-select
-        [(ngModel)]="filterRendu"
+        [(ngModel)]="filterOptions.submitFilter"
         name="filter"
         required
         (selectionChange)="applyFilter()"
       >
         <mat-option value="all">Tous</mat-option>
-        <mat-option value="rendu">Rendu</mat-option>
-        <mat-option value="nonRendu">Non rendu</mat-option>
+        <mat-option value="submit">Rendu</mat-option>
+        <mat-option value="notSubmited">Non rendu</mat-option>
       </mat-select>
     </mat-form-field>
   </div>
 </mat-card>
+<!-- Le tableau de devoirs -->
 <mat-table
   [dataSource]="datasource"
   matSort
   #agtTableSort="matSort"
   class="mat-elevation-z8"
 >
+  <!-- Le titre -->
   <ng-container matColumnDef="title">
     <mat-header-cell *matHeaderCellDef mat-sort-header="title"
       >Titre</mat-header-cell
@@ -42,6 +46,7 @@
       {{ assignment.title }}
     </mat-cell>
   </ng-container>
+  <!-- La date de rendu -->
   <ng-container matColumnDef="dueDate">
     <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate"
       >Pour le</mat-header-cell
@@ -50,14 +55,16 @@
       {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
     </mat-cell>
   </ng-container>
+  <!-- Le rendu avec une checkbox read only -->
   <ng-container matColumnDef="submission">
     <mat-header-cell *matHeaderCellDef mat-sort-header="submission"
       >Rendu</mat-header-cell
     >
     <mat-cell *matCellDef="let assignment">
-      {{ assignment.submission ? "Rendu" : "Non rendu" }}
+      <mat-checkbox [checked]="assignment.submission" disabled></mat-checkbox>
     </mat-cell>
   </ng-container>
+  <!-- Les actions -->
   <ng-container matColumnDef="actions">
     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
     <mat-cell *matCellDef="let assignment">

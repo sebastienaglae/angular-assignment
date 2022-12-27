@@ -44,7 +44,10 @@
   </mat-card-content>
   <!-- [disabled]="!isAdmin()" -->
   <div>
-    <button mat-raised-button color="secondary" (click)="onEdit()">
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      Rendre
+    </button>
+    <button mat-raised-button color="primary" (click)="onEdit()">
       Modifier
     </button>
     <button mat-raised-button color="warn" (click)="onDelete()">

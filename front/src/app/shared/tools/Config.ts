@@ -1,8 +1,26 @@
-import * as config from '../../../../config.json';
 export class Config {
-  static data = config;
+  static server = {
+    port: 3000,
+    host: 'localhost',
+  };
+  static auth = {
+    route: 'auth',
+    register: 'register',
+    login: 'login',
+    token: 'token',
+  };
 
-  static getServerUrl() {
-    return `http://${Config.data.server.host}:${Config.data.server.port}`;
+  static subject = {
+    route: 'subjects',
+  };
+
+  static assignment = {
+    route: 'assignments',
+  };
+
+  // Retoune l'url du serveur
+  static getServerUrl(): string {
+    Config.server;
+    return `http://${Config.server.host}:${Config.server.port}`;
   }
 }

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { ErrorRequest } from '../api/error.model';
 
 export abstract class Utils {
+  // Fonction qui permet de recupperer les parametres de l'url dans une map
   static getParams(): Map<string, string> {
     let params = new Map<string, string>();
     let url = window.location.href;
@@ -17,18 +18,21 @@ export abstract class Utils {
     return params;
   }
 
+  // Fonction qui permet de comparer deux valeurs
   public static compare(
     a: number | string,
     b: number | string,
     isAsc: boolean
-  ) {
+  ): number {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  public static compareDate(a: Date, b: Date, isAsc: boolean) {
+  // Fonction qui permet de comparer deux dates
+  public static compareDate(a: Date, b: Date, isAsc: boolean): number {
     return (a.getTime() < b.getTime() ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+  // Fonction qui retourne une date aléatoire
   public static randomDate(startYear: number, endYear: number): Date {
     let date = new Date(
       startYear + Math.random() * (endYear - startYear),
@@ -38,7 +42,8 @@ export abstract class Utils {
     return date;
   }
 
-  public static updateParam(key: string, value: string) {
+  // Fonction qui permet de mettre à jour un paramètre dans l'url
+  public static updateParam(key: string, value: string): void {
     key = encodeURIComponent(key);
     value = encodeURIComponent(value);
     let params = new Map<string, string>();
@@ -53,7 +58,7 @@ export abstract class Utils {
     }
     params.set(key, value);
     let newUrl = urlParts[0] + '?';
-    params.forEach((value, key) => {
+    params.forEach((value, key): void => {
       if (value === '') return;
       newUrl += key + '=' + value + '&';
     });
@@ -61,15 +66,17 @@ export abstract class Utils {
     window.history.replaceState({}, '', newUrl);
   }
 
+  // Fonction qui retourne un paramètre de l'url
   public static getParam(params: Map<string, string>, key: string): string {
     let value = params.get(key);
     if (value === undefined) return '';
     return decodeURIComponent(value);
   }
 
-  public static convertTimestampToTimeRemaining(date: number): string {
-    let hours = Math.floor(date / 3600000);
-    let minutes = Math.floor((date % 3600000) / 60000);
+  // Fonction qui converti un timestamp en temps restant
+  public static convertTimestampToTimeRemaining(timestamp: number): string {
+    let hours = Math.floor(timestamp / 3600000);
+    let minutes = Math.floor((timestamp % 3600000) / 60000);
     let result = '';
     if (hours > 0) result += hours + ' heure' + (hours > 1 ? 's' : '') + ' ';
     if (minutes > 0)
@@ -78,6 +85,7 @@ export abstract class Utils {
     return result;
   }
 
+  // Fonction qui converti un string en date
   public static stringToDateFormat(date: string): Date {
     let dateParts = date.split('/');
     return new Date(
@@ -87,19 +95,24 @@ export abstract class Utils {
     );
   }
 
-  public static decodeJWTToken(jwtToken: string): string {
+  // Fonction qui decode un token JWT et retourne le payload en json
+  public static decodeJWTToken(jwtToken: string): any {
     let payload = jwtToken.split('.')[1];
     let decodedPayload = atob(payload);
     let decodedPayloadObject = JSON.parse(decodedPayload);
-    return decodedPayloadObject.username;
+    return decodedPayloadObject;
   }
 
-  public static handleError<ErrorRequest>(operation: any) {
+  // Fonction qui traite les erreurs
+  public static handleError<ErrorRequest>(
+    operation: any
+  ): (error: any) => Observable<ErrorRequest> {
     return (error: any): Observable<ErrorRequest> => {
       return of(Utils.extractError(error) as ErrorRequest);
     };
   }
 
+  // Fonction qui extrait l'erreur dans un objet ErrorRequest
   public static extractError(error: any): ErrorRequest {
     let errorRequest = new ErrorRequest();
     if (error instanceof HttpErrorResponse) {
@@ -112,5 +125,16 @@ export abstract class Utils {
       errorRequest.message = error.message;
     }
     return errorRequest;
+  }
+
+  public static textPreview(text: string, length: number): string {
+    if (text.length > length) {
+      return text.substring(0, length) + '...';
+    }
+    return text;
+  }
+
+  public static bufferToBlob(buffer: ArrayBuffer): Blob {
+    return new Blob([buffer]);
   }
 }

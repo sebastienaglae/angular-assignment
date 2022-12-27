@@ -22,7 +22,6 @@ const routes: Routes = [
   {
     path: 'assignment/:id/edit',
     component: AssignmentModifyComponent,
-    canActivate: [AuthGuard],
   },
   { path: 'connection', component: ConnexionComponent },
   { path: 'register', component: RegisterComponent },

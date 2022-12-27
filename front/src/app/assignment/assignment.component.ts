@@ -6,6 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { merge, Observable, of as observableOf } from 'rxjs';
 import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { SearchAssignment } from '../shared/api/assignment/search.assignment.model';
+import { ErrorRequest } from '../shared/api/error.model';
+import { LoggingService } from '../shared/services/logging/logging.service';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
@@ -15,8 +17,8 @@ export class AssignmentComponent implements OnInit {
   searchAssignment!: SearchAssignment;
   datasource: MatTableDataSource<Assignment> = new MatTableDataSource();
 
-  searchText: string = '';
-  filterRendu: string = 'all';
+  filterOptions: FilterOptions = new FilterOptions();
+
   //@ts-ignore
   @ViewChild('paginator') paginator: MatPaginator;
   //@ts-ignore
@@ -24,20 +26,26 @@ export class AssignmentComponent implements OnInit {
   //@ts-ignore
   displayedColumns: string[] = ['title', 'dueDate', 'submission', 'actions'];
 
-  constructor(private assignementService: AssignmentService) {}
+  constructor(
+    private assignementService: AssignmentService,
+    private loggingService: LoggingService
+  ) {}
 
   ngOnInit(): void {
     this.datasource.sort = this.sort;
     this.datasource.paginator = this.paginator;
   }
 
-  ngAfterViewInit() {
+  // Fonction qui permet de filtrer les données
+  ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
     this.datasource.filterPredicate = this.getFilterPredicate();
     this.loadAssignments();
   }
 
-  loadAssignments() {
+  // Fonction qui permet de filtrer les données
+  loadAssignments(): void {
+    this.loggingService.event('AssignmentComponent', 'loadAssignments');
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
@@ -49,6 +57,10 @@ export class AssignmentComponent implements OnInit {
           });
         }),
         map((data) => {
+          if (data instanceof ErrorRequest) {
+            this.paginator.length = 0;
+            return [];
+          }
           this.paginator.length = data.totalItems;
           return data.items;
         }),
@@ -61,42 +73,41 @@ export class AssignmentComponent implements OnInit {
       });
   }
 
-  onSearch() {
-    this.datasource.filter = this.searchText.trim().toLowerCase();
-  }
-
-  onFilter() {
-    if (this.filterRendu === 'all') {
-      this.datasource.filter = '';
-    } else if (this.filterRendu === 'rendu') {
-      this.datasource.filter = 'true';
-    } else {
-      this.datasource.filter = 'false';
-    }
-  }
-
+  // Fonction qui permet de filtrer les données
   applyFilter() {
-    const nomFilter = this.searchText.trim().toLowerCase();
-    let renduFilter = '';
-    if (this.filterRendu === 'all') {
-      renduFilter = '';
-    } else if (this.filterRendu === 'rendu') {
-      renduFilter = 'true';
+    this.loggingService.event('AssignmentComponent', 'applyFilter');
+    const nomFilter = this.filterOptions.getSearchFilter();
+    const submitFilter = this.filterOptions.submitFilter;
+    let submitFilterResult = '';
+    if (submitFilter === 'all') {
+      submitFilterResult = '';
+    } else if (submitFilter === 'submit') {
+      submitFilterResult = 'true';
     } else {
-      renduFilter = 'false';
+      submitFilterResult = 'false';
     }
 
-    this.datasource.filter = nomFilter + '$' + renduFilter;
+    this.datasource.filter = nomFilter + '$' + submitFilterResult;
   }
 
+  // Fonction qui permet de filtrer les données
   getFilterPredicate() {
     return (data: Assignment, filter: string) => {
       const nomFilter = filter.split('$')[0];
       const renduFilter = filter.split('$')[1];
       const nomMatch = data.title.toLowerCase().includes(nomFilter);
-      const renduMatch =
-        renduFilter === '' || data.submission === (renduFilter === 'true');
-      return nomMatch && renduMatch;
+      // TODO : Faire le renduFilter
+      // return nomMatch && renduMatch;
+      return nomMatch;
     };
+  }
+}
+
+class FilterOptions {
+  searchText: string = '';
+  submitFilter: string = 'all';
+
+  getSearchFilter(): string {
+    return this.searchText.trim().toLowerCase();
   }
 }

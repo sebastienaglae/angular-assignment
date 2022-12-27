@@ -1,28 +1,36 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoggingService } from '../logging/logging.service';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import { Subject } from '../../models/subject.model';
 import { ResultSubject } from '../../api/subject/result.subject.model';
 import { Config } from '../../tools/Config';
+import { Utils } from '../../tools/Utils';
+import { ErrorRequest } from '../../api/error.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SubjectsService {
-  apiUrl = `http://${Config.data.server.host}:${Config.data.server.port}/subjects`;
+  apiUrl = `${Config.getServerUrl()}/${Config.subject.route}`;
   constructor(
     private loggingService: LoggingService,
     private http: HttpClient
   ) {}
 
-  getAll(): Observable<Subject[]> {
+  // Fonction qui permet de récupérer tous les matieres
+  getAll(): Observable<Subject[] | ErrorRequest> {
     this.loggingService.log('SubjectsService', 'GET ALL');
-    return this.http.get<Subject[]>(`${this.apiUrl}/`);
+    return this.http
+      .get<Subject[]>(`${this.apiUrl}/`)
+      .pipe(catchError(Utils.handleError<ErrorRequest>('subjectAll')));
   }
 
-  get(id: string): Observable<ResultSubject> {
+  // Fonction qui permet de récupérer une matiere en fonction de son id
+  get(id: string): Observable<ResultSubject | ErrorRequest> {
     this.loggingService.log('Subject', `GET ${id}`);
-    return this.http.get<ResultSubject>(`${this.apiUrl}/${id}`);
+    return this.http
+      .get<ResultSubject>(`${this.apiUrl}/${id}`)
+      .pipe(catchError(Utils.handleError<ErrorRequest>('subjectGet')));
   }
 }
