@@ -1,73 +1,91 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ErrorRequest } from '../../api/error.model';
+import { BehaviorSubject, Observable, catchError, of, throwError } from 'rxjs';
+import { AuthRequest } from '../../api/auth/register.auth.model';
+import { Utils } from '../../tools/Utils';
+import { TokenAuth } from '../../api/auth/token.auth.model';
+import { Config } from '../../tools/Config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  serverConf = Config.data.server;
   jwtToken: string | null = null;
-  apiUrl = 'http://localhost:3000/auth';
-  loggedIn = false;
+  apiUrl = `${Config.getServerUrl()}/${this.serverConf.authRoute}`;
+  // BehaviorSubject on the loggedIn state
+  loggedState = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
   register(
     username: string,
     password: string,
-    email: string,
-    callback: (status: boolean) => void
-  ) {
-    const apiRequest = this.http.post(`${this.apiUrl}/register`, {
-      username,
-      password,
-      email,
-    });
-
-    apiRequest.subscribe((data: any) => {
-      callback(data.success);
-    });
+    email: string
+  ): Observable<string> {
+    return this.http
+      .post<string>(`${this.apiUrl}/register`, {
+        username,
+        password,
+        email,
+      })
+      .pipe(catchError(Utils.handleError<string>('register')));
   }
 
-  logIn(
+  login(
     username: string,
     password: string,
-    rememberMe: boolean,
-    callback: (status: boolean) => void
-  ) {
-    const apiRequest = this.http.post(`${this.apiUrl}/login`, {
-      username,
-      password,
-    });
+    rememberMe: boolean
+  ): Observable<TokenAuth | ErrorRequest> {
+    const request = this.http
+      .post<TokenAuth>(`${this.apiUrl}/login`, {
+        username,
+        password,
+      })
+      .pipe(catchError(Utils.handleError<ErrorRequest>('login')));
 
-    apiRequest.subscribe((data: any) => {
-      if (!data) {
-        callback(false);
-        return;
-      }
-      this.jwtToken = data.token;
-      if (this.jwtToken === null) {
-        callback(false);
-        return;
-      }
-      if (rememberMe) {
-        localStorage.setItem('token', this.jwtToken);
-      } else {
-        sessionStorage.setItem('token', this.jwtToken);
-      }
-      callback(true);
-      this.loggedIn = true;
+    request.subscribe((result) => {
+      if (result instanceof ErrorRequest) return;
+      this.jwtToken = result.token;
+      this.setLoggedState(true);
+      this.saveToken(result.token, rememberMe);
     });
+    return request;
+  }
+
+  checkLogin(): boolean {
+    const token =
+      localStorage.getItem('token') || sessionStorage.getItem('token');
+    if (!token) {
+      this.setLoggedState(false);
+      console.log('No token');
+      return false;
+    }
+    this.jwtToken = token;
+    this.setLoggedState(true);
+    console.log('Token found');
+    return true;
+  }
+
+  saveToken(token: string, rememberMe: boolean) {
+    if (rememberMe) {
+      localStorage.setItem('token', token);
+    } else {
+      sessionStorage.setItem('token', token);
+    }
   }
 
   getUser() {
     // decodeJWTToken
   }
 
-  logOut() {
+  logout() {
     this.jwtToken = null;
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
-    this.loggedIn = false;
+    this.setLoggedState(false);
+    console.log('Logged out');
   }
 
   isAdmin() {
@@ -76,5 +94,13 @@ export class AuthService {
     });
 
     return isUserAdmin;
+  }
+
+  setLoggedState(state: boolean): void {
+    this.loggedState.next(state);
+  }
+
+  getLoggedState(): Observable<boolean> {
+    return this.loggedState.asObservable();
   }
 }

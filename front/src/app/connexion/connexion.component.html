@@ -1,15 +1,52 @@
 <mat-card>
-    <mat-card-title>Connexion</mat-card-title>
-    <form ngForm #registerForm>
-        <mat-form-field appearance="fill">
-            <mat-label>Nom</mat-label>
-            <input matInput placeholder="Hanagames" name="nom" />
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-            <mat-label>Mot de passe</mat-label>
-            <input matInput name="mdp" />
-        </mat-form-field>
+  <mat-card-title>Se connecter</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-form-field>
+        <input
+          #username
+          matInput
+          placeholder="Nom d'utilisateur"
+          formControlName="username"
+          required
+        />
+        <button
+          *ngIf="username"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="username.value = ''"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">
+          Le nom d'utilisateur est <strong>requis</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          #password
+          matInput
+          placeholder="Mot de passe"
+          formControlName="password"
+          type="password"
+          required
+        />
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Le mot de passe est <strong>requis</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
 
-        <button mat-raised-button color="primary">Se connecter</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="loginForm.invalid"
+      >
+        Se connecter
+      </button>
+      <div *ngIf="message" class="error">{{ message }}</div>
     </form>
+  </mat-card-content>
 </mat-card>

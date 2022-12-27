@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { Utils } from 'src/app/shared/tools/Utils';
 import { FormBuilder, Validators } from '@angular/forms';
+import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
+import { Subject } from 'src/app/shared/models/subject.model';
 
 @Component({
   selector: 'app-assignment-add',
@@ -31,21 +33,36 @@ export class AssignmentAddComponent implements OnInit {
   // Formulaire
   // newAssignmentItem: Assignment = new Assignment();
 
+  subjects: Subject[] = [];
+
   // Informations sur le stepper
   submitButtonText: string = 'Ajouter le devoir';
 
   @ViewChild('picker') picker: any;
 
-  subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'History'];
   constructor(
     private assignmentService: AssignmentService,
+    private subjectService: SubjectsService,
     private _formBuilder: FormBuilder,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     // fill the form with the url parameters
+    this.initSubject();
     this.fillForm();
+  }
+
+  initSubject() {
+    this.subjectService.getAll().subscribe((res) => {
+      this.subjects = res;
+      const subjectId = Utils.getParam(Utils.getParams(), 'subject');
+      if (subjectId) {
+        this.formGroups.subjectValue = this.subjects.find(
+          (subject) => subject.id === subjectId
+        );
+      }
+    });
   }
 
   // Rempli le formulaire avec les paramètres de l'url
@@ -53,15 +70,21 @@ export class AssignmentAddComponent implements OnInit {
     let params = Utils.getParams();
     //todo : See matiere
     if (params) {
-      this.formGroups.nameValue = Utils.getParam(params, 'name');
-      this.formGroups.authorValue = Utils.getParam(params, 'author');
-      this.formGroups.dateValue = new Date(Utils.getParam(params, 'date'));
+      this.formGroups.titleValue = Utils.getParam(params, 'title');
+      this.formGroups.dueDateValue = new Date(
+        Utils.getParam(params, 'dueDate')
+      );
+      this.formGroups.descriptionValue = Utils.getParam(params, 'description');
     }
   }
 
   // Met à jour l'url avec les paramètres
   updateUrl(param: string, value: string) {
     Utils.updateParam(param, value);
+  }
+
+  parseDate(date: string) {
+    return Date.parse(date).toString();
   }
 
   // Met à jour la photo de la matière et du professeur
@@ -75,11 +98,12 @@ export class AssignmentAddComponent implements OnInit {
   // Valide le formulaire et ajoute le devoir
   submitNewAssignment() {
     if (!this.formGroups.isAllValid()) return;
-    // this.assignmentService
-    //   .addAssignment(this.newAssignmentItem)
-    //   .subscribe((data) => {
-    //     this.handleSubmission();
-    //   });
+    const newAssignment = new Assignment();
+    newAssignment.title = this.formGroups.titleValue;
+    newAssignment.dueDate = this.formGroups.dueDateValue;
+    console.log(this.formGroups.dueDateValue.toUTCString());
+    // newAssignment.author = this.formGroups.authorValue;
+    // newAssignment.subject = this.formGroups.subjectValue;
   }
 
   // Redirige l'utilisateur vers la page d'accueil dans 5 secondes
@@ -103,14 +127,14 @@ export class AssignmentAddComponent implements OnInit {
 
 class StepperAssignmentFromGroup {
   constructor(private _formBuilder: FormBuilder) {}
-  nameFormGroup = this._formBuilder.group({
-    nameCtrl: ['', Validators.required],
+  titleFormGroup = this._formBuilder.group({
+    titleCtrl: ['', Validators.required],
   });
-  dateFormGroup = this._formBuilder.group({
-    dateCtrl: ['', Validators.required],
+  dueDateFormGroup = this._formBuilder.group({
+    dueDateCtrl: ['', Validators.required],
   });
-  authorFormGroup = this._formBuilder.group({
-    authorCtrl: ['', Validators.required],
+  descriptionFormGroup = this._formBuilder.group({
+    descriptionCtrl: ['', Validators.required],
   });
   subjectFormGroup = this._formBuilder.group({
     subjectCtrl: ['', Validators.required],
@@ -118,44 +142,43 @@ class StepperAssignmentFromGroup {
 
   isAllValid() {
     return (
-      this.nameFormGroup.valid &&
-      this.dateFormGroup.valid &&
-      this.authorFormGroup.valid &&
+      this.titleFormGroup.valid &&
+      this.dueDateFormGroup.valid &&
+      this.descriptionFormGroup.valid &&
       this.subjectFormGroup.valid
     );
   }
-  get nameValue() {
-    return this.nameFormGroup.get('nameCtrl')?.value ?? '';
+  get titleValue() {
+    return this.titleFormGroup.get('titleCtrl')?.value ?? '';
   }
 
-  get dateValue() {
+  get dueDateValue() {
     return (
-      new Date(this.dateFormGroup.get('dateCtrl')?.value as any) ??
+      new Date(this.dueDateFormGroup.get('dueDateCtrl')?.value as any) ??
       (new Date() as any)
     );
   }
 
-  get authorValue() {
-    return this.authorFormGroup.get('authorCtrl')?.value ?? '';
+  get descriptionValue() {
+    return this.descriptionFormGroup.get('descriptionCtrl')?.value ?? '';
   }
 
-  get subjectValue() {
-    return this.subjectFormGroup.get('subjectCtrl')?.value ?? '';
+  get subjectValue(): Subject | undefined {
+    return this.subjectFormGroup.get('subjectCtrl')?.value as any;
+  }
+  set titleValue(value: string) {
+    this.titleFormGroup.get('titleCtrl')?.setValue(value);
   }
 
-  set nameValue(value: string) {
-    this.nameFormGroup.get('nameCtrl')?.setValue(value);
+  set dueDateValue(value: Date) {
+    this.dueDateFormGroup.get('dueDateCtrl')?.setValue(value as any);
   }
 
-  set dateValue(value: Date) {
-    this.dateFormGroup.get('dateCtrl')?.setValue(value as any);
+  set descriptionValue(value: string) {
+    this.descriptionFormGroup.get('descriptionCtrl')?.setValue(value);
   }
 
-  set authorValue(value: string) {
-    this.authorFormGroup.get('authorCtrl')?.setValue(value);
-  }
-
-  set subjectValue(value: string) {
-    this.subjectFormGroup.get('subjectCtrl')?.setValue(value);
+  set subjectValue(value: Subject | undefined) {
+    this.subjectFormGroup.get('subjectCtrl')?.setValue(value as any);
   }
 }

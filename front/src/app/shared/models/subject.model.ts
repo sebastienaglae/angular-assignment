@@ -1,4 +1,4 @@
 export class Subject {
-  id!: number;
+  id!: string;
   name!: string;
 }

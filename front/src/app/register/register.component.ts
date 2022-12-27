@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
+import { ErrorRequest } from '../shared/api/error.model';
+import { AuthRequest } from '../shared/api/auth/register.auth.model';
 
 @Component({
   selector: 'app-register',
@@ -15,34 +17,38 @@ export class RegisterComponent implements OnInit {
     passwordConfirm: new FormControl('', [Validators.required]),
   });
 
-  errorMessage?: string;
+  message?: string;
 
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {}
 
   register() {
-    this.errorMessage = undefined;
+    this.message = undefined;
     if (!this.registerForm.valid)
-      return (this.errorMessage = 'Remplissez tous les champs');
+      return (this.message = 'Remplissez tous les champs');
     if (
       this.registerForm.value.password !==
       this.registerForm.value.passwordConfirm
     )
-      return (this.errorMessage = 'Les mots de passe ne correspondent pas');
+      return (this.message = 'Les mots de passe ne correspondent pas');
 
-    this.authService.register(
-      this.registerForm.value.email,
-      this.registerForm.value.username,
-      this.registerForm.value.password,
-      (status: boolean) => this.handleRegistration(status)
-    );
+    this.authService
+      .register(
+        this.registerForm.value.username,
+        this.registerForm.value.password,
+        this.registerForm.value.email
+      )
+      .subscribe((data) => {
+        this.handleRegistration(data);
+      });
 
-    return (this.errorMessage = undefined);
+    return (this.message = "En attente de l'inscription");
   }
 
-  handleRegistration(status: boolean) {
-    console.log(this.registerForm.value);
+  handleRegistration(data: any) {
+    if (data instanceof ErrorRequest) this.message = data.message;
+    if ((data as AuthRequest).success) this.message = 'Inscription réussie';
   }
 }
 

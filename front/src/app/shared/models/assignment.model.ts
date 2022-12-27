@@ -1,5 +1,5 @@
 import { Utils } from '../tools/Utils';
-import { Rating } from '../rating.model';
+import { Rating } from './rating.model';
 
 export class Assignment {
   public _id!: string;

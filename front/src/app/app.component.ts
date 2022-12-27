@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './shared/services/auth/auth.service';
 import { Utils } from './shared/tools/Utils';
+import { takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -9,19 +10,38 @@ import { Utils } from './shared/tools/Utils';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'mdr';
-  opened: boolean = false;
+  title = 'Hanagames';
+  isUserLogged: boolean = false;
+  sideMenuOpened: boolean = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  login() {
-    if (!this.authService.loggedIn) {
-      this.authService.logIn('test', 'test', false, (status: boolean) => {
-        console.log(status);
-      });
-    } else {
-      this.authService.logOut();
-      this.router.navigate(['/']);
-    }
+  // Fonction d'initialisation
+  ngOnInit(): void {
+    this.authService.checkLogin();
+    this.authService.loggedState.subscribe((data) => {
+      this.isUserLogged = data;
+    });
+  }
+
+  // Fonction de déconnexion
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+
+  // Fonction qui ouvre ou ferme le menu latéral
+  sideMenuToggle() {
+    this.sideMenuOpened = !this.sideMenuOpened;
+  }
+
+  // Fonction qui ferme le menu latéral
+  sideMenuClose() {
+    this.sideMenuOpened = false;
+  }
+
+  // Fonction qui ouvre le menu latéral
+  sideMenuOpen() {
+    this.sideMenuOpened = true;
   }
 }

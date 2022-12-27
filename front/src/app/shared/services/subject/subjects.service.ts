@@ -4,12 +4,13 @@ import { LoggingService } from '../logging/logging.service';
 import { Observable } from 'rxjs';
 import { Subject } from '../../models/subject.model';
 import { ResultSubject } from '../../api/subject/result.subject.model';
+import { Config } from '../../tools/Config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SubjectsService {
-  apiUrl = 'http://localhost:3000/subjects';
+  apiUrl = `http://${Config.data.server.host}:${Config.data.server.port}/subjects`;
   constructor(
     private loggingService: LoggingService,
     private http: HttpClient

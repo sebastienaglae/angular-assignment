@@ -3,25 +3,25 @@
 
 <mat-card>
   <mat-vertical-stepper>
-    <!-- Etape 1 : Nom du devoir -->
+    <!-- Etape 1 : Titre du devoir -->
     <mat-step
       #stepper
-      label="Nom du devoir"
-      errorMessage="Le nom est requis."
-      [stepControl]="formGroups.nameFormGroup"
+      label="Titre du devoir"
+      errorMessage="Le titre est requis."
+      [stepControl]="formGroups.titleFormGroup"
     >
-      <form [formGroup]="formGroups.nameFormGroup">
-        <h2>Entrez le nom du devoir</h2>
+      <form [formGroup]="formGroups.titleFormGroup">
+        <h2>Entrez le titre du devoir</h2>
         <mat-form-field>
-          <mat-label>Nom du devoir</mat-label>
+          <mat-label>Titre du devoir</mat-label>
           <input
-            #nameInput
+            #titleInput
             matInput
             placeholder="Ex. TD2 - Math"
-            formControlName="nameCtrl"
-            name="nom"
+            formControlName="titleCtrl"
+            name="title"
             required
-            (input)="updateUrl('name', nameInput.value)"
+            (input)="updateUrl('title', titleInput.value)"
           />
           <mat-hint>Ex. TD2 - Math</mat-hint>
         </mat-form-field>
@@ -34,17 +34,16 @@
     <mat-step
       label="Date de rendu"
       errorMessage="La date de rendu est requise."
-      [stepControl]="formGroups.dateFormGroup"
+      [stepControl]="formGroups.dueDateFormGroup"
     >
-      <form [formGroup]="formGroups.dateFormGroup">
+      <form [formGroup]="formGroups.dueDateFormGroup">
         <h2>Entrez la date de rendu du devoir</h2>
         <mat-form-field>
           <input
-            #dateInput
             matInput
             [ngxMatDatetimePicker]="picker"
             placeholder="Choisissez une date et une heure"
-            formControlName="dateCtrl"
+            formControlName="dueDateCtrl"
           />
           <mat-datepicker-toggle
             matSuffix
@@ -58,7 +57,12 @@
             [stepMinute]="1"
             [stepSecond]="1"
             [touchUi]="false"
-            (closed)="updateUrl('date', dateInput.value)"
+            (closed)="
+              updateUrl(
+                'dueDate',
+                picker._selected.toISOString().substring(0, 19)
+              )
+            "
           >
           </ngx-mat-datetime-picker>
         </mat-form-field>
@@ -68,26 +72,26 @@
         </div>
       </form>
     </mat-step>
-    <!-- Etape 3 : L'auteur -->
+    <!-- Etape 3 : La description -->
     <mat-step
-      label="Auteur"
-      errorMessage="L'auteur est requis."
-      [stepControl]="formGroups.authorFormGroup"
+      label="Description"
+      errorMessage="La description est requise."
+      [stepControl]="formGroups.descriptionFormGroup"
     >
-      <form [formGroup]="formGroups.authorFormGroup">
-        <h2>Entrez l'auteur du devoir</h2>
+      <form [formGroup]="formGroups.descriptionFormGroup">
+        <h2>Entrez la description du devoir</h2>
         <mat-form-field>
-          <mat-label>Auteur</mat-label>
+          <mat-label>Description</mat-label>
           <input
-            #authorInput
+            #descriptionInput
             matInput
-            placeholder="Ex. John Doe"
-            formControlName="authorCtrl"
-            name="auteur"
+            placeholder="Ex. Faire les exercices 1 à 5"
+            formControlName="descriptionCtrl"
+            name="description"
             required
-            (input)="updateUrl('author', authorInput.value)"
+            (input)="updateUrl('description', descriptionInput.value)"
           />
-          <mat-hint>Ex. John Doe</mat-hint>
+          <mat-hint> Ex. Faire les exercices 1 à 5 </mat-hint>
         </mat-form-field>
         <div>
           <button mat-button matStepperPrevious>Précédent</button>
@@ -117,10 +121,10 @@
               formControlName="subjectCtrl"
               name="matiere"
               required
-              (selectionChange)="updateUrl('subject', subjectInput.value)"
+              (selectionChange)="updateUrl('subject', subjectInput.value.id)"
             >
               <mat-option *ngFor="let subject of subjects" [value]="subject">
-                {{ subject }}
+                {{ subject.name }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -141,10 +145,10 @@
     <!-- Etape 5 : Recapitulatif avec un bouton pour envoyer -->
     <mat-step label="Récapitulatif">
       <h2>Récapitulatif</h2>
-      <p>Nom du devoir : {{ formGroups.nameValue }}</p>
-      <p>Date de rendu : {{ formGroups.dateValue }}</p>
-      <p>Auteur : {{ formGroups.authorValue }}</p>
-      <p>Matière : {{ formGroups.subjectValue }}</p>
+      <p>Titre du devoir : {{ formGroups.titleValue }}</p>
+      <p>Date de rendu : {{ formGroups.dueDateValue }}</p>
+      <p>Description : {{ formGroups.descriptionValue }}</p>
+      <p>Matière : {{ formGroups.subjectValue?.name }}</p>
       <div>
         <button mat-button matStepperPrevious>Précédent</button>
         <button

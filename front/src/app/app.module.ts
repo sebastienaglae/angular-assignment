@@ -33,7 +33,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { NgxMatMomentModule } from '@angular-material-components/moment-adapter';
 import {
   NgxMatTimepickerModule,
   NgxMatDatetimePickerModule,

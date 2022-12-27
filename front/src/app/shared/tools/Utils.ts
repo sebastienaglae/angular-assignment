@@ -1,3 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { ErrorRequest } from '../api/error.model';
+
 export abstract class Utils {
   static getParams(): Map<string, string> {
     let params = new Map<string, string>();
@@ -88,5 +92,25 @@ export abstract class Utils {
     let decodedPayload = atob(payload);
     let decodedPayloadObject = JSON.parse(decodedPayload);
     return decodedPayloadObject.username;
+  }
+
+  public static handleError<ErrorRequest>(operation: any) {
+    return (error: any): Observable<ErrorRequest> => {
+      return of(Utils.extractError(error) as ErrorRequest);
+    };
+  }
+
+  public static extractError(error: any): ErrorRequest {
+    let errorRequest = new ErrorRequest();
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        errorRequest.message = 'Impossible de se connecter au serveur';
+      } else {
+        errorRequest.message = error.error.error.message;
+      }
+    } else {
+      errorRequest.message = error.message;
+    }
+    return errorRequest;
   }
 }

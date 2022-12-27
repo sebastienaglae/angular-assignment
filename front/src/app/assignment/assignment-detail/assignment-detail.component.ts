@@ -69,7 +69,7 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   isAdmin(): boolean {
-    return this.authService.loggedIn;
+    throw new Error('Method not implemented.');
   }
 
   onEdit() {
