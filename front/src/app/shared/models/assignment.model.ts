@@ -4,6 +4,7 @@ import { Submission } from './submission.model';
 
 export class Assignment {
   public _id!: string;
+  public id!: string;
 
   public ownerId!: string;
   public subjectId!: string;

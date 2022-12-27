@@ -12,8 +12,8 @@ import { Subject } from 'src/app/shared/models/subject.model';
   styleUrls: ['./assignment-detail.component.css'],
 })
 export class AssignmentDetailComponent implements OnInit {
-  @Input() assignmentTarget: Assignment | undefined;
   @Output() deleteAssignement = new EventEmitter<Assignment>();
+  assignmentTarget?: Assignment;
 
   isAssignmentLate: boolean = false;
   assignmentTimeRemaining: string = '';
@@ -60,14 +60,11 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   onSubmit() {
-    this.router.navigate(['/assignment', this.assignmentTarget?._id, 'submit']);
+    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'submit']);
   }
 
   onEdit() {
-    this.router.navigate(['/assignment', this.assignmentTarget?._id, 'edit'], {
-      queryParams: { name: this.assignmentTarget?.title },
-      fragment: 'edition',
-    });
+    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'edit']);
   }
 
   onDelete() {

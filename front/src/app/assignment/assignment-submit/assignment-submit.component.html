@@ -1,1 +1,14 @@
-<p>assignment-submit works!</p>
+<!-- C'est un form qui permet d'upload un fichier -->
+<mat-card>
+  <mat-card-title>Envoyer une solution</mat-card-title>
+  <mat-card-content>
+    <form>
+      <!-- Le fichier -->
+      <mat-form-field>
+        <input #file type="file" required />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">Envoyer</button>
+      <div></div>
+    </form>
+  </mat-card-content>
+</mat-card>

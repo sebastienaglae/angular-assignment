@@ -9,6 +9,7 @@ import { AssignmentComponent } from './assignment/assignment.component';
 import { AssignmentDetailComponent } from './assignment/assignment-detail/assignment-detail.component';
 import { AuthGuard } from './shared/services/auth/auth.guard';
 import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-gen.component';
+import { AssignmentSubmitComponent } from './assignment/assignment-submit/assignment-submit.component';
 
 const routes: Routes = [
   { path: '', component: AssignmentComponent },
@@ -22,6 +23,10 @@ const routes: Routes = [
   {
     path: 'assignment/:id/edit',
     component: AssignmentModifyComponent,
+  },
+  {
+    path: 'assignment/:id/submit',
+    component: AssignmentSubmitComponent,
   },
   { path: 'connection', component: ConnexionComponent },
   { path: 'register', component: RegisterComponent },
