@@ -1,15 +1,14 @@
-<h1>Details :</h1>
-<mat-card *ngIf="assignmentTarget">
-  <mat-card-title>{{ assignmentTarget.title }}</mat-card-title>
-  <mat-card-header>
-    <mat-card-subtitle
-      >{{ assignmentTarget.createdAt | date }}
-    </mat-card-subtitle>
-  </mat-card-header>
+<!-- Chargement-->
+<mat-progress-bar
+  *ngIf="isLoading"
+  mode="indeterminate"
+  class="progress-bar"
+></mat-progress-bar>
+<mat-card *ngIf="!isLoading">
   <mat-card-content>
-    <p><b>Description :</b> {{ assignmentTarget.description }}</p>
-    <p *ngIf="assignmentTarget.updatedAt">
-      <b>Mis a jour le :</b> {{ assignmentTarget.updatedAt }}
+    <p><b>Description :</b> {{ assignmentTarget?.description }}</p>
+    <p *ngIf="assignmentTarget?.updatedAt">
+      <b>Mis a jour le :</b> {{ assignmentTarget?.updatedAt }}
     </p>
     <img
       *ngIf="subjectImgPath"
@@ -17,32 +16,98 @@
       width="100"
       height="100"
     />
-    <p *ngIf="subject"><b>Matière :</b> {{ subject.name }}</p>
+    <p><b>Matière :</b> {{ targetSubject?.name }}</p>
     <div *ngIf="teacherImgPath">
       <img src="{{ teacherImgPath }}" width="100" height="100" />
       <p>Professeur</p>
     </div>
-    <p *ngIf="assignmentTarget.rating">
-      <b>Remarques :</b> {{ assignmentTarget.rating.comment }}
-    </p>
-    <p *ngIf="assignmentTarget.rating && assignmentTarget.submission">
-      <b>Note :</b> {{ assignmentTarget.rating.rating }}
-    </p>
-    <p>
-      <b> Rendu :</b>
-      {{ assignmentTarget.submission ? "Oui" : "Non" }}
-    </p>
-    <p>
-      <b> Etat :</b>
-      {{ isAssignmentLate ? "Retard" : "Dans les temps" }}
-    </p>
-
-    <p>
-      <b> Temps restant :</b>
-      {{ assignmentTimeRemaining }}
-    </p>
   </mat-card-content>
   <!-- [disabled]="!isAdmin()" -->
+</mat-card>
+
+<!-- Create 3 tabs angular mat -->
+<mat-card *ngIf="assignmentTarget">
+  <mat-card-title>{{ assignmentTarget.title }}</mat-card-title>
+  <mat-card-header>
+    <mat-card-subtitle
+      >{{ assignmentTarget.createdAt | date }}
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-tab-group mat-stretch-tabs="true" class="fullWidth">
+    <mat-tab label="Informations">
+      <div>
+        <table class="fullWidth">
+          <tr>
+            <td><b>Description</b></td>
+            <td>{{ assignmentTarget.description }}</td>
+          </tr>
+          <tr>
+            <td><b>Créer le</b></td>
+            <td>{{ assignmentTarget.createdAt | date }}</td>
+          </tr>
+          <tr>
+            <td><b>Mis a jour le</b></td>
+            <td>{{ assignmentTarget.updatedAt | date }}</td>
+          </tr>
+          <tr>
+            <td><b>Pour le</b></td>
+            <td>{{ assignmentTarget.dueDate | date }}</td>
+          </tr>
+          <tr>
+            <td><b>Matière</b></td>
+            <td>{{ targetSubject?.name }}</td>
+          </tr>
+          <tr>
+            <td><b>Temps restant</b></td>
+            <td>{{ assignmentTimeRemaining }}</td>
+          </tr>
+          <tr>
+            <td>
+              <b> Etat :</b>
+            </td>
+            <td>{{ isAssignmentLate ? "Retard" : "Dans les temps" }}</td>
+          </tr>
+          <tr>
+            <td><b>Rendu</b></td>
+            <td>{{ assignmentTarget?.submission ? "Oui" : "Non" }}</td>
+          </tr>
+        </table>
+      </div>
+    </mat-tab>
+    <mat-tab label="Rendu">
+      <p *ngIf="!assignmentTarget.submission">Pas de rendu disponible</p>
+      <div *ngIf="assignmentTarget.submission">
+        <table class="fullWidth">
+          <tr>
+            <td><b>Type</b></td>
+            <td>{{ assignmentTarget.submission.type }}</td>
+          </tr>
+          <tr>
+            <td><b>Soumis le</b></td>
+            <td>{{ assignmentTarget.submission.submittedAt | date }}</td>
+          </tr>
+          <tr>
+            <td><b>Nom du fichier</b></td>
+            <td>{{ file?.name }}</td>
+          </tr>
+          <tr>
+            <td><b>Taille du fichier</b></td>
+            <td>{{ file?.size }} octets</td>
+          </tr>
+        </table>
+        <!-- le bouton telecharger -->
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="downloadSubmission()"
+        >
+          Télécharger
+        </button>
+      </div>
+    </mat-tab>
+    <mat-tab label="Notation">Content</mat-tab>
+  </mat-tab-group>
+
   <div>
     <button mat-raised-button color="primary" (click)="onSubmit()">
       Rendre

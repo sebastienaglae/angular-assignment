@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { LoggingService } from '../logging/logging.service';
 import { Observable, catchError } from 'rxjs';
 import { Subject } from '../../models/subject.model';
-import { ResultSubject } from '../../api/subject/result.subject.model';
 import { Config } from '../../tools/Config';
 import { Utils } from '../../tools/Utils';
 import { ErrorRequest } from '../../api/error.model';
@@ -27,10 +26,10 @@ export class SubjectsService {
   }
 
   // Fonction qui permet de récupérer une matiere en fonction de son id
-  get(id: string): Observable<ResultSubject | ErrorRequest> {
+  get(id: string): Observable<Subject | ErrorRequest> {
     this.loggingService.log('Subject', `GET ${id}`);
     return this.http
-      .get<ResultSubject>(`${this.apiUrl}/${id}`)
+      .get<Subject>(`${this.apiUrl}/${id}`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('subjectGet')));
   }
 }

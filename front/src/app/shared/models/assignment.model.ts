@@ -1,3 +1,4 @@
+import { Observable, Subscription } from 'rxjs';
 import { Utils } from '../tools/Utils';
 import { Rating } from './rating.model';
 import { Submission } from './submission.model';
@@ -11,14 +12,23 @@ export class Assignment {
   public title!: string;
   public description!: string;
   public createdAt!: Date;
-  public updatedAt!: Date;
+  public updatedAt?: Date;
   public dueDate!: Date;
-  public submission!: Submission;
-  public rating!: Rating;
+  public submission?: Submission;
+  public rating?: Rating;
+
+  public static createSubmission(
+    assignment: Assignment,
+    type: string,
+    buffer: Buffer
+  ): void {
+    assignment.submission = new Submission();
+    assignment.submission.type = type;
+    assignment.submission.content = buffer;
+  }
 
   public isValid(): boolean {
     // TODO: implement
-
     return true;
   }
 

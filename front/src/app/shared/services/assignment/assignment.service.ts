@@ -9,6 +9,7 @@ import { Config } from '../../tools/Config';
 import { ErrorRequest } from '../../api/error.model';
 import { Utils } from '../../tools/Utils';
 import { SuccessRequest } from '../../api/success.model';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ export class AssignmentService {
   apiUrl = `${Config.getServerUrl()}/${Config.assignment.route}`;
   constructor(
     private loggingService: LoggingService,
+    private authService: AuthService,
     private http: HttpClient
   ) {}
 
@@ -79,10 +81,13 @@ export class AssignmentService {
       error.message = 'Assignment is undefined';
       return of(error);
     }
-
-    this.loggingService.log(assignment.title, `PUT ${assignment._id}`);
     return this.http
-      .put<SuccessRequest>(`${this.apiUrl}`, assignment)
+      .put<SuccessRequest>(
+        `${this.apiUrl}/${assignment.id}`,
+        assignment,
+
+        Utils.httpOptionsToken(this.authService.getToken())
+      )
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentUpdate')));
   }
 }

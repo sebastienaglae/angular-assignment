@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCardModule } from '@angular/material/card';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RouterModule } from '@angular/router';
@@ -40,6 +40,12 @@ import {
 } from '@angular-material-components/datetime-picker';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { AssignmentSubmitComponent } from './assignment/assignment-submit/assignment-submit.component';
+import { NgxMatFileInputModule } from '@angular-material-components/file-input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
+import { CdkColumnDef } from '@angular/cdk/table';
 @NgModule({
   declarations: [
     AppComponent,
@@ -83,11 +89,19 @@ import { AssignmentSubmitComponent } from './assignment/assignment-submit/assign
     NgxMatDatetimePickerModule,
     NgxMatNativeDateModule,
     MatExpansionModule,
+    NgxMatFileInputModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatSnackBarModule,
+    MatTabsModule,
   ],
   providers: [
     {
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: { showError: true },
+    },
+    {
+      provide: CdkColumnDef,
     },
   ],
   bootstrap: [AppComponent],

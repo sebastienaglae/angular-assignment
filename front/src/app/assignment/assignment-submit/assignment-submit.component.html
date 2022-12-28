@@ -1,14 +1,54 @@
-<!-- C'est un form qui permet d'upload un fichier -->
-<mat-card>
-  <mat-card-title>Envoyer une solution</mat-card-title>
-  <mat-card-content>
-    <form>
-      <!-- Le fichier -->
-      <mat-form-field>
-        <input #file type="file" required />
-      </mat-form-field>
-      <button mat-raised-button color="primary" type="submit">Envoyer</button>
-      <div></div>
-    </form>
-  </mat-card-content>
-</mat-card>
+<!-- Chargement-->
+<mat-progress-bar
+  *ngIf="isLoading"
+  mode="indeterminate"
+  class="progress-bar"
+></mat-progress-bar>
+<div *ngIf="!isLoading" class="center">
+  <mat-card class="center">
+    <mat-card-title>Envoyer un devoir</mat-card-title>
+    <mat-card-subtitle> {{ assignmentTarget?.title }} </mat-card-subtitle>
+    <p>
+      <b>Énoncé :</b>
+      {{ assignmentTarget?.description }}
+    </p>
+    <p>
+      <b>Date limite :</b>
+      {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }}
+    </p>
+    <!-- Matiere -->
+    <p>
+      <b>Matière :</b>
+      {{ subjectTarget?.name }}
+    </p>
+    <mat-card-content>
+      <form [formGroup]="submitForm" (submit)="submit()">
+        <!-- Le fichier -->
+        <mat-form-field>
+          <ngx-mat-file-input
+            class="center"
+            #file
+            matInput
+            placeholder="Fichier"
+            formControlName="fileCtrl"
+            [multiple]="false"
+            [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"
+          ></ngx-mat-file-input>
+        </mat-form-field>
+        <mat-hint>
+          Formats acceptés : .pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .gif,
+          .zip
+        </mat-hint>
+        <button
+          mat-raised-button
+          mat
+          color="primary"
+          type="submit"
+          [disabled]="!submitForm.valid"
+        >
+          Envoyer
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

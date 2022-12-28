@@ -29,13 +29,15 @@ class AssignmentService {
         return assignment;
     }
 
-    async update(id, subjectId, title, description, dueDate) {
+    async update(id, subjectId, title, description, dueDate, submission, rating) {
         const result = await Assignment.updateOne({ _id: id }, {
             subject: subjectId,
 
             title,
             description,
             dueDate,
+            submission,
+            rating,
 
             updatedAt: Date.now()
         });

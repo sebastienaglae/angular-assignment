@@ -64,14 +64,14 @@ router.put('/:id', async (req, res, next) => {
         const { id } = req.params;
         ObjectIdValidator('id', id);
 
-        const { subjectId, title, description, dueDate } = req.body;
+        const { subjectId, title, description, dueDate, submission, rating } = req.body;
         AssignmentPropertyValidator(title, description, dueDate);
 
         if (!await SubjectService.exists(subjectId)) {
             throw new ObjectNotFoundError('Subject not found');
         }
 
-        const success = await AssignmentService.update(id, subjectId, title, description, dueDate);
+        const success = await AssignmentService.update(id, subjectId, title, description, dueDate, submission, rating);
 
         res.json({ success });
     } catch (error) {

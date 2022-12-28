@@ -1,6 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ErrorRequest } from '../api/error.model';
+import { Buffer } from 'buffer';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export abstract class Utils {
   // Fonction qui permet de recupperer les parametres de l'url dans une map
@@ -117,7 +119,10 @@ export abstract class Utils {
     let errorRequest = new ErrorRequest();
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) {
-        errorRequest.message = 'Impossible de se connecter au serveur';
+        errorRequest.message = 'Erreur de connexion';
+      } else if (error.status === 401) {
+        errorRequest.message = "Erreur d'authentification";
+        errorRequest.needAuth = true;
       } else {
         errorRequest.message = error.error.error.message;
       }
@@ -134,7 +139,53 @@ export abstract class Utils {
     return text;
   }
 
-  public static bufferToBlob(buffer: ArrayBuffer): Blob {
-    return new Blob([buffer]);
+  public static bufferToFile(buffer: ArrayBuffer): File {
+    let blob = new Blob([buffer]);
+    return new File([blob], 'file');
+  }
+
+  public static fileToArrayBuffer(
+    file: File,
+    callback: (buffer: Buffer) => void
+  ): void {
+    let reader = new FileReader();
+    reader.onload = function (e: any) {
+      const arrayBuffer = e.target.result;
+      let buffer = Buffer.from(arrayBuffer);
+
+      callback(buffer);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  public static snackBarError(
+    _snackBar: MatSnackBar,
+    message: string | ErrorRequest
+  ) {
+    const errorMessage =
+      typeof message === 'string' ? message : message.message;
+    _snackBar.open(errorMessage, 'Fermer', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+    });
+  }
+
+  public static snackBarSuccess(_snackBar: MatSnackBar, message: string) {
+    _snackBar.open(message, 'Fermer', {
+      duration: 5000,
+      panelClass: ['success-snackbar'],
+    });
+  }
+
+  public static httpOptionsToken(token: string | null): {
+    headers: HttpHeaders;
+  } {
+    if (!token) return { headers: new HttpHeaders() };
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      }),
+    };
   }
 }

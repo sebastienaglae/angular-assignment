@@ -101,6 +101,10 @@ export class AuthService {
     return Utils.decodeJWTToken(this.jwtToken) as User;
   }
 
+  getToken(): string | null {
+    return this.jwtToken;
+  }
+
   // Fonction qui permet de se déconnecter
   logout(): void {
     this.loggingService.log('AuthService', 'LOGOUT');

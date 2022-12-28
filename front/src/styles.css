@@ -14,16 +14,56 @@ h1 {
   text-align: center;
 }
 mat-card {
-  width: 90%;
-  margin: 15px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 10px;
+  margin: 20px;
+}
+
+@media (min-width: 600px) {
+  mat-card {
+    width: 500px;
+  }
 }
 
 form {
   display: flex;
   flex-direction: column;
   margin: 5px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* SnackBar */
+.error-snackbar {
+  color: white;
+  --mdc-snackbar-container-color: #ff7f7f;
+}
+
+.success-snackbar {
+  color: white;
+  --mdc-snackbar-container-color: #7fff7f;
+}
+
+/* File input */
+.mat-input-element {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.mat-mdc-form-field-type-ngx-mat-file-input {
+  width: 235px;
 }
