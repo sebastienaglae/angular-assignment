@@ -1,7 +1,15 @@
-<h1>Liste des devoirs a rendre</h1>
+<!-- Composant : Liste des devoirs a rendre -->
+<!-- Description : Ce composant permet de lister les devoirs a rendre -->
 
-<!-- Add a filter for the table on assignment.rendu and add search bar -->
+<!-- Chargement-->
+<mat-progress-bar
+  *ngIf="isLoading"
+  mode="indeterminate"
+  class="progress-bar"
+></mat-progress-bar>
+
 <mat-card>
+  <h1>Liste des devoirs a rendre</h1>
   <div>
     <!-- Filtre de recherche -->
     <mat-form-field>
@@ -87,6 +95,6 @@
 <mat-paginator
   class="mat-paginator-sticky"
   #paginator
-  [pageSizeOptions]="[5, 10, 25, 100]"
+  [pageSizeOptions]="[5, 10, 25, 100, 250]"
   showFirstLastButtons
 ></mat-paginator>

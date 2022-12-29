@@ -1,4 +1,3 @@
-import { Observable, Subscription } from 'rxjs';
 import { Utils } from '../tools/Utils';
 import { Rating } from './rating.model';
 import { Submission } from './submission.model';
@@ -25,11 +24,6 @@ export class Assignment {
     assignment.submission = new Submission();
     assignment.submission.type = type;
     assignment.submission.content = buffer;
-  }
-
-  public isValid(): boolean {
-    // TODO: implement
-    return true;
   }
 
   // Fonction qui retourne true si la date de rendu est dépassée

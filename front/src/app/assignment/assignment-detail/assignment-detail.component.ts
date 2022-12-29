@@ -62,10 +62,7 @@ export class AssignmentDetailComponent implements OnInit {
     this.assignmentTarget = assData;
     this.isAssignmentLate = Assignment.isTooLate(assData);
     this.assignmentTimeRemaining = Assignment.getTimeRemaining(assData);
-    this.file = Submission.getFile(assData.submission);
-    if (!this.file) {
-      Utils.snackBarError(this._snackBar, 'Impossible de récupérer le fichier');
-    }
+    this.handleFileSubmission();
     this.subjectsService.get(assData.subjectId).subscribe((data) => {
       if (!data) return;
       this.targetSubject = data as any as Subject;
@@ -75,25 +72,31 @@ export class AssignmentDetailComponent implements OnInit {
     });
   }
 
+  handleFileSubmission() {
+    if (!this.assignmentTarget?.submission) return;
+    this.file = Submission.getFile(this.assignmentTarget.submission);
+    if (!this.file) {
+      Utils.snackBarError(this._snackBar, 'Impossible de récupérer le fichier');
+    }
+  }
+
   isAdmin(): boolean {
     throw new Error('Method not implemented.');
   }
 
-  onSubmit() {
+  submitRedirect() {
     this.router.navigate(['/assignment', this.assignmentTarget?.id, 'submit']);
   }
 
-  onEdit() {
+  ratingRedirect() {
+    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'rate']);
+  }
+
+  editRedirect() {
     this.router.navigate(['/assignment', this.assignmentTarget?.id, 'edit']);
   }
 
-  downloadSubmission() {
-    if (!this.assignmentTarget) return;
-    if (!this.assignmentTarget.submission) return;
-    Submission.downloadContentToUser(this.assignmentTarget);
-  }
-
-  onDelete() {
+  deleteRedirect() {
     if (!this.assignmentTarget) return;
     this.assignementService
       .delete(this.assignmentTarget._id)
@@ -101,5 +104,11 @@ export class AssignmentDetailComponent implements OnInit {
         console.log(data);
       });
     this.assignmentTarget = undefined;
+  }
+
+  downloadSubmission() {
+    if (!this.assignmentTarget) return;
+    if (!this.assignmentTarget.submission) return;
+    Submission.downloadContentToUser(this.assignmentTarget);
   }
 }

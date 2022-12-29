@@ -7,6 +7,8 @@ import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 
 @Component({
   selector: 'app-assignment-modify',
@@ -15,20 +17,28 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class AssignmentModifyComponent implements OnInit {
   editForm = new EditFormGroup();
-  assignment: Assignment = new Assignment();
+  assignmentTarget: Assignment = new Assignment();
   descriptionPreview: string = '';
   subjects: Subject[] = [];
   selectedSubject!: Subject;
+  isLoading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private subjectService: SubjectsService,
-    private assignementService: AssignmentService
-  ) {
+    private assignementService: AssignmentService,
+    private _snackBar: MatSnackBar,
+    private loggingService: LoggingService
+  ) {}
+
+  ngOnInit(): void {
     this.getAssignment();
     this.initSubject();
   }
+
+  // Fonction qui permet de récupérer les matières
   initSubject() {
+    this.loggingService.event('AssignmentModifyComponent', 'initSubject');
     this.subjectService.getAll().subscribe((res) => {
       if (res instanceof ErrorRequest) return;
       this.subjects = res;
@@ -36,39 +46,51 @@ export class AssignmentModifyComponent implements OnInit {
     });
   }
 
+  // Fonction qui permet de récupérer l'assignment
   getAssignment() {
+    this.loggingService.event('AssignmentModifyComponent', 'getAssignment');
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.assignementService.get(id).subscribe((data) => {
-        // TODO MANAGE ERROR
-        if (!data) return;
-
-        const assResult = data as any as Assignment;
-        const subject = this.subjects.find((s) => s.id === assResult.subjectId);
-        if (subject) {
-          this.editForm.subjectValue = subject;
-        }
-        this.assignment = assResult;
-        this.descriptionPreview = Utils.textPreview(assResult.description, 20);
-        this.updateSelectedSubject();
+        this.handleAssignment(data);
       });
     }
   }
 
+  // Fonction qui permet de gérer l'assignment
+  handleAssignment(assData: ErrorRequest | Assignment) {
+    this.loggingService.event('AssignmentModifyComponent', 'handleAssignment');
+    if (!assData) {
+      Utils.snackBarError(this._snackBar, 'Erreur inconue');
+      return;
+    }
+    if (assData instanceof ErrorRequest) {
+      Utils.snackBarError(this._snackBar, assData);
+      return;
+    }
+
+    this.assignmentTarget = assData;
+    this.updateSelectedSubject();
+  }
+
+  // Fonction qui permet de modifier l'assignment
   updateSelectedSubject() {
-    if (!this.assignment.subjectId) return;
+    this.loggingService.event(
+      'AssignmentModifyComponent',
+      'updateSelectedSubject'
+    );
+    if (!this.assignmentTarget.subjectId) return;
     if (this.subjects.length === 0) return;
 
     const subject = this.subjects.find(
-      (s) => s.id === this.assignment.subjectId
+      (s) => s.id === this.assignmentTarget.subjectId
     );
     if (subject) {
       this.editForm.subjectValue = subject;
       this.selectedSubject = subject;
+      this.isLoading = false;
     }
   }
-
-  ngOnInit(): void {}
 }
 
 class EditFormGroup extends FormGroup {

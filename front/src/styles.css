@@ -67,3 +67,12 @@ form {
 .mat-mdc-form-field-type-ngx-mat-file-input {
   width: 235px;
 }
+
+/* Loading */
+mat-progress-bar.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}

@@ -1,7 +1,13 @@
 <!-- Composant : Ajout d'un devoir -->
 <!-- Description : Ce composant permet d'ajouter un devoir -->
 
-<mat-card>
+<!-- Chargement-->
+<mat-progress-bar
+  *ngIf="isLoading"
+  mode="indeterminate"
+  class="progress-bar"
+></mat-progress-bar>
+<mat-card *ngIf="!isLoading">
   <mat-vertical-stepper>
     <!-- Etape 1 : Titre du devoir -->
     <mat-step
@@ -108,12 +114,6 @@
       <form [formGroup]="formGroups.subjectFormGroup">
         <h2>Entrez la matière du devoir</h2>
         <div>
-          <img
-            *ngIf="formGroups.subjectValue"
-            src="subjectImgPath"
-            width="50"
-            height="50"
-          />
           <mat-form-field>
             <mat-label>Matière</mat-label>
             <mat-select
@@ -128,13 +128,21 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <div>
+            <img
+              *ngIf="formGroups.subjectValue"
+              src="{{ teacherImgPath }}"
+              width="50%"
+              height="100%"
+            />
+            <img
+              *ngIf="formGroups.subjectValue"
+              src="{{ subjectImgPath }}"
+              width="50%"
+              height="100%"
+            />
+          </div>
         </div>
-        <img
-          *ngIf="formGroups.subjectValue"
-          src="{{ teacherImgPath }}"
-          width="100"
-          height="100"
-        />
 
         <div>
           <button mat-button matStepperPrevious>Précédent</button>

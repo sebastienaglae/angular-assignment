@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { ErrorRequest } from '../shared/api/error.model';
 import { SuccessRequest } from '../shared/api/success.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
+import { Utils } from '../shared/tools/Utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-register',
@@ -13,22 +15,27 @@ import { LoggingService } from '../shared/services/logging/logging.service';
 export class RegisterComponent implements OnInit {
   registerForm: RegisterAccountFromGroup = new RegisterAccountFromGroup();
 
-  message?: string;
-
   constructor(
     private authService: AuthService,
-    private loggingService: LoggingService
+    private loggingService: LoggingService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
 
   register() {
     this.loggingService.event('RegisterComponent', 'register');
-    this.message = undefined;
-    if (!this.registerForm.valid)
-      return (this.message = 'Remplissez tous les champs');
-    if (!this.registerForm.isPasswordSame())
-      return (this.message = 'Les mots de passe ne correspondent pas');
+    if (!this.registerForm.valid) {
+      Utils.snackBarError(this.snackBar, 'Remplissez tous les champs');
+      return;
+    }
+    if (!this.registerForm.isPasswordSame()) {
+      Utils.snackBarError(
+        this.snackBar,
+        'Les mots de passe ne sont pas identiques'
+      );
+      return;
+    }
 
     this.authService
       .register(
@@ -39,19 +46,18 @@ export class RegisterComponent implements OnInit {
       .subscribe((data) => {
         this.handleRegistration(data);
       });
-
-    return (this.message = "En attente de l'inscription");
   }
 
   // Fonction qui gère l'inscription
   handleRegistration(data: ErrorRequest | SuccessRequest): void {
     this.loggingService.event('RegisterComponent', 'handleRegistration');
     if (data instanceof ErrorRequest) {
-      this.message = data.message;
+      Utils.snackBarError(this.snackBar, data);
       return;
     }
-    if (data.success) this.message = 'Inscription réussie';
-    else this.message = 'Inscription échouée';
+    if (data.success)
+      Utils.snackBarSuccess(this.snackBar, 'Inscription réussie');
+    else Utils.snackBarError(this.snackBar, 'Inscription échouée');
   }
 }
 

@@ -17,6 +17,7 @@ export class Submission {
       // Trick to force download, see https://stackoverflow.com/a/32226068 but it's not clean :(
       const link = document.createElement('a');
       link.href = url;
+      //todo : add extension
       link.download = `${assignment.id}.${submission.type.split('/')[1]}`;
       link.click();
     }

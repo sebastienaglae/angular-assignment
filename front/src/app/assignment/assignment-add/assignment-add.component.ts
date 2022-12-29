@@ -13,6 +13,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 
 @Component({
   selector: 'app-assignment-add',
@@ -23,54 +25,69 @@ export class AssignmentAddComponent implements OnInit {
   @Output() newAssignment = new EventEmitter<Assignment>();
   // Pamametres de redirection
   timeBeforeRedirect: number = 5;
+  isLoading: boolean = true;
 
   // Chemins des images du professeur et de la matière
-  teacherImgPath!: string;
-  subjectImgPath!: string;
+  teacherImgPath: string =
+    'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png';
+  subjectImgPath: string =
+    'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png';
 
   // Form groups et form controls pour le stepper
   formGroups = new StepperAssignmentFromGroup(this._formBuilder);
 
-  // Formulaire
-  // newAssignmentItem: Assignment = new Assignment();
-
-  subjects: Subject[] = [];
-
   // Informations sur le stepper
   submitButtonText: string = 'Ajouter le devoir';
+
+  subjects: Subject[] = [];
 
   @ViewChild('picker') picker: any;
 
   constructor(
     private assignmentService: AssignmentService,
     private subjectService: SubjectsService,
-    private _formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private loggingService: LoggingService,
+    private _formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
-    // fill the form with the url parameters
     this.initSubject();
     this.fillForm();
   }
 
+  // Rempli la liste des matières
   initSubject() {
     this.subjectService.getAll().subscribe((res) => {
-      if (res instanceof ErrorRequest) return;
-      this.subjects = res;
-      const subjectId = Utils.getParam(Utils.getParams(), 'subject');
-      if (subjectId) {
-        this.formGroups.subjectValue = this.subjects.find(
-          (subject) => subject.id === subjectId
-        );
-      }
+      this.handleSubject(res);
     });
+  }
+
+  // Gère la réponse de l'api pour les matières
+  handleSubject(res: Subject[] | ErrorRequest) {
+    if (res instanceof ErrorRequest) {
+      Utils.snackBarError(
+        this.snackBar,
+        "Erreur lors de l'obtention des matières"
+      );
+      return;
+    }
+    this.subjects = res;
+    const subjectId = Utils.getParam(Utils.getParams(), 'subject');
+    if (subjectId) {
+      this.formGroups.subjectValue = this.subjects.find(
+        (subject) => subject.id === subjectId
+      );
+    }
+
+    this.isLoading = false;
   }
 
   // Rempli le formulaire avec les paramètres de l'url
   fillForm() {
+    this.loggingService.event('AssignmentAddComponent', 'fillForm');
     let params = Utils.getParams();
-    //todo : See matiere
     if (params) {
       this.formGroups.titleValue = Utils.getParam(params, 'title');
       this.formGroups.dueDateValue = new Date(
@@ -85,6 +102,7 @@ export class AssignmentAddComponent implements OnInit {
     Utils.updateParam(param, value);
   }
 
+  //todo move to utils
   parseDate(date: string) {
     return Date.parse(date).toString();
   }
@@ -106,6 +124,7 @@ export class AssignmentAddComponent implements OnInit {
     console.log(this.formGroups.dueDateValue.toUTCString());
     // newAssignment.author = this.formGroups.authorValue;
     // newAssignment.subject = this.formGroups.subjectValue;
+    //todo : add to service
   }
 
   // Redirige l'utilisateur vers la page d'accueil dans 5 secondes
@@ -119,11 +138,6 @@ export class AssignmentAddComponent implements OnInit {
         this.router.navigate(['/home']);
       }
     }, 1000);
-  }
-
-  // Réinitialise le formulaire
-  reset() {
-    // this.newAssignmentItem = new Assignment();
   }
 }
 

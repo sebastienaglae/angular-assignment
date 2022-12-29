@@ -159,13 +159,12 @@ export abstract class Utils {
   }
 
   public static snackBarError(
-    _snackBar: MatSnackBar,
+    snackBar: MatSnackBar,
     message: string | ErrorRequest
   ) {
     const errorMessage =
       typeof message === 'string' ? message : message.message;
-    _snackBar.open(errorMessage, 'Fermer', {
-      duration: 5000,
+    snackBar.open(errorMessage, 'Fermer', {
       panelClass: ['error-snackbar'],
     });
   }

@@ -46,6 +46,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CdkColumnDef } from '@angular/cdk/table';
+import { AssignmentRateComponent } from './assignment/assignment-rate/assignment-rate.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +58,7 @@ import { CdkColumnDef } from '@angular/cdk/table';
     AssignmentModifyComponent,
     AssignmentGenComponent,
     AssignmentSubmitComponent,
+    AssignmentRateComponent,
   ],
   imports: [
     BrowserModule,

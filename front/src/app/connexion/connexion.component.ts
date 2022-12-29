@@ -4,6 +4,8 @@ import { AuthService } from '../shared/services/auth/auth.service';
 import { ErrorRequest } from '../shared/api/error.model';
 import { TokenAuth } from '../shared/api/auth/token.auth.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
+import { Utils } from '../shared/tools/Utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-connexion',
@@ -12,11 +14,11 @@ import { LoggingService } from '../shared/services/logging/logging.service';
 })
 export class ConnexionComponent implements OnInit {
   loginForm: RegisterAccountFromGroup = new RegisterAccountFromGroup();
-  message?: string;
 
   constructor(
     private authService: AuthService,
-    private loggingService: LoggingService
+    private loggingService: LoggingService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
@@ -24,9 +26,10 @@ export class ConnexionComponent implements OnInit {
   // Fonction qui gère la connexion
   login() {
     this.loggingService.event('ConnexionComponent', 'login');
-    this.message = undefined;
-    if (!this.loginForm.valid)
-      return (this.message = 'Remplissez tous les champs');
+    if (!this.loginForm.valid) {
+      Utils.snackBarError(this.snackBar, 'Remplissez tous les champs');
+      return;
+    }
 
     this.authService
       .login(
@@ -37,17 +40,19 @@ export class ConnexionComponent implements OnInit {
       .subscribe((data) => {
         this.handleLogin(data);
       });
-
-    return (this.message = 'En attente de la connexion');
   }
 
   // Fonction qui gère la connexion
   handleLogin(data: ErrorRequest | TokenAuth) {
     this.loggingService.event('ConnexionComponent', 'handleLogin');
-    if (data instanceof ErrorRequest) return (this.message = data.message);
-    return (this.message = 'Connexion réussie');
+    if (data instanceof ErrorRequest) {
+      Utils.snackBarError(this.snackBar, data.message);
+      return;
+    }
+    Utils.snackBarSuccess(this.snackBar, 'Connexion réussie');
   }
 }
+
 class RegisterAccountFromGroup extends FormGroup {
   constructor() {
     super({

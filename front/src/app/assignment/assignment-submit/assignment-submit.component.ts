@@ -7,7 +7,6 @@ import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { Subject } from 'src/app/shared/models/subject.model';
-import { Submission } from 'src/app/shared/models/submission.model';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
@@ -36,6 +35,7 @@ export class AssignmentSubmitComponent {
     this.getAssignment();
   }
 
+  // Fonction qui permet de récupérer l'assignment
   getAssignment() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -45,6 +45,7 @@ export class AssignmentSubmitComponent {
     }
   }
 
+  // Fonction qui permet de récupérer le sujet de l'assignment
   handleAssignment(assData: Assignment | ErrorRequest) {
     if (!assData) return;
     if (assData instanceof ErrorRequest) {
@@ -58,6 +59,7 @@ export class AssignmentSubmitComponent {
     });
   }
 
+  // Fonction qui permet de récupérer le sujet
   handleSubject(subData: Subject | ErrorRequest) {
     if (!subData) {
       Utils.snackBarError(this._snackBar, 'Erreur inconue');
@@ -72,6 +74,7 @@ export class AssignmentSubmitComponent {
     this.isLoading = false;
   }
 
+  // Fonction qui permet de soumettre le rendu
   submit() {
     this.loggingService.event('AssignmentSubmitComponent', 'submit');
     const file = this.submitForm.file;
@@ -81,6 +84,7 @@ export class AssignmentSubmitComponent {
     );
   }
 
+  // Fonction qui permet de créer le rendu
   handleSubmission(type: string, buffer: Buffer) {
     this.loggingService.event('AssignmentSubmitComponent', 'handleSubmission');
     if (this.assignmentTarget == null) return;
@@ -94,8 +98,8 @@ export class AssignmentSubmitComponent {
       });
   }
 
+  // Fonction qui permet de gérer la réponse de la création du rendu
   handleUpdate(data: ErrorRequest | SuccessRequest) {
-    console.log(data);
     if (data instanceof ErrorRequest) {
       this.loggingService.event(
         'AssignmentSubmitComponent',

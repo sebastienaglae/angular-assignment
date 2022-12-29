@@ -16,6 +16,7 @@ import { LoggingService } from '../shared/services/logging/logging.service';
 export class AssignmentComponent implements OnInit {
   searchAssignment!: SearchAssignment;
   datasource: MatTableDataSource<Assignment> = new MatTableDataSource();
+  isLoading: boolean = true;
 
   filterOptions: FilterOptions = new FilterOptions();
 
@@ -50,6 +51,7 @@ export class AssignmentComponent implements OnInit {
       .pipe(
         startWith({}),
         switchMap(() => {
+          this.isLoading = true;
           return this.assignementService.search({
             page: this.paginator.pageIndex,
             pageSize: this.paginator.pageSize,
@@ -62,6 +64,7 @@ export class AssignmentComponent implements OnInit {
             return [];
           }
           this.paginator.length = data.totalItems;
+          this.isLoading = false;
           return data.items;
         }),
         catchError(() => {

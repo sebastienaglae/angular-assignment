@@ -1,0 +1,32 @@
+<!-- Composant : Note un devoir -->
+<!-- Description : Ce composant permet de noter un devoir -->
+
+<!-- Chargement-->
+<mat-progress-bar
+  *ngIf="isLoading"
+  mode="indeterminate"
+  class="progress-bar"
+></mat-progress-bar>
+<mat-card *ngIf="!isLoading" class="center">
+  <h2>Notation</h2>
+  <form [formGroup]="rateForm">
+    <!-- Form for rating someone and for a comment -->
+    <mat-form-field>
+      <mat-label>Note</mat-label>
+      <input
+        matInput
+        formControlName="rateCtrl"
+        type="number"
+        min="0"
+        max="20"
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Commentaire</mat-label>
+      <textarea matInput formControlName="commentCtrl"></textarea>
+    </mat-form-field>
+    <button mat-raised-button color="primary" [disabled]="!rateForm.valid">
+      Noter
+    </button>
+  </form>
+</mat-card>

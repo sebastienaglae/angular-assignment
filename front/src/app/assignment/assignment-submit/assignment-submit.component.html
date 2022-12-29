@@ -1,17 +1,23 @@
+<!-- Composant : Soumet un devoir -->
+<!-- Description : Ce composant permet de soumettre un devoir -->
+
 <!-- Chargement-->
 <mat-progress-bar
   *ngIf="isLoading"
   mode="indeterminate"
   class="progress-bar"
 ></mat-progress-bar>
+
 <div *ngIf="!isLoading" class="center">
   <mat-card class="center">
     <mat-card-title>Envoyer un devoir</mat-card-title>
     <mat-card-subtitle> {{ assignmentTarget?.title }} </mat-card-subtitle>
+    <!-- Description -->
     <p>
-      <b>Énoncé :</b>
+      <b>Description :</b>
       {{ assignmentTarget?.description }}
     </p>
+    <!-- Date limite -->
     <p>
       <b>Date limite :</b>
       {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }}

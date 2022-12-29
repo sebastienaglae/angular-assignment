@@ -1,36 +1,18 @@
+<!--Composant : Détail d'un devoir -->
+<!-- Description : Ce composant permet d'afficher les détails d'un devoir -->
+
 <!-- Chargement-->
 <mat-progress-bar
   *ngIf="isLoading"
   mode="indeterminate"
   class="progress-bar"
 ></mat-progress-bar>
-<mat-card *ngIf="!isLoading">
-  <mat-card-content>
-    <p><b>Description :</b> {{ assignmentTarget?.description }}</p>
-    <p *ngIf="assignmentTarget?.updatedAt">
-      <b>Mis a jour le :</b> {{ assignmentTarget?.updatedAt }}
-    </p>
-    <img
-      *ngIf="subjectImgPath"
-      src="{{ subjectImgPath }}"
-      width="100"
-      height="100"
-    />
-    <p><b>Matière :</b> {{ targetSubject?.name }}</p>
-    <div *ngIf="teacherImgPath">
-      <img src="{{ teacherImgPath }}" width="100" height="100" />
-      <p>Professeur</p>
-    </div>
-  </mat-card-content>
-  <!-- [disabled]="!isAdmin()" -->
-</mat-card>
 
-<!-- Create 3 tabs angular mat -->
-<mat-card *ngIf="assignmentTarget">
-  <mat-card-title>{{ assignmentTarget.title }}</mat-card-title>
+<mat-card *ngIf="!isLoading">
+  <mat-card-title>{{ assignmentTarget?.title }}</mat-card-title>
   <mat-card-header>
     <mat-card-subtitle
-      >{{ assignmentTarget.createdAt | date }}
+      >{{ assignmentTarget?.createdAt | date }}
     </mat-card-subtitle>
   </mat-card-header>
   <mat-tab-group mat-stretch-tabs="true" class="fullWidth">
@@ -39,19 +21,19 @@
         <table class="fullWidth">
           <tr>
             <td><b>Description</b></td>
-            <td>{{ assignmentTarget.description }}</td>
+            <td>{{ assignmentTarget?.description }}</td>
           </tr>
           <tr>
             <td><b>Créer le</b></td>
-            <td>{{ assignmentTarget.createdAt | date }}</td>
+            <td>{{ assignmentTarget?.createdAt | date }}</td>
           </tr>
           <tr>
             <td><b>Mis a jour le</b></td>
-            <td>{{ assignmentTarget.updatedAt | date }}</td>
+            <td>{{ assignmentTarget?.updatedAt | date }}</td>
           </tr>
           <tr>
             <td><b>Pour le</b></td>
-            <td>{{ assignmentTarget.dueDate | date }}</td>
+            <td>{{ assignmentTarget?.dueDate | date }}</td>
           </tr>
           <tr>
             <td><b>Matière</b></td>
@@ -75,16 +57,16 @@
       </div>
     </mat-tab>
     <mat-tab label="Rendu">
-      <p *ngIf="!assignmentTarget.submission">Pas de rendu disponible</p>
-      <div *ngIf="assignmentTarget.submission">
+      <p *ngIf="!assignmentTarget?.submission">Pas de rendu disponible</p>
+      <div *ngIf="assignmentTarget?.submission">
         <table class="fullWidth">
           <tr>
             <td><b>Type</b></td>
-            <td>{{ assignmentTarget.submission.type }}</td>
+            <td>{{ assignmentTarget?.submission?.type }}</td>
           </tr>
           <tr>
             <td><b>Soumis le</b></td>
-            <td>{{ assignmentTarget.submission.submittedAt | date }}</td>
+            <td>{{ assignmentTarget?.submission?.submittedAt | date }}</td>
           </tr>
           <tr>
             <td><b>Nom du fichier</b></td>
@@ -109,13 +91,16 @@
   </mat-tab-group>
 
   <div>
-    <button mat-raised-button color="primary" (click)="onSubmit()">
+    <button mat-raised-button color="primary" (click)="submitRedirect()">
       Rendre
     </button>
-    <button mat-raised-button color="primary" (click)="onEdit()">
+    <button mat-raised-button color="primary" (click)="ratingRedirect()">
+      Noter
+    </button>
+    <button mat-raised-button color="primary" (click)="editRedirect()">
       Modifier
     </button>
-    <button mat-raised-button color="warn" (click)="onDelete()">
+    <button mat-raised-button color="warn" (click)="deleteRedirect()">
       Supprimer
     </button>
   </div>
