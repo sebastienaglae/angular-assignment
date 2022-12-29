@@ -1,4 +1,4 @@
-const {Teacher} = require('../models/db');
+const { Teacher } = require('../models/db');
 
 class TeacherService {
     async search(name, limit) {
@@ -16,7 +16,7 @@ class TeacherService {
     async create(title, iconUrl) {
         const teacher = new Teacher({
             name: title,
-            iconUrl: iconUrl
+            iconUrl: iconUrl,
         });
         await teacher.save();
         return teacher._id;

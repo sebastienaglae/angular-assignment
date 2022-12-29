@@ -136,6 +136,11 @@ const AssignmentSchema = new mongoose.Schema({
     },
     rating: {
         type: AssignmentRatingSchema
+    },
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Teacher',
+        required: true
     }
 });
 const Assignment = mongoose.model('Assignment', AssignmentSchema);

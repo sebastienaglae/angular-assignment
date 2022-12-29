@@ -1,11 +1,13 @@
 const { AccountDto } = require('./account');
 const { SubjectDto } = require('./subject');
+const { TeacherDto } = require('./teacher');
 
 const AssignmentDto = assignment => {
     return {
         id: assignment._id,
         ownerId: assignment.owner,
         subjectId: assignment.subject,
+        teacherId: assignment.teacher,
         title: assignment.title,
         description: assignment.description,
         createdAt: assignment.createdAt,
@@ -21,6 +23,7 @@ const AssignmentSearchEntryDto = assignment => {
         id: assignment._id,
         ownerId: assignment.owner,
         subjectId: assignment.subject,
+        teacherId: assignment.teacher,
         title: assignment.title,
         createdAt: assignment.createdAt,
         updatedAt: assignment.updatedAt,
@@ -35,6 +38,7 @@ const AssignmentFullDto = assignment => {
         id: assignment._id,
         owner: AccountDto(assignment.owner),
         subject: SubjectDto(assignment.subject),
+        teacher: TeacherDto(assignment.teacher),
         title: assignment.title,
         description: assignment.description,
         createdAt: assignment.createdAt,
@@ -45,4 +49,4 @@ const AssignmentFullDto = assignment => {
     };
 }
 
-module.exports = { AssignmentDto, AssignmentSearchEntryDto };
+module.exports = { AssignmentDto, AssignmentSearchEntryDto, AssignmentFullDto };

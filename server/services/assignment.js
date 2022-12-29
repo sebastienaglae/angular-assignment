@@ -50,7 +50,7 @@ class AssignmentService {
 
     async updateRating(id, rating) {
         const result = await Assignment.updateOne({ _id: id }, {
-            rating,
+            rating
         });
         return result.modifiedCount === 1;
     }

@@ -9,7 +9,7 @@ const TeacherService = require('../services/teacher');
 const Role = require('../models/role');
 const { AuthenticationRequiredError, AuthorizationError, ObjectNotFoundError } = require("../models/error");
 const { StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator } = require('../util/validator');
-const { AssignmentDto, AssignmentSearchEntryDto } = require("../models/dto/assignment");
+const { AssignmentDto, AssignmentSearchEntryDto, AssignmentFullDto } = require("../models/dto/assignment");
 
 router.get('/search', async (req, res, next) => {
     try {
@@ -126,7 +126,7 @@ router.put('/:id/rating', async (req, res, next) => {
         NumberValidator('rating', rating, 0);
         StringLengthValidator('comment', comment, 0, 1000);
 
-        const success = await AssignmentService.updateInformation(id, rating);
+        const success = await AssignmentService.updateRating(id, { rating, comment });
 
         res.json({ success });
     } catch (error) {
