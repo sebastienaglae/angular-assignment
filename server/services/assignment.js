@@ -2,23 +2,21 @@ const { Assignment } = require('../models/db');
 
 class AssignmentService {
     static _maxSearchLimit = 1000;
-    static _orderOptions = {
-        'created-asc': { createdAt: 1 },
-        'created-desc': { createdAt: -1 },
-    };
+    static _maxSubmissionSize = 1024 * 1024 * 4; // 4 MB
 
     get maxSearchLimit() {
         return AssignmentService._maxSearchLimit;
     }
 
-    isValidOrder(order) {
-        return AssignmentService._orderOptions.hasOwnProperty(order);
+    get maxSubmissionSize() {
+        return AssignmentService._maxSubmissionSize;
     }
 
-    async create(ownerId, subjectId, title, description, dueDate) {
+    async create(ownerId, subjectId, teacherId, title, description, dueDate) {
         const assignment = new Assignment({
             owner: ownerId,
             subject: subjectId,
+            teacher: teacherId,
 
             title,
             description,
@@ -29,17 +27,30 @@ class AssignmentService {
         return assignment;
     }
 
-    async update(id, subjectId, title, description, dueDate, submission, rating) {
+    async updateInformation(id, subjectId, teacherId, title, description, dueDate) {
         const result = await Assignment.updateOne({ _id: id }, {
             subject: subjectId,
+            teacher: teacherId,
 
             title,
             description,
             dueDate,
-            submission,
-            rating,
 
             updatedAt: Date.now()
+        });
+        return result.modifiedCount === 1;
+    }
+
+    async updateSubmission(id, submission) {
+        const result = await Assignment.updateOne({ _id: id }, {
+            submission,
+        });
+        return result.modifiedCount === 1;
+    }
+
+    async updateRating(id, rating) {
+        const result = await Assignment.updateOne({ _id: id }, {
+            rating,
         });
         return result.modifiedCount === 1;
     }
@@ -54,21 +65,17 @@ class AssignmentService {
     }
 
     async search(options) {
-        if (options === undefined) {
-            options = new SearchOptions();
-        }
-
         const checkOptionsResult = this.checkOptions(options);
         if (checkOptionsResult !== undefined) {
             throw checkOptionsResult;
         }
 
-        const filter = {};
-        const query = Assignment.find(filter);
-
-        query.sort(AssignmentService._orderOptions[options.order]);
-        query.skip((options.page - 1) * options.limit);
-        query.limit(options.limit + 1); // +1 to check if there is a next page
+        const filter = this.convertFilterToQuery(options.filter);
+        const query = Assignment
+            .find(filter)
+            .sort(options.order)
+            .skip((options.page - 1) * options.limit)
+            .limit(options.limit + 1);
 
         const items = await query.exec();
         const result = new SearchResult();
@@ -84,6 +91,21 @@ class AssignmentService {
         return result;
     }
 
+    convertFilterToQuery(filter) {
+        const query = {};
+        for (const key in filter) {
+            const value = filter[key];
+            const type = typeof value;
+            const path = Assignment.schema.paths[key];
+            if (path.instance === 'String' && type === 'string') {
+                query[key] = { $regex: value, $options: 'i' };
+            } else {
+                query[key] = value;
+            }
+        }
+        return query;
+    }
+
     countDocuments(filter) {
         return Assignment.countDocuments(filter);
     }
@@ -95,8 +117,36 @@ class AssignmentService {
         if (options.limit < 1 || options.limit > this.maxSearchLimit) {
             return new SearchBadRequestError('Invalid limit');
         }
-        if (!this.isValidOrder(options.order)) {
+        if (typeof options.filter !== 'object') {
+            return new SearchBadRequestError('Invalid filter');
+        }
+        if (typeof options.order !== 'object') {
             return new SearchBadRequestError('Invalid order');
+        }
+
+        // check if values inside filter are valid
+        for (const key in options.filter) {
+            const value = options.filter[key];
+            const type = typeof value;
+            if (type !== 'string' && type !== 'number' && type !== 'boolean') {
+                return new SearchBadRequestError('Invalid filter. Values must be strings, numbers or booleans.');
+            }
+            const keyExists = key in Assignment.schema.paths;
+            if (!keyExists) {
+                return new SearchBadRequestError('Invalid filter. Unknown key.');
+            }
+        }
+
+        // check if values inside order are valid
+        for (const key in options.order) {
+            const value = options.order[key];
+            if (value !== 1 && value !== -1) {
+                return new SearchBadRequestError('Invalid order. Order value must be 1 or -1.');
+            }
+            const keyExists = key in Assignment.schema.paths;
+            if (!keyExists) {
+                return new SearchBadRequestError('Invalid order. Unknown key.');
+            }
         }
     }
 }
@@ -106,14 +156,6 @@ class SearchBadRequestError extends Error {
         super(message);
         this.name = 'SearchBadRequestError';
         this.code = 400;
-    }
-}
-
-class SearchOptions {
-    constructor() {
-        this.page = 1;
-        this.limit = 10;
-        this.order = 'created-asc';
     }
 }
 

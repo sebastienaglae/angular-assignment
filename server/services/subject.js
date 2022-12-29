@@ -13,9 +13,10 @@ class SubjectService {
         return Subject.exists({ _id: id });
     }
 
-    async create(title) {
+    async create(title, iconUrl) {
         const subject = new Subject({
-            name: title
+            name: title,
+            iconUrl: iconUrl
         });
         await subject.save();
     }

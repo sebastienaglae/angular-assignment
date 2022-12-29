@@ -16,6 +16,20 @@ const AssignmentDto = assignment => {
     };
 }
 
+const AssignmentSearchEntryDto = assignment => {
+    return {
+        id: assignment._id,
+        ownerId: assignment.owner,
+        subjectId: assignment.subject,
+        title: assignment.title,
+        createdAt: assignment.createdAt,
+        updatedAt: assignment.updatedAt,
+        dueDate: assignment.dueDate,
+        hasSubmission: assignment.submission !== null,
+        hasRating: assignment.rating !== null
+    };
+}
+
 const AssignmentFullDto = assignment => {
     return {
         id: assignment._id,
@@ -31,4 +45,4 @@ const AssignmentFullDto = assignment => {
     };
 }
 
-module.exports = { AssignmentDto };
+module.exports = { AssignmentDto, AssignmentSearchEntryDto };

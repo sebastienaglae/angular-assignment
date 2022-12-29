@@ -1,30 +1,31 @@
 const express = require('express');
+const fs = require('fs');
 const router = express.Router();
 
 const AssignmentService = require('../services/assignment');
 const SubjectService = require('../services/subject');
+const TeacherService = require('../services/teacher');
 
 const Role = require('../models/role');
 const { AuthenticationRequiredError, AuthorizationError, ObjectNotFoundError } = require("../models/error");
 const { StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator } = require('../util/validator');
-const { AssignmentDto } = require("../models/dto/assignment");
+const { AssignmentDto, AssignmentSearchEntryDto } = require("../models/dto/assignment");
 
 router.get('/search', async (req, res, next) => {
     try {
-        const { page = 1, limit = 10, order = 'created-asc' } = req.query;
-
+        const { filter = '{}', order = '{}', page = 1, limit = 10 } = req.query;
         NumberValidator('page', page, 1);
         NumberValidator('limit', limit, 1, AssignmentService.maxSearchLimit);
-        CustomValidator('order', order, AssignmentService.isValidOrder);
 
         const options = {
+            filter: JSON.parse(filter),
+            order: JSON.parse(order),
             page: page,
             limit: limit,
-            order: order
         };
         const searchResult = await AssignmentService.search(options);
 
-        searchResult.items = searchResult.items.map(AssignmentDto);
+        searchResult.items = searchResult.items.map(AssignmentSearchEntryDto);
 
         res.json(searchResult);
     } catch (error) {
@@ -52,7 +53,7 @@ router.delete('/:id', async (req, res, next) => {
     }
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id/info', async (req, res, next) => {
     try {
         if (!req.auth) {
             throw new AuthenticationRequiredError();
@@ -64,14 +65,68 @@ router.put('/:id', async (req, res, next) => {
         const { id } = req.params;
         ObjectIdValidator('id', id);
 
-        const { subjectId, title, description, dueDate, submission, rating } = req.body;
-        AssignmentPropertyValidator(title, description, dueDate);
+        const { subjectId, teacherId, title, description, dueDate } = req.body;
+        AssignmentPropertyValidator(subjectId, teacherId, title, description, dueDate);
 
         if (!await SubjectService.exists(subjectId)) {
             throw new ObjectNotFoundError('Subject not found');
         }
+        if (!await TeacherService.exists(teacherId)) {
+            throw new ObjectNotFoundError('Teacher not found');
+        }
 
-        const success = await AssignmentService.update(id, subjectId, title, description, dueDate, submission, rating);
+        const success = await AssignmentService.updateInformation(id, subjectId, title, description, dueDate);
+
+        res.json({ success });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.put('/:id/submission', async (req, res, next) => {
+    try {
+        if (!req.auth) {
+            throw new AuthenticationRequiredError();
+        }
+        if (!req.auth.hasRole(Role.UPDATE_ASSIGNMENT)) {
+            throw new AuthorizationError('Only admins can update assignments');
+        }
+
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const file = req.files.submission;
+        const { mimetype, name, tempFilePath, size } = file;
+        StringLengthValidator('name', name, 1, 255);
+        NumberValidator('size', size, 1, AssignmentService.maxSubmissionSize);
+
+        // open the file and read the content
+        const submission = fs.readFileSync(tempFilePath);
+        const success = await AssignmentService.updateSubmission(id, { type: mimetype, originalName: name, content: submission });
+
+        res.json({ success });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.put('/:id/rating', async (req, res, next) => {
+    try {
+        if (!req.auth) {
+            throw new AuthenticationRequiredError();
+        }
+        if (!req.auth.hasRole(Role.UPDATE_ASSIGNMENT)) {
+            throw new AuthorizationError('Only admins can update assignments');
+        }
+
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const { rating, comment = '' } = req.body;
+        NumberValidator('rating', rating, 0);
+        StringLengthValidator('comment', comment, 0, 1000);
+
+        const success = await AssignmentService.updateInformation(id, rating);
 
         res.json({ success });
     } catch (error) {
@@ -105,15 +160,18 @@ router.post('/create', async (req, res, next) => {
             throw new AuthorizationError('Only admins can update assignments');
         }
 
-        const { subjectId, title, description, dueDate } = req.body;
-        AssignmentPropertyValidator(title, description, dueDate);
+        const { subjectId, teacherId, title, description, dueDate } = req.body;
+        AssignmentPropertyValidator(subjectId, teacherId, title, description, dueDate);
 
         if (!await SubjectService.exists(subjectId)) {
             throw new ObjectNotFoundError('Subject not found');
         }
+        if (!await TeacherService.exists(teacherId)) {
+            throw new ObjectNotFoundError('Teacher not found');
+        }
 
         const ownerId = req.auth.id;
-        const assignment = await AssignmentService.create(ownerId, subjectId, title, description, dueDate);
+        const assignment = await AssignmentService.create(ownerId, subjectId, teacherId, title, description, dueDate);
 
         res.json(AssignmentDto(assignment));
     } catch (error) {
@@ -121,7 +179,9 @@ router.post('/create', async (req, res, next) => {
     }
 });
 
-const AssignmentPropertyValidator = (title, description, dueDate) => {
+const AssignmentPropertyValidator = (subjectId, teacherId, title, description, dueDate) => {
+    ObjectIdValidator('subjectId', subjectId);
+    ObjectIdValidator('teacherId', teacherId);
     StringLengthValidator('title', title, 1, 100);
     StringLengthValidator('description', description, 1, 50000);
     DateTimeValidator('dueDate', dueDate);

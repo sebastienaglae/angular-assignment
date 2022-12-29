@@ -36,12 +36,34 @@ const SubjectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    iconUrl: {
+        type: String,
+        required: true,
+    },
+
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
 const Subject = mongoose.model('Subject', SubjectSchema);
+
+// Declare the schema of Teacher, which is the teacher of an assignment
+const TeacherSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    iconUrl: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+});
+const Teacher = mongoose.model('Teacher', TeacherSchema);
 
 // Declare the schema of Assignment, which is the assignment itself
 const AssignmentSubmissionSchema = new mongoose.Schema({
@@ -51,6 +73,10 @@ const AssignmentSubmissionSchema = new mongoose.Schema({
     },
     content: {
         type: Buffer,
+        required: true,
+    },
+    originalName: {
+        type: String,
         required: true,
     },
     submittedAt: {
@@ -99,12 +125,11 @@ const AssignmentSchema = new mongoose.Schema({
         default: Date.now
     },
     updatedAt: {
-        type: Date,
-        default: undefined
+        type: Date
     },
     dueDate: {
         type: Date,
-        required: false
+        required: true
     },
     submission: {
         type: AssignmentSubmissionSchema,
@@ -115,4 +140,4 @@ const AssignmentSchema = new mongoose.Schema({
 });
 const Assignment = mongoose.model('Assignment', AssignmentSchema);
 
-module.exports = { Account, Assignment, Subject };
+module.exports = { Account, Assignment, Subject, Teacher };

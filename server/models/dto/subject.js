@@ -1,7 +1,8 @@
 const SubjectDto = (subject) => {
     return {
         id: subject._id,
-        name: subject.name
+        name: subject.name,
+        iconUrl: subject.iconUrl,
     };
 }
 
