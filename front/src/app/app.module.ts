@@ -47,6 +47,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { CdkColumnDef } from '@angular/cdk/table';
 import { AssignmentRateComponent } from './assignment/assignment-rate/assignment-rate.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.component';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatChipsModule } from '@angular/material/chips';
+import { SizePipe } from './shared/tools/SizePipe'
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -59,6 +65,8 @@ import { AssignmentRateComponent } from './assignment/assignment-rate/assignment
     AssignmentGenComponent,
     AssignmentSubmitComponent,
     AssignmentRateComponent,
+    TeacherDetailComponent,
+    SizePipe
   ],
   imports: [
     BrowserModule,
@@ -96,6 +104,9 @@ import { AssignmentRateComponent } from './assignment/assignment-rate/assignment
     MatProgressBarModule,
     MatSnackBarModule,
     MatTabsModule,
+    MatMenuModule,
+    MatBadgeModule,
+    MatChipsModule
   ],
   providers: [
     {
@@ -109,4 +120,4 @@ import { AssignmentRateComponent } from './assignment/assignment-rate/assignment
   bootstrap: [AppComponent],
   exports: [AppRoutingModule, AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

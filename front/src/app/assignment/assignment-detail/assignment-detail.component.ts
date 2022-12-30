@@ -9,6 +9,8 @@ import { Submission } from 'src/app/shared/models/submission.model';
 import { Utils } from 'src/app/shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
+import { SuccessRequest } from 'src/app/shared/api/success.model';
+import { SizePipe } from 'src/app/shared/tools/SizePipe';
 
 @Component({
   selector: 'app-assignment-detail',
@@ -34,7 +36,7 @@ export class AssignmentDetailComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getAssignment();
@@ -63,13 +65,15 @@ export class AssignmentDetailComponent implements OnInit {
     this.isAssignmentLate = Assignment.isTooLate(assData);
     this.assignmentTimeRemaining = Assignment.getTimeRemaining(assData);
     this.handleFileSubmission();
-    this.subjectsService.get(assData.subjectId).subscribe((data) => {
-      if (!data) return;
-      this.targetSubject = data as any as Subject;
-      //todo : get teacher img path
-      //this.subjectImgPath = subjectResult.imgPath;
-      this.isLoading = false;
-    });
+    //todo : subject check
+    if (assData.subjectId)
+      this.subjectsService.get(assData.subjectId).subscribe((data) => {
+        if (!data) return;
+        this.targetSubject = data as any as Subject;
+        //todo : get teacher img path
+        //this.subjectImgPath = subjectResult.imgPath;
+        this.isLoading = false;
+      });
   }
 
   handleFileSubmission() {
@@ -82,6 +86,10 @@ export class AssignmentDetailComponent implements OnInit {
 
   isAdmin(): boolean {
     throw new Error('Method not implemented.');
+  }
+
+  teacherRedirect() {
+    this.router.navigate(['/teacher', this.assignmentTarget?.teacherId]);
   }
 
   submitRedirect() {
@@ -98,13 +106,25 @@ export class AssignmentDetailComponent implements OnInit {
 
   deleteRedirect() {
     if (!this.assignmentTarget) return;
-    this.assignementService
-      .delete(this.assignmentTarget._id)
-      .subscribe((data) => {
-        console.log(data);
-      });
-    this.assignmentTarget = undefined;
+    if (!this.assignmentTarget.id) return;
+    this.assignementService.delete(this.assignmentTarget?.id).subscribe((data) => {
+      this.handleDeleteAssignment(data);
+    });
+
   }
+
+  handleDeleteAssignment(data: ErrorRequest | SuccessRequest) {
+    if (data instanceof ErrorRequest) {
+      Utils.snackBarError(this._snackBar, data);
+      return;
+    }
+    if (!data.success) {
+      Utils.snackBarError(this._snackBar, 'Erreur lors de la suppression');
+      return;
+    }
+    Utils.snackBarSuccess(this._snackBar, 'Suppression réussie');
+  }
+
 
   downloadSubmission() {
     if (!this.assignmentTarget) return;

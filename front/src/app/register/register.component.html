@@ -1,23 +1,11 @@
-<!-- Formulaire d'inscription, username, email, password and password confirmation -->
-<mat-card>
-  <mat-card-title>S'inscrire</mat-card-title>
+<mat-card class="card-basic card-little">
+  <mat-card-title class="title-big">S'inscrire</mat-card-title>
   <mat-card-content>
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       <!-- Le nom de l'utilisateur -->
-      <mat-form-field>
-        <input
-          #username
-          matInput
-          placeholder="Nom d'utilisateur"
-          formControlName="username"
-        />
-        <button
-          *ngIf="username"
-          matSuffix
-          mat-icon-button
-          aria-label="Clear"
-          (click)="username.value = ''"
-        >
+      <mat-form-field class="fullwidth">
+        <input #username matInput placeholder="Nom d'utilisateur" formControlName="username" />
+        <button *ngIf="username" matSuffix mat-icon-button aria-label="Clear" (click)="username.value = ''">
           <mat-icon>close</mat-icon>
         </button>
         <mat-error *ngIf="registerForm.isUsernameHasError('required')">
@@ -25,68 +13,44 @@
         </mat-error>
       </mat-form-field>
       <!-- L'email -->
-      <mat-form-field>
-        <input
-          #email
-          matInput
-          type="email"
-          placeholder="Email"
-          formControlName="email"
-        />
-        <button
-          *ngIf="email"
-          matSuffix
-          mat-icon-button
-          aria-label="Clear"
-          (click)="email.value = ''"
-        >
+      <mat-form-field class="fullwidth">
+        <input #email matInput type="email" placeholder="Email" formControlName="email" />
+        <button *ngIf="email" matSuffix mat-icon-button aria-label="Clear" (click)="email.value = ''">
           <mat-icon>close</mat-icon>
         </button>
         <mat-error *ngIf="registerForm.isEmailHasError('required')">
           L'email est <strong>requis</strong>
         </mat-error>
-        <mat-error
-          *ngIf="
+        <mat-error *ngIf="
             registerForm.isEmailHasError('email') &&
             !registerForm.isEmailHasError('required')
-          "
-        >
+          ">
           Entrez une adresse email <strong>valide</strong>
         </mat-error>
       </mat-form-field>
       <!-- Le mot de passe -->
-      <mat-form-field>
-        <input
-          #password
-          matInput
-          placeholder="Mot de passe"
-          formControlName="password"
-          type="password"
-        />
+      <mat-form-field class="fullwidth">
+        <input #password matInput placeholder="Mot de passe" formControlName="password" type="password" />
         <mat-error *ngIf="registerForm.isPasswordHasError('required')">
           Le mot de passe est <strong>requis</strong>
         </mat-error>
       </mat-form-field>
       <!-- La confirmation du mot de passe -->
-      <mat-form-field>
-        <input
-          matInput
-          placeholder="Confimer le mot de passe"
-          formControlName="passwordConfirm"
-          type="password"
-        />
+      <mat-form-field class="fullwidth">
+        <input matInput placeholder="Confimer le mot de passe" formControlName="passwordConfirm" type="password" />
         <mat-error *ngIf="registerForm.isPasswordConfirmHasError('required')">
           La confirmation est <strong>requise</strong>
         </mat-error>
       </mat-form-field>
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="registerForm.invalid"
-      >
-        S'inscrire
-      </button>
+      <div class="center space-little">
+        <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+          S'inscrire
+        </button>
+      </div>
     </form>
-  </mat-card-content></mat-card
->
+    <div class="center space-little">
+      <button mat-raised-button color="secondary" (click)="connectionRedirect()">
+        Se connecter
+      </button>
+    </div>
+  </mat-card-content></mat-card>

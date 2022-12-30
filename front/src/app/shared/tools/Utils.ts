@@ -44,7 +44,6 @@ export abstract class Utils {
     return date;
   }
 
-  // Fonction qui permet de mettre à jour un paramètre dans l'url
   public static updateParam(key: string, value: string): void {
     key = encodeURIComponent(key);
     value = encodeURIComponent(value);
@@ -58,7 +57,11 @@ export abstract class Utils {
         params.set(paramParts[0], paramParts[1]);
       }
     }
-    params.set(key, value);
+    if (value === undefined) {
+      params.delete(key);
+    } else {
+      params.set(key, value);
+    }
     let newUrl = urlParts[0] + '?';
     params.forEach((value, key): void => {
       if (value === '') return;
@@ -69,10 +72,16 @@ export abstract class Utils {
   }
 
   // Fonction qui retourne un paramètre de l'url
-  public static getParam(params: Map<string, string>, key: string): string {
+  public static getParam(params: Map<string, string>, key: string): string | undefined {
     let value = params.get(key);
     if (value === undefined) return '';
     return decodeURIComponent(value);
+  }
+
+  static getParamNumber(params: Map<string, string>, key: string) {
+    let value = params.get(key);
+    if (value === undefined) return undefined;
+    return parseInt(decodeURIComponent(value));
   }
 
   // Fonction qui converti un timestamp en temps restant
@@ -186,5 +195,38 @@ export abstract class Utils {
         Authorization: 'Bearer ' + token,
       }),
     };
+  }
+
+  public static searchFilterOrderPagination(
+    filter?: any,
+    order?: any,
+    pagination?: any
+  ): string {
+    let query: Map<string, string> = new Map();
+    if (filter) {
+      query.set('filter', encodeURIComponent(JSON.stringify(filter)));
+    }
+    if (order) {
+      query.set('order', encodeURIComponent(JSON.stringify(order)));
+    }
+    if (pagination) {
+      for (const key in pagination) {
+        if (pagination.hasOwnProperty(key)) {
+          const value = pagination[key];
+          query.set(key, value);
+        }
+      }
+    }
+
+    return Utils.mapToQueryParams(query);
+  }
+
+  public static mapToQueryParams(map: Map<string, string>): string {
+    let queryString = '?';
+    map.forEach((value, key) => {
+      queryString += key + '=' + value + '&';
+    });
+    queryString = queryString.substring(0, queryString.length - 1);
+    return queryString;
   }
 }

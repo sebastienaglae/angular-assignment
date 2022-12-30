@@ -8,15 +8,15 @@ import { Assignment } from 'src/app/shared/models/assignment.model';
   styleUrls: ['./assignment-gen.component.css'],
 })
 export class AssignmentGenComponent implements OnInit {
-  constructor(private assignementService: AssignmentService) {}
+  constructor(private assignementService: AssignmentService) { }
   assignmentsAdded: string[] = [];
   agtCount: number = 10;
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onGen() {
     for (let i = 0; i < this.agtCount; i++) {
-      this.assignementService.add(Assignment.random()).subscribe((data) => {
+      this.assignementService.create(Assignment.random()).subscribe((data) => {
         this.assignmentsAdded.push((data as any).message);
       });
     }

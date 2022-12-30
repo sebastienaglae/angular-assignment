@@ -7,6 +7,7 @@ import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { Subject } from 'src/app/shared/models/subject.model';
+import { Submission } from 'src/app/shared/models/submission.model';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
@@ -29,7 +30,7 @@ export class AssignmentSubmitComponent {
     private loggingService: LoggingService,
     private subjectsService: SubjectsService,
     private _snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.getAssignment();
@@ -54,6 +55,8 @@ export class AssignmentSubmitComponent {
     }
 
     this.assignmentTarget = assData;
+    //todo : check if assignment is not already submitted
+    if (assData.subjectId == null) return;
     this.subjectsService.get(assData.subjectId).subscribe((subData) => {
       this.handleSubject(subData);
     });
@@ -80,19 +83,19 @@ export class AssignmentSubmitComponent {
     const file = this.submitForm.file;
     if (file == null) return;
     Utils.fileToArrayBuffer(file, (buffer) =>
-      this.handleSubmission(file.type, buffer)
+      this.handleSubmission(file, buffer)
     );
   }
 
   // Fonction qui permet de créer le rendu
-  handleSubmission(type: string, buffer: Buffer) {
+  handleSubmission(file: File, buffer: Buffer) {
     this.loggingService.event('AssignmentSubmitComponent', 'handleSubmission');
     if (this.assignmentTarget == null) return;
 
-    Assignment.createSubmission(this.assignmentTarget, type, buffer);
+    const sub = Submission.createSubmission(file, buffer);
 
     this.assignementService
-      .updateAssignment(this.assignmentTarget)
+      .updateSubmission(this.assignmentTarget.id, sub, file)
       .subscribe((data) => {
         this.handleUpdate(data);
       });
@@ -108,10 +111,11 @@ export class AssignmentSubmitComponent {
       Utils.snackBarError(this._snackBar, data);
       return;
     }
-    this.loggingService.event(
-      'AssignmentSubmitComponent',
-      'handleUpdateSuccess'
-    );
+    if (!data.success) {
+      Utils.snackBarError(this._snackBar, 'Erreur inconnue');
+      return;
+    }
+
     Utils.snackBarSuccess(this._snackBar, 'Votre devoir a bien été envoyé !');
   }
 }

@@ -1,13 +1,13 @@
-import { ValidatorFn, Validators } from '@angular/forms';
 import { Utils } from '../tools/Utils';
 import { Rating } from './rating.model';
+import { Subject } from './subject.model';
 import { Submission } from './submission.model';
+import { Teacher } from './teacher.model';
+import { User } from './user.model';
 
 export class Assignment {
   public id?: string;
 
-  public ownerId?: string;
-  public subjectId?: string;
   public title?: string;
   public description?: string;
   public createdAt?: Date;
@@ -15,52 +15,18 @@ export class Assignment {
   public dueDate?: Date;
   public submission?: Submission;
   public rating?: Rating;
-  public teacherId?: string;
-
-  public static getOwnerIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
-
-  public static getSubjectIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
-
-  public static getTitleValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
-
-  public static getDescriptionValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
-
-  public static getDueDateValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
-
-  public static geTeacherIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
-  }
+  public teacher?: Teacher;
+  public subject?: Subject;
+  public owner?: User;
 
   public isValid() {
     return (
-      this.ownerId !== undefined &&
-      this.subjectId !== undefined &&
+      this.owner !== undefined &&
+      this.subject !== undefined &&
       this.title !== undefined &&
       this.description !== undefined &&
       this.dueDate !== undefined &&
-      this.teacherId !== undefined
+      this.teacher !== undefined
     );
   }
   // Fonction qui retourne true si la date de rendu est dépassée
@@ -80,12 +46,5 @@ export class Assignment {
     let rendu = new Date(ass.dueDate);
     let diff = rendu.getTime() - today.getTime();
     return Utils.convertTimestampToTimeRemaining(diff);
-  }
-
-  public static random(): Assignment {
-    // TODO: implement
-    let assignment = new Assignment();
-
-    return assignment;
   }
 }

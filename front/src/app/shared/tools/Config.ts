@@ -14,6 +14,10 @@ export class Config {
     route: 'subjects',
   };
 
+  static teacher = {
+    route: 'teachers',
+  };
+
   static assignment = {
     route: 'assignments',
   };

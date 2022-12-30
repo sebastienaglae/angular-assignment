@@ -6,6 +6,7 @@ import { SuccessRequest } from '../shared/api/success.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
 import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -18,10 +19,11 @@ export class RegisterComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private loggingService: LoggingService,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private route: Router
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   register() {
     this.loggingService.event('RegisterComponent', 'register');
@@ -59,6 +61,11 @@ export class RegisterComponent implements OnInit {
       Utils.snackBarSuccess(this.snackBar, 'Inscription réussie');
     else Utils.snackBarError(this.snackBar, 'Inscription échouée');
   }
+
+  connectionRedirect() {
+    this.route.navigate(['/login']);
+  }
+
 }
 
 class RegisterAccountFromGroup extends FormGroup {

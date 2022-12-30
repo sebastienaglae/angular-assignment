@@ -10,40 +10,85 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-h1 {
+
+/* Card */
+mat-card.card-basic, mat-accordion.card-basic {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin-left : auto;
+  margin-right : auto;
+  padding: 20px;
+}
+
+mat-card.card-little {
+  width: 300px;
+  margin-top : 20px;
+}
+
+mat-card.card-medium {
+  width: 50%;
+  margin-top : 20px;
+}
+
+mat-card.card-big, mat-accordion.card-big{
+  width: 70%;
+  margin-top : 20px;
+}
+
+mat-card.card-large {
+  width: 80%;
+  margin-top : 20px;
+}
+
+mat-card.card-giant {
+  width: 90%;
+  margin-top : 20px;
+  margin-left : auto;
+  margin-right : auto;
+}
+
+mat-card-title.title-big{
+  font-size: 30px;
+  padding: 20px;
+}
+
+.table-center > tr > td:nth-child(2) {
   text-align: center;
 }
-mat-card {
+
+.sameline {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 10px;
-  margin: 20px;
+  align-content: center;
 }
 
-@media (min-width: 600px) {
-  mat-card {
-    width: 500px;
-  }
+.space{
+  padding: 5px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  margin: 5px;
+.marginauto {
+  margin: auto !important;
 }
 
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+.fullwidth {
+  width: 100% !important;
+}
+
+.attheend {
   margin-left: auto;
-  margin-right: auto;
 }
 
-.fullWidth {
-  width: 100%;
+.center{
+  text-align: center;
+}
+
+.space-little{
+  padding: 10px;
 }
 
 /* SnackBar */
@@ -62,6 +107,7 @@ form {
   background-color: transparent;
   border: none;
   outline: none;
+  width: 100%;
 }
 
 .mat-mdc-form-field-type-ngx-mat-file-input {
@@ -75,4 +121,56 @@ mat-progress-bar.progress-bar {
   left: 0;
   width: 100%;
   z-index: 1000;
+}
+
+/* Calendar fixer */
+ngx-mat-calendar-header >
+.mat-calendar-header >
+.mat-calendar-controls >
+.mat-calendar-period-button {
+  background-color: #7b1fa2;
+  color: white
+}
+
+ngx-mat-calendar-header >
+.mat-calendar-header >
+.mat-calendar-controls >
+.mat-calendar-previous-button {
+  background-color: #7b1fa2;
+}
+
+ngx-mat-calendar-header >
+.mat-calendar-header >
+.mat-calendar-controls >
+.mat-calendar-next-button {
+  background-color: #7b1fa2;
+}
+
+.ngx-mat-timepicker-table >
+.ngx-mat-timepicker-tbody >
+.ng-star-inserted >
+td >
+.mat-focus-indicator {
+  background-color: #7b1fa2;
+  color: white
+}
+
+ngx-mat-datetime-content >
+.actions >
+button {
+  background-color: #7b1fa2;
+  color: white
+}
+
+/* Fix file input */
+ngx-mat-file-input>
+.mat-form-field-suffix>
+button {
+  background-color: #7b1fa2;
+  color: white
+}
+
+ngx-mat-file-input >
+input:nth-child(1) {
+  color: white;
 }

@@ -7,14 +7,9 @@
     <!-- Titre/Bouton du site -->
     <button mat-button routerLink="" (click)="sideMenuClose()">
       <span>{{ title }}</span>
-    </button>
+    </button><span class="example-spacer"></span>
     <!-- Bouton de connexion  -->
-    <button
-      *ngIf="!isUserLogged"
-      mat-button
-      routerLink="/connection"
-      (click)="sideMenuClose()"
-    >
+    <button *ngIf="!isUserLogged" mat-button routerLink="/connection" (click)="sideMenuClose()">
       Connexion
     </button>
     <!-- Bouton d'inscription -->
@@ -22,12 +17,7 @@
       S'inscrire
     </button>
     <!-- Bouton de deconnexion -->
-    <button
-      *ngIf="isUserLogged"
-      mat-button
-      routerLink=""
-      (click)="sideMenuClose(); logout()"
-    >
+    <button color="warn" *ngIf="isUserLogged" mat-button routerLink="" (click)="sideMenuClose(); logout()">
       Se deconnecter
     </button>
   </mat-toolbar>

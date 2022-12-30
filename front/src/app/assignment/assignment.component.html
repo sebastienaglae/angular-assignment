@@ -2,99 +2,107 @@
 <!-- Description : Ce composant permet de lister les devoirs a rendre -->
 
 <!-- Chargement-->
-<mat-progress-bar
-  *ngIf="isLoading"
-  mode="indeterminate"
-  class="progress-bar"
-></mat-progress-bar>
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
 
-<mat-card>
-  <h1>Liste des devoirs a rendre</h1>
+<mat-card class="card-basic card-big">
+  <mat-card-title class="title-big">
+    Devoirs
+  </mat-card-title>
+
   <div>
     <!-- Filtre de recherche -->
-    <mat-form-field>
-      <mat-label>Rechercher</mat-label>
-      <input
-        matInput
-        #search
-        placeholder="Ex. Devoir 1"
-        [(ngModel)]="filterOptions.searchText"
-        (keyup)="applyFilter()"
-      />
-    </mat-form-field>
-    <!-- Filtre de rendu -->
-    <mat-form-field>
-      <mat-label>Rendu</mat-label>
-      <mat-select
-        [(ngModel)]="filterOptions.submitFilter"
-        name="filter"
-        required
-        (selectionChange)="applyFilter()"
-      >
-        <mat-option value="all">Tous</mat-option>
-        <mat-option value="submit">Rendu</mat-option>
-        <mat-option value="notSubmited">Non rendu</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="sameline">
+      <mat-chip-listbox aria-label="submit selection" [(ngModel)]="filterOptions.submitFilter" name="submit"
+        (change)="loadAssignments()">
+        <mat-chip-option value="all">Tous</mat-chip-option>
+        <mat-chip-option value="submit" color="warn">Rendu</mat-chip-option>
+        <mat-chip-option value="notSubmited" color="accent">Non Rendu</mat-chip-option>
+      </mat-chip-listbox>
+      <span class="space"> </span>
+      <mat-chip-listbox aria-label="rating selection" [(ngModel)]="filterOptions.ratingFilter" name="rating"
+        [minlength]="1" (change)="loadAssignments()">
+        <mat-chip-option value="all">Tous</mat-chip-option>
+        <mat-chip-option value="rated" color="warn">Noté</mat-chip-option>
+        <mat-chip-option value="notRated" color="accent">Non noté</mat-chip-option>
+      </mat-chip-listbox>
+    </div>
+    <div class="sameline">
+      <h1>Recherche</h1>
+      <span class="space"> </span>
+      <mat-form-field class="fullwidth">
+        <mat-label>Rechercher</mat-label>
+        <input matInput #search placeholder="Test Assignment N" [(ngModel)]="filterOptions.searchText"
+          (keyup)="loadAssignments()" />
+      </mat-form-field>
+    </div>
   </div>
 </mat-card>
 <!-- Le tableau de devoirs -->
-<mat-table
-  [dataSource]="datasource"
-  matSort
-  #agtTableSort="matSort"
-  class="mat-elevation-z8"
->
-  <!-- Le titre -->
-  <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef mat-sort-header="title"
-      >Titre</mat-header-cell
-    >
-    <mat-cell *matCellDef="let assignment">
-      {{ assignment.title }}
-    </mat-cell>
-  </ng-container>
-  <!-- La date de rendu -->
-  <ng-container matColumnDef="dueDate">
-    <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate"
-      >Pour le</mat-header-cell
-    >
-    <mat-cell *matCellDef="let assignment">
-      {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
-    </mat-cell>
-  </ng-container>
-  <!-- Le rendu avec une checkbox read only -->
-  <ng-container matColumnDef="submission">
-    <mat-header-cell *matHeaderCellDef mat-sort-header="submission"
-      >Rendu</mat-header-cell
-    >
-    <mat-cell *matCellDef="let assignment">
-      <mat-checkbox [checked]="assignment.submission" disabled></mat-checkbox>
-    </mat-cell>
-  </ng-container>
-  <!-- Les actions -->
-  <ng-container matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-    <mat-cell *matCellDef="let assignment">
-      <nav>
-        <a
-          mat-raised-button
-          color="primary"
-          [routerLink]="['/assignment', assignment.id]"
-        >
-          Détails
-        </a>
-      </nav>
-    </mat-cell>
-  </ng-container>
-  <mat-header-row
-    *matHeaderRowDef="displayedColumns; sticky: true"
-  ></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-</mat-table>
-<mat-paginator
-  class="mat-paginator-sticky"
-  #paginator
-  [pageSizeOptions]="[5, 10, 25, 100, 250]"
-  showFirstLastButtons
-></mat-paginator>
+<mat-card class="card-giant">
+  <mat-table [dataSource]="datasource" matSort #agtTableSort="matSort" class="mat-elevation-z8">
+    <!-- Le titre -->
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="title">Titre</mat-header-cell>
+      <mat-cell *matCellDef="let assignment">
+        {{ assignment.title }}
+      </mat-cell>
+    </ng-container>
+    <!-- La date de rendu -->
+    <ng-container matColumnDef="dueDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate">Pour le</mat-header-cell>
+      <mat-cell *matCellDef="let assignment">
+        {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
+      </mat-cell>
+    </ng-container>
+    <!-- Le rendu -->
+    <ng-container matColumnDef="hasSubmission">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="hasSubmission">Rendu</mat-header-cell>
+      <mat-cell *matCellDef="let assignment">
+        <mat-checkbox [checked]="assignment.hasSubmission" disabled></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <!-- La notation -->
+    <ng-container matColumnDef="hasRating">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="hasRating">Noter</mat-header-cell>
+      <mat-cell *matCellDef="let assignment">
+        <mat-checkbox [checked]="assignment.hasRating" disabled></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <!-- Les actions -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let assignment">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="['/assignment', assignment.id]">
+            <mat-icon>more_horiz</mat-icon>
+            <span>Plus de détails</span>
+          </button>
+          <button mat-menu-item [routerLink]="['/assignment', assignment.id, 'edit']">
+            <mat-icon>edit</mat-icon>
+            <span>Modifier</span>
+          </button>
+          <button mat-menu-item [routerLink]="['/assignment', assignment.id, 'submit']">
+            <mat-icon>cloud_upload</mat-icon>
+            <span>Rendre</span>
+          </button>
+          <button mat-menu-item [routerLink]="['/assignment', assignment.id,'rate']">
+            <mat-icon>note_add</mat-icon>
+            <span>Noter</span>
+          </button>
+          <button mat-menu-item (click)="onDeleteAssignment(assignment.id)">
+            <mat-icon>delete</mat-icon>
+            <span>Supprimer</span>
+          </button>
+        </mat-menu>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+  <mat-paginator class="mat-paginator-sticky" #paginator [pageSizeOptions]="[5, 10, 25, 100, 250, 500]"
+    showFirstLastButtons>
+  </mat-paginator>
+</mat-card>

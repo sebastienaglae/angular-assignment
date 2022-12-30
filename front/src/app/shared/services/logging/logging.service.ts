@@ -4,9 +4,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class LoggingService {
-  constructor() {}
+  constructor() { }
 
-  log(name: string, action: string): void {
+  log(action: string): void {
+    let name = new Error().stack?.split('at ')[3].split(' ')[0] ?? 'unknown';
     console.log(`[LOG] '${name}': ${action}`);
   }
 

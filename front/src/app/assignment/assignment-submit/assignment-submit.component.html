@@ -2,58 +2,44 @@
 <!-- Description : Ce composant permet de soumettre un devoir -->
 
 <!-- Chargement-->
-<mat-progress-bar
-  *ngIf="isLoading"
-  mode="indeterminate"
-  class="progress-bar"
-></mat-progress-bar>
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
 
-<div *ngIf="!isLoading" class="center">
-  <mat-card class="center">
+<div *ngIf="!isLoading">
+  <mat-card class="card-basic card-big">
     <mat-card-title>Envoyer un devoir</mat-card-title>
     <mat-card-subtitle> {{ assignmentTarget?.title }} </mat-card-subtitle>
-    <!-- Description -->
-    <p>
-      <b>Description :</b>
-      {{ assignmentTarget?.description }}
-    </p>
-    <!-- Date limite -->
-    <p>
-      <b>Date limite :</b>
-      {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }}
-    </p>
-    <!-- Matiere -->
-    <p>
-      <b>Matière :</b>
-      {{ subjectTarget?.name }}
-    </p>
+    <br>
+    <p class="center"><b>Description</b></p>
+    <p class="center">{{ assignmentTarget?.description }}</p>
+    <mat-list class="fullwidth">
+      <mat-divider></mat-divider>
+      <mat-list-item>
+        <p class="sameline"><b>Date limite</b> {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }} </p>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item>
+        <p class="sameline"><b>Matière</b> {{ subjectTarget?.name }} </p>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+    </mat-list>
     <mat-card-content>
+      <p class="center"> <b>Choisissez un fichier a televerser !</b></p>
       <form [formGroup]="submitForm" (submit)="submit()">
         <!-- Le fichier -->
-        <mat-form-field>
-          <ngx-mat-file-input
-            class="center"
-            #file
-            matInput
-            placeholder="Fichier"
-            formControlName="fileCtrl"
-            [multiple]="false"
-            [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"
-          ></ngx-mat-file-input>
+        <mat-form-field class="fullwidth">
+          <ngx-mat-file-input #file matInput placeholder="Fichier" formControlName="fileCtrl" [multiple]="false"
+            [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"></ngx-mat-file-input>
         </mat-form-field>
         <mat-hint>
           Formats acceptés : .pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .gif,
           .zip
         </mat-hint>
-        <button
-          mat-raised-button
-          mat
-          color="primary"
-          type="submit"
-          [disabled]="!submitForm.valid"
-        >
-          Envoyer
-        </button>
+        <br><br>
+        <div class="center">
+          <button mat-raised-button mat color="primary" type="submit" [disabled]="!submitForm.valid">
+            Envoyer
+          </button>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>

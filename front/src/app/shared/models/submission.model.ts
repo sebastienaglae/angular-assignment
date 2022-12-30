@@ -5,6 +5,18 @@ export class Submission {
   type!: string;
   content: Buffer | string | null = null;
   submittedAt!: Date;
+  originalName!: string;
+
+  public static createSubmission(
+    file: File,
+    buffer: Buffer
+  ): Submission {
+    let submission = new Submission();
+    submission.type = file.type;
+    submission.originalName = file.name;
+    submission.content = buffer;
+    return submission;
+  }
 
   public static downloadContentToUser(assignment: Assignment): void {
     const submission = assignment.submission;
@@ -17,8 +29,7 @@ export class Submission {
       // Trick to force download, see https://stackoverflow.com/a/32226068 but it's not clean :(
       const link = document.createElement('a');
       link.href = url;
-      //todo : add extension
-      link.download = `${assignment.id}.${submission.type.split('/')[1]}`;
+      link.download = `${assignment.submission?.originalName}`;
       link.click();
     }
   }

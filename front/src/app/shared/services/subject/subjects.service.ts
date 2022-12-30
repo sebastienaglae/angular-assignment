@@ -15,11 +15,11 @@ export class SubjectsService {
   constructor(
     private loggingService: LoggingService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   // Fonction qui permet de récupérer tous les matieres
   getAll(): Observable<Subject[] | ErrorRequest> {
-    this.loggingService.log('SubjectsService', 'GET ALL');
+    this.loggingService.log('GET ALL');
     return this.http
       .get<Subject[]>(`${this.apiUrl}/`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('subjectAll')));
@@ -27,7 +27,7 @@ export class SubjectsService {
 
   // Fonction qui permet de récupérer une matiere en fonction de son id
   get(id: string): Observable<Subject | ErrorRequest> {
-    this.loggingService.log('Subject', `GET ${id}`);
+    this.loggingService.log(`GET ${id}`);
     return this.http
       .get<Subject>(`${this.apiUrl}/${id}`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('subjectGet')));

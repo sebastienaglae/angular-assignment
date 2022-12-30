@@ -1,10 +1,10 @@
-import { Assignment } from '../../models/assignment.model';
+import { AssignmentSearch } from '../../models/assignment.search.model';
 
 export class SearchAssignment {
   page!: number;
   totalPages!: number;
   totalItems!: number;
-  items!: Assignment[];
+  items!: AssignmentSearch[];
   hasNext!: boolean;
   hasPrevious!: boolean;
 }

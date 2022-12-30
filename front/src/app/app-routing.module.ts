@@ -11,6 +11,7 @@ import { AuthGuard } from './shared/services/auth/auth.guard';
 import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-gen.component';
 import { AssignmentSubmitComponent } from './assignment/assignment-submit/assignment-submit.component';
 import { AssignmentRateComponent } from './assignment/assignment-rate/assignment-rate.component';
+import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.component';
 
 const routes: Routes = [
   { path: '', component: AssignmentComponent },
@@ -35,10 +36,13 @@ const routes: Routes = [
   },
   { path: 'connection', component: ConnexionComponent },
   { path: 'register', component: RegisterComponent },
+  {
+    path: 'teacher/:id', component: TeacherDetailComponent,
+  }
 ];
 
 @NgModule({
   imports: [BrowserModule, RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

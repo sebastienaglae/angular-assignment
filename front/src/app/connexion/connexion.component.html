@@ -1,23 +1,11 @@
-<mat-card>
-  <mat-card-title>Se connecter</mat-card-title>
+<mat-card class="card-basic card-little">
+  <mat-card-title class="title-big">Se connecter</mat-card-title>
   <mat-card-content>
     <form [formGroup]="loginForm" (ngSubmit)="login()">
       <!-- Le nom d'utilisateur -->
-      <mat-form-field>
-        <input
-          #username
-          matInput
-          placeholder="Nom d'utilisateur"
-          formControlName="username"
-          required
-        />
-        <button
-          *ngIf="username"
-          matSuffix
-          mat-icon-button
-          aria-label="Clear"
-          (click)="username.value = ''"
-        >
+      <mat-form-field class="fullwidth">
+        <input #username matInput placeholder="Nom d'utilisateur" formControlName="username" required />
+        <button *ngIf="username" matSuffix mat-icon-button aria-label="Clear" (click)="username.value = ''">
           <mat-icon>close</mat-icon>
         </button>
         <mat-error *ngIf="loginForm.isUsernameHasError('required')">
@@ -25,30 +13,24 @@
         </mat-error>
       </mat-form-field>
       <!-- Le mot de passe -->
-      <mat-form-field>
-        <input
-          #password
-          matInput
-          placeholder="Mot de passe"
-          formControlName="password"
-          type="password"
-          required
-        />
+      <mat-form-field class="fullwidth">
+        <input #password matInput placeholder="Mot de passe" formControlName="password" type="password" required />
         <mat-error *ngIf="loginForm.isPasswordHasError('required')">
           Le mot de passe est <strong>requis</strong>
         </mat-error>
       </mat-form-field>
       <!-- Se souvenir de moi -->
       <mat-checkbox formControlName="remember">Se souvenir de moi</mat-checkbox>
-
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="!loginForm.valid"
-      >
-        Se connecter
-      </button>
+      <div class="center space-little">
+        <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">
+          Se connecter
+        </button>
+      </div>
     </form>
+    <div class="center space-little">
+      <button mat-raised-button color="secondary" (click)="registerRedirect()">
+        S'inscrire
+      </button>
+    </div>
   </mat-card-content>
 </mat-card>

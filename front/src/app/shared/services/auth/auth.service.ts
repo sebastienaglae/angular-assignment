@@ -25,7 +25,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private loggingService: LoggingService
-  ) {}
+  ) { }
 
   // Fonction qui permet de s'inscrire
   register(
@@ -33,7 +33,7 @@ export class AuthService {
     password: string,
     email: string
   ): Observable<SuccessRequest | ErrorRequest> {
-    this.loggingService.log('AuthService', 'REGISTER');
+    this.loggingService.log('REGISTER');
     return this.http
       .post<SuccessRequest>(`${this.apiUrl}/${Config.auth.register}`, {
         username,
@@ -49,7 +49,7 @@ export class AuthService {
     password: string,
     rememberMe: boolean
   ): Observable<TokenAuth | ErrorRequest> {
-    this.loggingService.log('AuthService', 'LOGIN');
+    this.loggingService.log('LOGIN');
     const request = this.http
       .post<TokenAuth>(`${this.apiUrl}/${Config.auth.login}`, {
         username,
@@ -68,18 +68,18 @@ export class AuthService {
 
   // Fonction qui permet de modifier l'état de la connexion
   checkLogin(): boolean {
-    this.loggingService.log('AuthService', 'CHECK LOGIN');
+    this.loggingService.log('CHECK LOGIN');
     const token =
       localStorage.getItem(Config.auth.token) ||
       sessionStorage.getItem(Config.auth.token);
     if (!token) {
       this.setLoggedState(false);
-      this.loggingService.log('AuthService', 'CHECK LOGIN NO TOKEN FOUND');
+      this.loggingService.log('CHECK LOGIN NO TOKEN FOUND');
       return false;
     }
     this.jwtToken = token;
     this.setLoggedState(true);
-    this.loggingService.log('AuthService', 'CHECK LOGIN TOKEN FOUND');
+    this.loggingService.log('CHECK LOGIN TOKEN FOUND');
     return true;
   }
 
@@ -87,10 +87,10 @@ export class AuthService {
   saveToken(token: string, rememberMe: boolean): void {
     if (rememberMe) {
       localStorage.setItem(Config.auth.token, token);
-      this.loggingService.log('AuthService', 'SAVE TOKEN IN LOCAL STORAGE');
+      this.loggingService.log('SAVE TOKEN IN LOCAL STORAGE');
     } else {
       sessionStorage.setItem(Config.auth.token, token);
-      this.loggingService.log('AuthService', 'SAVE TOKEN IN SESSION STORAGE');
+      this.loggingService.log('SAVE TOKEN IN SESSION STORAGE');
     }
   }
 
@@ -107,7 +107,7 @@ export class AuthService {
 
   // Fonction qui permet de se déconnecter
   logout(): void {
-    this.loggingService.log('AuthService', 'LOGOUT');
+    this.loggingService.log('LOGOUT');
     this.jwtToken = null;
     localStorage.removeItem(Config.auth.token);
     sessionStorage.removeItem(Config.auth.token);

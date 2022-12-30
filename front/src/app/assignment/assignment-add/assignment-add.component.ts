@@ -50,7 +50,7 @@ export class AssignmentAddComponent implements OnInit {
     private snackBar: MatSnackBar,
     private loggingService: LoggingService,
     private _formBuilder: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initSubject();
@@ -89,11 +89,11 @@ export class AssignmentAddComponent implements OnInit {
     this.loggingService.event('AssignmentAddComponent', 'fillForm');
     let params = Utils.getParams();
     if (params) {
-      this.formGroups.titleValue = Utils.getParam(params, 'title');
+      this.formGroups.titleValue = Utils.getParam(params, 'title') ?? '';
       this.formGroups.dueDateValue = new Date(
-        Utils.getParam(params, 'dueDate')
+        Utils.getParam(params, 'dueDate') ?? ''
       );
-      this.formGroups.descriptionValue = Utils.getParam(params, 'description');
+      this.formGroups.descriptionValue = Utils.getParam(params, 'description') ?? '';
     }
   }
 
@@ -142,7 +142,7 @@ export class AssignmentAddComponent implements OnInit {
 }
 
 class StepperAssignmentFromGroup {
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: FormBuilder) { }
   titleFormGroup = this._formBuilder.group({
     titleCtrl: ['', Validators.required],
   });

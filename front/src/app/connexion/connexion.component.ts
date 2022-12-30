@@ -6,6 +6,7 @@ import { TokenAuth } from '../shared/api/auth/token.auth.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
 import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-connexion',
@@ -18,10 +19,11 @@ export class ConnexionComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private loggingService: LoggingService,
-    private snackBar: MatSnackBar
-  ) {}
+    private snackBar: MatSnackBar,
+    private route: Router
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // Fonction qui gère la connexion
   login() {
@@ -50,6 +52,13 @@ export class ConnexionComponent implements OnInit {
       return;
     }
     Utils.snackBarSuccess(this.snackBar, 'Connexion réussie');
+
+    this.route.navigate(['/home']);
+  }
+
+  // Fonction qui gère le lien vers la page d'inscription
+  registerRedirect() {
+    this.route.navigate(['/register']);
   }
 }
 
