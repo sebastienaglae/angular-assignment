@@ -4,6 +4,7 @@ import { ErrorRequest } from '../api/error.model';
 import { Buffer } from 'buffer';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoadingService } from '../services/loading/loading.service';
+import { LoggingService } from '../services/logging/logging.service';
 
 export abstract class Utils {
   // Fonction qui permet de recupperer les parametres de l'url dans une map
@@ -168,7 +169,7 @@ export abstract class Utils {
     reader.readAsArrayBuffer(file);
   }
 
-  private static snackBarError(
+  public static snackBarError(
     snackBar: MatSnackBar,
     message: string | ErrorRequest
   ) {
@@ -184,16 +185,6 @@ export abstract class Utils {
       duration: 5000,
       panelClass: ['success-snackbar'],
     });
-  }
-
-  public static frontError(_snackBar: MatSnackBar, errorRequest: ErrorRequest | string, loadingService: LoadingService) {
-    loadingService.error();
-    this.snackBarError(_snackBar, errorRequest);
-  }
-
-  public static frontErrorSoft(_snackBar: MatSnackBar, errorRequest: ErrorRequest | string, loadingService: LoadingService) {
-    loadingService.errorSoft();
-    this.snackBarError(_snackBar, errorRequest);
   }
 
   public static httpOptionsToken(token: string | null): {
@@ -240,4 +231,10 @@ export abstract class Utils {
     queryString = queryString.substring(0, queryString.length - 1);
     return queryString;
   }
+
+  public test(this: LoggingService) {
+    console.log('test ' + this);
+  }
+
+
 }

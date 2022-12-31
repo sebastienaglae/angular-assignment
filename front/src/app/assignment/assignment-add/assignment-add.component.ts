@@ -1,8 +1,6 @@
 import {
   Component,
-  EventEmitter,
   OnInit,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { Assignment } from 'src/app/shared/models/assignment.model';
@@ -17,21 +15,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 import { Teacher } from 'src/app/shared/models/teacher.model';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
+import { BaseComponent } from 'src/app/base/base.component';
+import { TeacherService } from 'src/app/shared/services/teacher/teacher.service';
 
 @Component({
   selector: 'app-assignment-add',
   templateUrl: './assignment-add.component.html',
   styleUrls: ['./assignment-add.component.css'],
 })
-export class AssignmentAddComponent implements OnInit {
+export class AssignmentAddComponent extends BaseComponent implements OnInit {
   // Pamametres de redirection
   timeBeforeRedirect: number = 5;
-
-  // Chemins des images du professeur et de la matière
-  teacherImgPath: string =
-    'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png';
-  subjectImgPath: string =
-    'https://upload.wikimedia.org/wikipedia/commons/b/b6/Image_created_with_a_mobile_phone.png';
 
   // Form groups et form controls pour le stepper
   formGroups = new StepperAssignmentFromGroup(this._formBuilder);
@@ -42,43 +36,43 @@ export class AssignmentAddComponent implements OnInit {
   subjects: Subject[] = [];
   teachers: Teacher[] = [];
 
-  loading: boolean = true;
-
   @ViewChild('picker') picker: any;
 
   constructor(
-    private assignmentService: AssignmentService,
-    private subjectService: SubjectsService,
-    private router: Router,
-    private snackBar: MatSnackBar,
-    private loggingService: LoggingService,
+    private _assignmentService: AssignmentService,
+    private _subjectService: SubjectsService,
+    private _teacherService: TeacherService,
+    private _router: Router,
+    _snackBar: MatSnackBar,
+    private _loggingService: LoggingService,
     private _formBuilder: FormBuilder,
 
-    private loadingService: LoadingService,
+    _loadingService: LoadingService,
   ) {
-    this.loading = this.loadingService.changeLoadingState(true);
+    super(_loadingService, _snackBar);
+    this.loadingState(true);
   }
 
   ngOnInit(): void {
-    this.initSubject();
+    this.initSubjectTeacher();
     this.fillForm();
   }
 
   // Rempli la liste des matières
-  initSubject() {
-    this.subjectService.getAll().subscribe((res) => {
+  initSubjectTeacher() {
+    this._loggingService.event();
+    this._subjectService.getAll().subscribe((res) => {
       this.handleSubject(res);
+    });
+    this._teacherService.getAll().subscribe((res) => {
+      this.handleTeacher(res);
     });
   }
 
   // Gère la réponse de l'api pour les matières
   handleSubject(res: Subject[] | ErrorRequest) {
     if (res instanceof ErrorRequest) {
-      Utils.frontError(
-        this.snackBar,
-        res,
-        this.loadingService
-      );
+      this.handleError(res);
       return;
     }
     this.subjects = res;
@@ -89,13 +83,29 @@ export class AssignmentAddComponent implements OnInit {
       );
     }
 
-
-    this.loading = this.loadingService.changeLoadingState(false);
+    this.loadingState(false);
   }
+
+  handleTeacher(res: Teacher[] | ErrorRequest) {
+    if (res instanceof ErrorRequest) {
+      this.handleError(res);
+      return;
+    }
+    this.teachers = res;
+    const teacherId = Utils.getParam(Utils.getParams(), 'teacher');
+    if (teacherId) {
+      this.formGroups.subjectValue = this.subjects.find(
+        (teacher) => teacher.id === teacherId
+      );
+    }
+
+    this.loadingState(false);
+  }
+
 
   // Rempli le formulaire avec les paramètres de l'url
   fillForm() {
-    this.loggingService.event('AssignmentAddComponent', 'fillForm');
+    this._loggingService.event();
     let params = Utils.getParams();
     if (params) {
       this.formGroups.titleValue = Utils.getParam(params, 'title') ?? '';
@@ -131,7 +141,7 @@ export class AssignmentAddComponent implements OnInit {
       i--;
       if (i < 0) {
         clearInterval(interval);
-        this.router.navigate(['/home']);
+        this._router.navigate(['/home']);
       }
     }, 1000);
   }
@@ -164,6 +174,7 @@ class StepperAssignmentFromGroup {
       this.teacherFormGroup.valid
     );
   }
+
   get titleValue() {
     return this.titleFormGroup.get('titleCtrl')?.value ?? '';
   }
@@ -207,3 +218,4 @@ class StepperAssignmentFromGroup {
     this.teacherFormGroup.get('teacherCtrl')?.setValue(value as any as never);
   }
 }
+

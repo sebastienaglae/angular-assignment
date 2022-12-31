@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { BaseComponent } from 'src/app/base/base.component';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { Teacher } from 'src/app/shared/models/teacher.model';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
@@ -12,9 +13,8 @@ import { Utils } from 'src/app/shared/tools/Utils';
   templateUrl: './teacher-detail.component.html',
   styleUrls: ['./teacher-detail.component.css']
 })
-export class TeacherDetailComponent {
+export class TeacherDetailComponent extends BaseComponent {
   teacherTarget?: Teacher;
-  loading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,9 +25,10 @@ export class TeacherDetailComponent {
     loadingService.getLoadingState().subscribe((state) => {
       this.loading = state.enabled;
     });
-    loadingService.changeLoadingState(true);
+    super(loadingService, snackBar);
+    this.loadingState(true)
   }
-  ngOnInit(): void {
+  onInit(): void {
     this.getTeacher();
   }
 
@@ -42,11 +43,11 @@ export class TeacherDetailComponent {
 
   handleTeacher(data: Teacher | ErrorRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this.snackBar, data, this.loadingService);
+      this.handleError(data)
       return;
     }
 
     this.teacherTarget = data;
-    this.loadingService.changeLoadingState(false);
+    this.loadingState(false);
   }
 }

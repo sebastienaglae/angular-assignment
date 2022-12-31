@@ -3,6 +3,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { BaseComponent } from 'src/app/base/base.component';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Assignment } from 'src/app/shared/models/assignment.model';
@@ -19,24 +20,24 @@ import { Utils } from 'src/app/shared/tools/Utils';
   templateUrl: './assignment-submit.component.html',
   styleUrls: ['./assignment-submit.component.css'],
 })
-export class AssignmentSubmitComponent {
+export class AssignmentSubmitComponent extends BaseComponent {
   submitForm = new SubmitFormGroup();
   assignmentTarget?: Assignment;
   subjectTarget?: Subject;
-  loading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private assignementService: AssignmentService,
     private loggingService: LoggingService,
     private subjectsService: SubjectsService,
-    private _snackBar: MatSnackBar,
-    private loadingService: LoadingService
+    snackBar: MatSnackBar,
+    loadingService: LoadingService
   ) {
-    this.loading = this.loadingService.changeLoadingState(true);
+    super(loadingService, snackBar);
+    this.loadingState(true);
   }
 
-  ngOnInit() {
+  onInit() {
     this.getAssignment();
   }
 
@@ -52,9 +53,8 @@ export class AssignmentSubmitComponent {
 
   // Fonction qui permet de récupérer le sujet de l'assignment
   handleAssignment(assData: Assignment | ErrorRequest) {
-    if (!assData) return;
     if (assData instanceof ErrorRequest) {
-      Utils.frontError(this._snackBar, assData, this.loadingService);
+      this.handleError(assData);
       return;
     }
 
@@ -68,17 +68,13 @@ export class AssignmentSubmitComponent {
 
   // Fonction qui permet de récupérer le sujet
   handleSubject(subData: Subject | ErrorRequest) {
-    if (!subData) {
-      Utils.frontError(this._snackBar, 'Erreur inconue', this.loadingService);
-      return;
-    }
     if (subData instanceof ErrorRequest) {
-      Utils.frontError(this._snackBar, subData, this.loadingService);
+      this.handleError(subData);
       return;
     }
 
     this.subjectTarget = subData;
-    this.loading = this.loadingService.changeLoadingState(false);
+    this.loadingState(false)
   }
 
   // Fonction qui permet de soumettre le rendu
@@ -95,7 +91,8 @@ export class AssignmentSubmitComponent {
   handleSubmission(file: File, buffer: Buffer) {
     this.loggingService.event('AssignmentSubmitComponent', 'handleSubmission');
     if (this.assignmentTarget == null) return;
-    this.loadingService.changeUploadState(true);
+    this.loadingState(true)
+
     const sub = Submission.createSubmission(file, buffer);
 
     this.assignementService
@@ -112,16 +109,16 @@ export class AssignmentSubmitComponent {
         'AssignmentSubmitComponent',
         'handleUpdateError'
       );
-      Utils.frontError(this._snackBar, data, this.loadingService);
+      this.handleErrorSoft(data);
       return;
     }
     if (!data.success) {
-      Utils.frontError(this._snackBar, 'Erreur inconnue', this.loadingService);
+      this.handleErrorSoft('Erreur inconnue');
       return;
     }
 
     Utils.snackBarSuccess(this._snackBar, 'Votre devoir a bien été envoyé !');
-    this.loadingService.changeUploadState(false);
+    this.loadingState(false)
   }
 }
 
