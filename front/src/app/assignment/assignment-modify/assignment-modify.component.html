@@ -1,20 +1,18 @@
 <!-- Composant : Modifie un composant -->
 <!-- Description : Ce composant permet de modifier un devoir -->
 
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-
-<div *ngIf="!isLoading">
+<div *ngIf="!loading">
   <mat-card class="card-basic card-big">
     <mat-card-title class="title-big">
-      {{ assignmentTarget?.title }}
+      {{ assignmentTarget.title }}
     </mat-card-title>
     <mat-card-subtitle>
-      {{ assignmentTarget?.createdAt | date }}
+      {{ assignmentTarget.createdAt | date }}
     </mat-card-subtitle>
     <mat-card-content>
       <p>
-        Vous pouvez modifier le devoir ici. Attention, les modifications ne seront pas réversibles.
+        Vous pouvez modifier le devoir ici. Attention, les modifications ne
+        seront pas réversibles.
       </p>
     </mat-card-content>
   </mat-card>
@@ -22,14 +20,17 @@
     <mat-card-title>
       <h2>Modifier le devoir</h2>
     </mat-card-title>
-    <form [formGroup]="editForm" class="fullwidth" (submit)="onUpdateAssignment()">
+    <form
+      [formGroup]="editForm"
+      class="fullwidth"
+      (submit)="onUpdateAssignment()"
+    >
       <mat-accordion class="mat-accordion-headers-align">
         <!-- Titre -->
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Titre </strong></span>
+              <span> <strong> Titre </strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier le titre du devoir
@@ -39,8 +40,13 @@
           <h2>Titre</h2>
           <mat-form-field class="fullwidth">
             <mat-label>Titre</mat-label>
-            <input matInput placeholder="Titre" formControlName="titleCtrl" [(ngModel)]="assignmentTarget.title"
-              name="title" />
+            <input
+              matInput
+              placeholder="Titre"
+              formControlName="titleCtrl"
+              [(ngModel)]="assignmentTarget.title"
+              name="title"
+            />
           </mat-form-field>
           <mat-hint> Ex. Td4 </mat-hint>
           <p>Vous pouvez changer le titre du devoir</p>
@@ -49,8 +55,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Description </strong> </span>
+              <span> <strong> Description </strong> </span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier la description du devoir
@@ -60,8 +65,13 @@
           <h2>Description</h2>
           <mat-form-field class="fullwidth">
             <mat-label>Description</mat-label>
-            <textarea matInput placeholder="Description" [(ngModel)]="assignmentTarget.description"
-              formControlName="descriptionCtrl" name="description"></textarea>
+            <textarea
+              matInput
+              placeholder="Description"
+              [(ngModel)]="assignmentTarget.description"
+              formControlName="descriptionCtrl"
+              name="description"
+            ></textarea>
           </mat-form-field>
           <mat-hint> Ex. Vous devez faire ca ! </mat-hint>
           <p>Vous pouvez changer la description du devoir</p>
@@ -69,8 +79,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong>Date de rendu</strong></span>
+              <span> <strong>Date de rendu</strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier la date de rendu du devoir
@@ -79,11 +88,27 @@
           </mat-expansion-panel-header>
           <h2>Date de rendu</h2>
           <mat-form-field>
-            <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisissez une date et une heure"
-              [(ngModel)]="assignmentTarget.dueDate" formControlName="dueDateCtrl" name="dueDate" />
-            <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-            <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="true" [stepHour]="1" [stepMinute]="1"
-              [stepSecond]="1" [touchUi]="false"></ngx-mat-datetime-picker>
+            <input
+              matInput
+              [ngxMatDatetimePicker]="picker"
+              placeholder="Choisissez une date et une heure"
+              [(ngModel)]="assignmentTarget.dueDate"
+              formControlName="dueDateCtrl"
+              name="dueDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="$any(picker)"
+            ></mat-datepicker-toggle>
+            <ngx-mat-datetime-picker
+              #picker
+              [showSpinners]="true"
+              [showSeconds]="true"
+              [stepHour]="1"
+              [stepMinute]="1"
+              [stepSecond]="1"
+              [touchUi]="false"
+            ></ngx-mat-datetime-picker>
           </mat-form-field>
           <mat-hint> Ex. 2020-12-31T23:59:59 </mat-hint>
           <p>Vous pouvez changer la date de rendu du devoir</p>
@@ -92,8 +117,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Matière </strong></span>
+              <span> <strong> Matière </strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier la matiere de rendu du devoir
@@ -103,7 +127,12 @@
           <h2>Matière</h2>
           <mat-form-field>
             <mat-label>Matière</mat-label>
-            <mat-select #subjectInput formControlName="subjectCtrl" name="matiere" required>
+            <mat-select
+              #subjectInput
+              formControlName="subjectCtrl"
+              name="matiere"
+              required
+            >
               <mat-option *ngFor="let subject of subjects" [value]="subject">
                 {{ subject.name }}
               </mat-option>
@@ -116,8 +145,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Professeur </strong></span>
+              <span> <strong> Professeur </strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier le professeur de rendu du devoir
@@ -127,7 +155,12 @@
           <h2>Professeur</h2>
           <mat-form-field>
             <mat-label>Professeur</mat-label>
-            <mat-select #teacherInput formControlName="teacherCtrl" name="professeur" required>
+            <mat-select
+              #teacherInput
+              formControlName="teacherCtrl"
+              name="professeur"
+              required
+            >
               <mat-option *ngFor="let teacher of teachers" [value]="teacher">
                 {{ teacher.name }}
               </mat-option>
@@ -137,9 +170,16 @@
           <p>Vous pouvez changer le professeur du devoir</p>
         </mat-expansion-panel>
       </mat-accordion>
-      <br>
+      <br />
       <div class="center">
-        <button mat-raised-button color="primary" type="submit" [disabled]="!editForm.valid">Modifier</button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!editForm.valid"
+        >
+          Modifier
+        </button>
       </div>
     </form>
   </mat-card>
@@ -147,14 +187,19 @@
     <mat-card-title>
       <h2>Modifier le rendu</h2>
     </mat-card-title>
-    <form [formGroup]="editSubmissionForm" class="fullwidth" (submit)="onUpdateSubmit()">
+    <form
+      [formGroup]="editSubmissionForm"
+      class="fullwidth"
+      (submit)="onUpdateSubmit()"
+    >
       <mat-accordion class="mat-accordion-headers-align">
         <!-- Rendu -->
-        <mat-expansion-panel [disabled]="assignmentTarget.submission === undefined">
+        <mat-expansion-panel
+          [disabled]="assignmentTarget.submission === undefined"
+        >
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Rendu </strong></span>
+              <span> <strong> Rendu </strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier un rendu
@@ -164,24 +209,40 @@
           <h2>Rendu</h2>
           <mat-form-field class="fullwidth">
             <!-- Le fichier -->
-            <ngx-mat-file-input class="fullwidth" #file matInput placeholder="Fichier" formControlName="fileCtrl"
-              [multiple]="false" [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"></ngx-mat-file-input>
+            <ngx-mat-file-input
+              class="fullwidth"
+              #file
+              matInput
+              placeholder="Fichier"
+              formControlName="fileCtrl"
+              [multiple]="false"
+              [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"
+            ></ngx-mat-file-input>
 
             <mat-hint>
-              Formats acceptés : .pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .gif,
-              .zip
+              Formats acceptés : .pdf, .doc, .docx, .txt, .jpg, .jpeg, .png,
+              .gif, .zip
             </mat-hint>
           </mat-form-field>
-          <br>
+          <br />
 
-          <p *ngIf="assignmentTarget.submission?.content"> <b>
-              Il y a un fichier ' {{ assignmentTarget.submission?.originalName }} !'
-            </b> </p>
+          <p *ngIf="assignmentTarget.submission?.content">
+            <b>
+              Il y a un fichier '
+              {{ assignmentTarget.submission?.originalName }} !'
+            </b>
+          </p>
         </mat-expansion-panel>
       </mat-accordion>
-      <br>
+      <br />
       <div class="center">
-        <button mat-raised-button color="primary" [disabled]="!editSubmissionForm.valid">Modifier</button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!editSubmissionForm.valid"
+        >
+          Modifier
+        </button>
       </div>
     </form>
   </mat-card>
@@ -189,14 +250,17 @@
     <mat-card-title>
       <h2>Modifier la notation</h2>
     </mat-card-title>
-    <form [formGroup]="editRatingForm" class="fullwidth" (submit)="onUpdateRating()">
+    <form
+      [formGroup]="editRatingForm"
+      class="fullwidth"
+      (submit)="onUpdateRating()"
+    >
       <mat-accordion class="mat-accordion-headers-align">
         <!-- Note -->
         <mat-expansion-panel [disabled]="assignmentTarget.rating === undefined">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Note </strong> </span>
+              <span> <strong> Note </strong> </span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier un note
@@ -206,8 +270,14 @@
           <h2>Note</h2>
           <mat-form-field>
             <mat-label>Note</mat-label>
-            <input matInput placeholder="Note" formControlName="ratingCtrl" type="number" name="rating"
-              [ngModel]="assignmentTarget.rating?.rating" />
+            <input
+              matInput
+              placeholder="Note"
+              formControlName="ratingCtrl"
+              type="number"
+              name="rating"
+              [ngModel]="assignmentTarget.rating?.rating"
+            />
           </mat-form-field>
           <mat-hint> Ex. 18 </mat-hint>
           <p>Vous pouvez changer la note du devoir</p>
@@ -216,8 +286,7 @@
         <mat-expansion-panel [disabled]="assignmentTarget.rating === undefined">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              <span>
-                <strong> Commentaire </strong></span>
+              <span> <strong> Commentaire </strong></span>
             </mat-panel-title>
             <mat-panel-description>
               Modifier un commentaire
@@ -227,15 +296,26 @@
           <h2>Commentaire</h2>
           <mat-form-field class="fullwidth">
             <mat-label>Commentaire</mat-label>
-            <textarea matInput placeholder="Commentaire" formControlName="commentCtrl" name="comment"
-              [ngModel]="assignmentTarget.rating?.comment"></textarea>
+            <textarea
+              matInput
+              placeholder="Commentaire"
+              formControlName="commentCtrl"
+              name="comment"
+              [ngModel]="assignmentTarget.rating?.comment"
+            ></textarea>
           </mat-form-field>
           <mat-hint> Ex. 18 </mat-hint>
           <p>Vous pouvez changer la note du devoir</p>
-        </mat-expansion-panel>
-      </mat-accordion><br>
+        </mat-expansion-panel> </mat-accordion
+      ><br />
       <div class="center">
-        <button mat-raised-button color="primary" [disabled]="!editRatingForm.valid">Modifier</button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!editRatingForm.valid"
+        >
+          Modifier
+        </button>
       </div>
     </form>
   </mat-card>

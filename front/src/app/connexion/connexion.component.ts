@@ -7,6 +7,7 @@ import { LoggingService } from '../shared/services/logging/logging.service';
 import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoadingService } from '../shared/services/loading/loading.service';
 
 @Component({
   selector: 'app-connexion',
@@ -20,8 +21,11 @@ export class ConnexionComponent implements OnInit {
     private authService: AuthService,
     private loggingService: LoggingService,
     private snackBar: MatSnackBar,
-    private route: Router
-  ) { }
+    private route: Router,
+    private loadingService: LoadingService
+  ) {
+    this.loadingService.changeLoadingState(true);
+  }
 
   ngOnInit(): void { }
 
@@ -29,7 +33,7 @@ export class ConnexionComponent implements OnInit {
   login() {
     this.loggingService.event('ConnexionComponent', 'login');
     if (!this.loginForm.valid) {
-      Utils.snackBarError(this.snackBar, 'Remplissez tous les champs');
+      Utils.frontError(this.snackBar, 'Remplissez tous les champs', this.loadingService);
       return;
     }
 
@@ -48,7 +52,7 @@ export class ConnexionComponent implements OnInit {
   handleLogin(data: ErrorRequest | TokenAuth) {
     this.loggingService.event('ConnexionComponent', 'handleLogin');
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this.snackBar, data.message);
+      Utils.frontError(this.snackBar, data.message, this.loadingService);
       return;
     }
     Utils.snackBarSuccess(this.snackBar, 'Connexion réussie');

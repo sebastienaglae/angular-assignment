@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AssignmentService } from '../shared/services/assignment/assignment.service';
 import { Assignment } from '../shared/models/assignment.model';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentSearch } from '../shared/models/assignment.search.model';
 import { SuccessRequest } from '../shared/api/success.model';
+import { LoadingService } from '../shared/services/loading/loading.service';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
@@ -21,7 +22,6 @@ import { SuccessRequest } from '../shared/api/success.model';
 export class AssignmentComponent implements OnInit {
   searchAssignment!: SearchAssignment;
   datasource: MatTableDataSource<AssignmentSearch> = new MatTableDataSource();
-  isLoading: boolean = true;
 
   filterOptions: FilterOptions = new FilterOptions();
 
@@ -32,13 +32,16 @@ export class AssignmentComponent implements OnInit {
   //@ts-ignore
   displayedColumns: string[] = ['title', 'dueDate', 'hasSubmission', 'hasRating', 'actions'];
 
+  // Add ref of AppComponent to use it in the template
   constructor(
     private assignementService: AssignmentService,
     private loggingService: LoggingService,
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private router: Router,
-  ) { }
+    private loadingService: LoadingService,
+  ) {
+    this.loadingService.changeLoadingState(true);
+  }
+
 
   ngOnInit(): void {
     this.datasource.paginator = this.paginator;
@@ -59,11 +62,11 @@ export class AssignmentComponent implements OnInit {
 
   handleDeleteAssignment(data: SuccessRequest | ErrorRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this.snackBar, data)
+      Utils.frontError(this.snackBar, data, this.loadingService)
       return;
     }
     if (!data.success) {
-      Utils.snackBarError(this.snackBar, 'Une erreur est survenue');
+      Utils.frontError(this.snackBar, 'Une erreur est survenue', this.loadingService);
       return;
     }
 
@@ -77,7 +80,7 @@ export class AssignmentComponent implements OnInit {
       .pipe(
         startWith({}),
         switchMap(() => {
-          this.isLoading = true;
+          this.loadingService.changeLoadingState(true);
           return this.assignementService.search(this.getFilter(), this.getOrder(), {
             page: this.paginator.pageIndex,
             limit: this.paginator.pageSize,
@@ -86,11 +89,11 @@ export class AssignmentComponent implements OnInit {
         map((data) => {
           if (data instanceof ErrorRequest) {
             this.paginator.length = 0;
-            Utils.snackBarError(this.snackBar, data)
+            Utils.frontError(this.snackBar, data, this.loadingService)
             return [];
           }
           this.paginator.length = data.totalItems;
-          this.isLoading = false;
+          this.loadingService.changeLoadingState(false);
           return data.items;
         }),
         catchError(() => {
@@ -120,11 +123,18 @@ export class AssignmentComponent implements OnInit {
     if (this.filterOptions.searchText !== '') {
       json = { ...json, ...{ title: this.filterOptions.searchText } }
     }
-    if (this.filterOptions.submitFilter !== 'all') {
+    if (this.filterOptions.submitFilter !== undefined) {
       json = { ...json, ...{ submission: this.filterOptions.submitFilter === 'submit' ? null : false } }
     }
-    if (this.filterOptions.ratingFilter !== 'all') {
+    if (this.filterOptions.ratingFilter !== undefined) {
       json = { ...json, ...{ rating: this.filterOptions.ratingFilter === 'rated' ? null : false } }
+    }
+    // todo check if it's right
+    if (this.filterOptions.yearFilter !== undefined) {
+      json = { ...json, ...{ year: this.filterOptions.yearFilter } }
+    }
+    if (this.filterOptions.monthFilter !== undefined) {
+      json = { ...json, ...{ month: this.filterOptions.monthFilter } }
     }
 
     return json;
@@ -133,8 +143,10 @@ export class AssignmentComponent implements OnInit {
 
 class FilterOptions {
   searchText: string = '';
-  submitFilter: string = 'all';
-  ratingFilter: string = 'all';
+  submitFilter: string | undefined = undefined;
+  ratingFilter: string | undefined = undefined;
+  yearFilter: number | undefined = undefined;
+  monthFilter: number | undefined = undefined;
 
   getSearchFilter(): string {
     return this.searchText.trim().toLowerCase();

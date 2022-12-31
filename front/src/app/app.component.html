@@ -6,39 +6,65 @@
     </button>
     <!-- Titre/Bouton du site -->
     <button mat-button routerLink="" (click)="sideMenuClose()">
-      <span>{{ title }}</span>
-    </button><span class="example-spacer"></span>
+      <span>{{ title }}</span></button
+    ><span class="example-spacer"></span>
     <!-- Bouton de connexion  -->
-    <button *ngIf="!isUserLogged" mat-button routerLink="/connection" (click)="sideMenuClose()">
+    <button
+      *ngIf="!isUserLogged"
+      mat-button
+      routerLink="/connection"
+      color="accent"
+      (click)="sideMenuClose()"
+    >
       Connexion
     </button>
     <!-- Bouton d'inscription -->
-    <button mat-button routerLink="/register" (click)="sideMenuClose()">
+    <button
+      *ngIf="!isUserLogged"
+      color="accent"
+      mat-button
+      routerLink="/register"
+      (click)="sideMenuClose()"
+    >
       S'inscrire
     </button>
     <!-- Bouton de deconnexion -->
-    <button color="warn" *ngIf="isUserLogged" mat-button routerLink="" (click)="sideMenuClose(); logout()">
+    <button
+      color="warn"
+      *ngIf="isUserLogged"
+      mat-button
+      routerLink=""
+      (click)="sideMenuClose(); logout()"
+    >
       Se deconnecter
     </button>
   </mat-toolbar>
 
   <mat-sidenav-container>
     <mat-sidenav [(opened)]="sideMenuOpened" (click)="sideMenuClose()">
-      <!-- Le bouton de la liste des devoirs-->
-      <button routerLink="/list" mat-button class="full-width">
-        Liste des devoirs
-      </button>
       <!-- Le bouton d'ajout de devoir -->
-      <button mat-button class="full-width" routerLink="/add">
+      <button mat-button class="fullwidth" routerLink="assignment/add">
         Ajout d'un devoir
       </button>
       <!-- Le bouton de génération de données de test -->
-      <button mat-button class="full-width" routerLink="/gen">
+      <button mat-button class="fullwidth" routerLink="/gen">
         Génération de données de test
       </button>
     </mat-sidenav>
     <mat-sidenav-content>
       <router-outlet></router-outlet>
+      <mat-progress-bar
+        *ngIf="loadingModel.enabled"
+        [mode]="loadingModel.mode"
+        class="progress-bar"
+        [color]="loadingModel.color"
+        [value]="loadingModel.value"
+      ></mat-progress-bar>
+      <mat-toolbar class="footer" color="primary">
+        <span class="example-spacer"></span>
+        <span>© 2022 - Miage M1 - Sébastien Aglaé | Mike Chiappe</span>
+        <span class="example-spacer"></span>
+      </mat-toolbar>
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>

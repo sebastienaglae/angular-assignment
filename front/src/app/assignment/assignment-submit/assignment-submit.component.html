@@ -1,42 +1,54 @@
 <!-- Composant : Soumet un devoir -->
 <!-- Description : Ce composant permet de soumettre un devoir -->
 
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-
-<div *ngIf="!isLoading">
+<div *ngIf="!loading">
   <mat-card class="card-basic card-big">
     <mat-card-title>Envoyer un devoir</mat-card-title>
     <mat-card-subtitle> {{ assignmentTarget?.title }} </mat-card-subtitle>
-    <br>
+    <br />
     <p class="center"><b>Description</b></p>
     <p class="center">{{ assignmentTarget?.description }}</p>
     <mat-list class="fullwidth">
       <mat-divider></mat-divider>
       <mat-list-item>
-        <p class="sameline"><b>Date limite</b> {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }} </p>
+        <p class="sameline">
+          <b>Date limite</b>
+          {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }}
+        </p>
       </mat-list-item>
       <mat-divider></mat-divider>
       <mat-list-item>
-        <p class="sameline"><b>Matière</b> {{ subjectTarget?.name }} </p>
+        <p class="sameline"><b>Matière</b> {{ subjectTarget?.name }}</p>
       </mat-list-item>
       <mat-divider></mat-divider>
     </mat-list>
     <mat-card-content>
-      <p class="center"> <b>Choisissez un fichier a televerser !</b></p>
+      <p class="center"><b>Choisissez un fichier a televerser !</b></p>
       <form [formGroup]="submitForm" (submit)="submit()">
         <!-- Le fichier -->
         <mat-form-field class="fullwidth">
-          <ngx-mat-file-input #file matInput placeholder="Fichier" formControlName="fileCtrl" [multiple]="false"
-            [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"></ngx-mat-file-input>
+          <ngx-mat-file-input
+            #file
+            matInput
+            placeholder="Fichier"
+            formControlName="fileCtrl"
+            [multiple]="false"
+            [accept]="'.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip'"
+          ></ngx-mat-file-input>
         </mat-form-field>
         <mat-hint>
           Formats acceptés : .pdf, .doc, .docx, .txt, .jpg, .jpeg, .png, .gif,
           .zip
         </mat-hint>
-        <br><br>
+        <br /><br />
         <div class="center">
-          <button mat-raised-button mat color="primary" type="submit" [disabled]="!submitForm.valid">
+          <button
+            mat-raised-button
+            mat
+            color="primary"
+            type="submit"
+            [disabled]="!submitForm.valid"
+          >
             Envoyer
           </button>
         </div>

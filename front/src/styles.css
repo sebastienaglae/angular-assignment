@@ -4,53 +4,56 @@ html,
 body {
   height: 100%;
   min-height: 100vh;
+  min-width: 600px;
 }
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-
 /* Card */
-mat-card.card-basic, mat-accordion.card-basic {
+mat-card.card-basic,
+mat-accordion.card-basic {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  margin-left : auto;
-  margin-right : auto;
+  margin-left: auto;
+  margin-right: auto;
   padding: 20px;
 }
 
 mat-card.card-little {
   width: 300px;
-  margin-top : 20px;
+  margin-top: 20px;
 }
 
 mat-card.card-medium {
   width: 50%;
-  margin-top : 20px;
+  margin-top: 20px;
 }
 
-mat-card.card-big, mat-accordion.card-big{
-  width: 70%;
-  margin-top : 20px;
+mat-card.card-big,
+mat-accordion.card-big {
+  max-width: 70%;
+  width: 500px;
+  margin-top: 20px;
 }
 
 mat-card.card-large {
   width: 80%;
-  margin-top : 20px;
+  margin-top: 20px;
 }
 
 mat-card.card-giant {
   width: 90%;
-  margin-top : 20px;
-  margin-left : auto;
-  margin-right : auto;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-mat-card-title.title-big{
+mat-card-title.title-big {
   font-size: 30px;
   padding: 20px;
 }
@@ -66,14 +69,13 @@ mat-card-title.title-big{
   align-content: center;
 }
 
-.space{
+.space {
   padding: 5px;
 }
 
 .marginauto {
   margin: auto !important;
 }
-
 
 .fullwidth {
   width: 100% !important;
@@ -83,11 +85,11 @@ mat-card-title.title-big{
   margin-left: auto;
 }
 
-.center{
+.center {
   text-align: center;
 }
 
-.space-little{
+.space-little {
   padding: 10px;
 }
 
@@ -117,60 +119,69 @@ mat-card-title.title-big{
 /* Loading */
 mat-progress-bar.progress-bar {
   position: fixed;
-  top: 0;
+  top: 64px;
   left: 0;
-  width: 100%;
-  z-index: 1000;
+  zindex: 25000;
 }
 
 /* Calendar fixer */
-ngx-mat-calendar-header >
-.mat-calendar-header >
-.mat-calendar-controls >
-.mat-calendar-period-button {
+ngx-mat-calendar-header
+  > .mat-calendar-header
+  > .mat-calendar-controls
+  > .mat-calendar-period-button {
   background-color: #7b1fa2;
-  color: white
+  color: white;
 }
 
-ngx-mat-calendar-header >
-.mat-calendar-header >
-.mat-calendar-controls >
-.mat-calendar-previous-button {
-  background-color: #7b1fa2;
-}
-
-ngx-mat-calendar-header >
-.mat-calendar-header >
-.mat-calendar-controls >
-.mat-calendar-next-button {
+ngx-mat-calendar-header
+  > .mat-calendar-header
+  > .mat-calendar-controls
+  > .mat-calendar-previous-button {
   background-color: #7b1fa2;
 }
 
-.ngx-mat-timepicker-table >
-.ngx-mat-timepicker-tbody >
-.ng-star-inserted >
-td >
-.mat-focus-indicator {
+ngx-mat-calendar-header
+  > .mat-calendar-header
+  > .mat-calendar-controls
+  > .mat-calendar-next-button {
   background-color: #7b1fa2;
-  color: white
 }
 
-ngx-mat-datetime-content >
-.actions >
-button {
+.ngx-mat-timepicker-table
+  > .ngx-mat-timepicker-tbody
+  > .ng-star-inserted
+  > td
+  > .mat-focus-indicator {
   background-color: #7b1fa2;
-  color: white
+  color: white;
+}
+
+ngx-mat-datetime-content > .actions > button {
+  background-color: #7b1fa2;
+  color: white;
 }
 
 /* Fix file input */
-ngx-mat-file-input>
-.mat-form-field-suffix>
-button {
+ngx-mat-file-input > .mat-form-field-suffix > button {
   background-color: #7b1fa2;
-  color: white
+  color: white;
 }
 
-ngx-mat-file-input >
-input:nth-child(1) {
+ngx-mat-file-input > input:nth-child(1) {
   color: white;
+}
+
+/* Chips space */
+.chipsline {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: nowrap;
+}
+
+.chipsline > mat-chip-listbox {
+  padding-left: 8px;
 }

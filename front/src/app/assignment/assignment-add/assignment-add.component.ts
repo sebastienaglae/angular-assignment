@@ -15,6 +15,8 @@ import { Subject } from 'src/app/shared/models/subject.model';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
+import { Teacher } from 'src/app/shared/models/teacher.model';
+import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 
 @Component({
   selector: 'app-assignment-add',
@@ -22,10 +24,8 @@ import { LoggingService } from 'src/app/shared/services/logging/logging.service'
   styleUrls: ['./assignment-add.component.css'],
 })
 export class AssignmentAddComponent implements OnInit {
-  @Output() newAssignment = new EventEmitter<Assignment>();
   // Pamametres de redirection
   timeBeforeRedirect: number = 5;
-  isLoading: boolean = true;
 
   // Chemins des images du professeur et de la matière
   teacherImgPath: string =
@@ -40,6 +40,9 @@ export class AssignmentAddComponent implements OnInit {
   submitButtonText: string = 'Ajouter le devoir';
 
   subjects: Subject[] = [];
+  teachers: Teacher[] = [];
+
+  loading: boolean = true;
 
   @ViewChild('picker') picker: any;
 
@@ -49,8 +52,12 @@ export class AssignmentAddComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private loggingService: LoggingService,
-    private _formBuilder: FormBuilder
-  ) { }
+    private _formBuilder: FormBuilder,
+
+    private loadingService: LoadingService,
+  ) {
+    this.loading = this.loadingService.changeLoadingState(true);
+  }
 
   ngOnInit(): void {
     this.initSubject();
@@ -67,9 +74,10 @@ export class AssignmentAddComponent implements OnInit {
   // Gère la réponse de l'api pour les matières
   handleSubject(res: Subject[] | ErrorRequest) {
     if (res instanceof ErrorRequest) {
-      Utils.snackBarError(
+      Utils.frontError(
         this.snackBar,
-        "Erreur lors de l'obtention des matières"
+        res,
+        this.loadingService
       );
       return;
     }
@@ -81,7 +89,8 @@ export class AssignmentAddComponent implements OnInit {
       );
     }
 
-    this.isLoading = false;
+
+    this.loading = this.loadingService.changeLoadingState(false);
   }
 
   // Rempli le formulaire avec les paramètres de l'url
@@ -100,19 +109,6 @@ export class AssignmentAddComponent implements OnInit {
   // Met à jour l'url avec les paramètres
   updateUrl(param: string, value: string) {
     Utils.updateParam(param, value);
-  }
-
-  //todo move to utils
-  parseDate(date: string) {
-    return Date.parse(date).toString();
-  }
-
-  // Met à jour la photo de la matière et du professeur
-  subjectChange() {
-    // TODO : Add the professor and the imange subject
-    console.log('Subject change');
-    // this.teacherImgPath =
-    // this.subjectImgPath =
   }
 
   // Valide le formulaire et ajoute le devoir
@@ -144,16 +140,19 @@ export class AssignmentAddComponent implements OnInit {
 class StepperAssignmentFromGroup {
   constructor(private _formBuilder: FormBuilder) { }
   titleFormGroup = this._formBuilder.group({
-    titleCtrl: ['', Validators.required],
+    titleCtrl: ['', Assignment.getTitleValidators()],
   });
   dueDateFormGroup = this._formBuilder.group({
-    dueDateCtrl: ['', Validators.required],
+    dueDateCtrl: ['', Assignment.getDueDateValidators()],
   });
   descriptionFormGroup = this._formBuilder.group({
-    descriptionCtrl: ['', Validators.required],
+    descriptionCtrl: ['', Assignment.getDescriptionValidators()],
   });
   subjectFormGroup = this._formBuilder.group({
     subjectCtrl: ['', Validators.required],
+  });
+  teacherFormGroup = this._formBuilder.group({
+    teacherCtrl: ['', Validators.required],
   });
 
   isAllValid() {
@@ -161,7 +160,8 @@ class StepperAssignmentFromGroup {
       this.titleFormGroup.valid &&
       this.dueDateFormGroup.valid &&
       this.descriptionFormGroup.valid &&
-      this.subjectFormGroup.valid
+      this.subjectFormGroup.valid &&
+      this.teacherFormGroup.valid
     );
   }
   get titleValue() {
@@ -182,6 +182,11 @@ class StepperAssignmentFromGroup {
   get subjectValue(): Subject | undefined {
     return this.subjectFormGroup.get('subjectCtrl')?.value as any;
   }
+
+  get teacherValue(): Teacher | undefined {
+    return this.teacherFormGroup.get('teacherCtrl')?.value as any;
+  }
+
   set titleValue(value: string) {
     this.titleFormGroup.get('titleCtrl')?.setValue(value);
   }
@@ -196,5 +201,9 @@ class StepperAssignmentFromGroup {
 
   set subjectValue(value: Subject | undefined) {
     this.subjectFormGroup.get('subjectCtrl')?.setValue(value as any);
+  }
+
+  set teacherValue(value: Teacher | undefined) {
+    this.teacherFormGroup.get('teacherCtrl')?.setValue(value as any as never);
   }
 }

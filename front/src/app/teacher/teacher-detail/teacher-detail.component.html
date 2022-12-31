@@ -1,12 +1,12 @@
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-
-<mat-card *ngIf="!isLoading" class="center">
+<mat-card *ngIf="!loading" class="card-basic card-little">
   <mat-card-title>
-    <h2> {{ teacherTarget?.name }} </h2>
+    <h2>{{ teacherTarget?.name }}</h2>
   </mat-card-title>
   <mat-card-subtitle>
     {{ teacherTarget?.createdAt | date }}
   </mat-card-subtitle>
-  <img src="{{teacherTarget?.iconUrl}}" alt="Photo de {{teacherTarget?.name}}" />
+  <img
+    src="{{ teacherTarget?.iconUrl }}"
+    alt="Photo de {{ teacherTarget?.name }}"
+  />
 </mat-card>

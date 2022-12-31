@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
@@ -10,7 +10,20 @@ import { Utils } from 'src/app/shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
-import { SizePipe } from 'src/app/shared/tools/SizePipe';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { LoadingService } from 'src/app/shared/services/loading/loading.service';
+
+@Component({
+  selector: 'assignment-options.sheet',
+  templateUrl: './assignment-options.sheet.html',
+})
+export class BottomSheetAssignmentOptions {
+  constructor(private _bottomSheetRef: MatBottomSheetRef<AssignmentDetailComponent>) { }
+
+  openLink(event: string): void {
+    this._bottomSheetRef.dismiss(event);
+  }
+}
 
 @Component({
   selector: 'app-assignment-detail',
@@ -18,12 +31,11 @@ import { SizePipe } from 'src/app/shared/tools/SizePipe';
   styleUrls: ['./assignment-detail.component.css'],
 })
 export class AssignmentDetailComponent implements OnInit {
-  @Output() deleteAssignement = new EventEmitter<Assignment>();
   assignmentTarget?: Assignment;
-  isLoading: boolean = true;
   file: File | undefined;
   isAssignmentLate: boolean = false;
   assignmentTimeRemaining: string = '';
+  loading: boolean = true;
 
   targetSubject?: Subject;
   teacherImgPath!: string;
@@ -35,11 +47,26 @@ export class AssignmentDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
-    private _snackBar: MatSnackBar
-  ) { }
+    private _snackBar: MatSnackBar,
+    private _bottomSheet: MatBottomSheet,
+    private loadingService: LoadingService
+  ) {
+    this.loading = this.loadingService.changeLoadingState(true);
+  }
 
   ngOnInit(): void {
     this.getAssignment();
+  }
+
+  openBottomSheet(): void {
+    this._bottomSheet.open(BottomSheetAssignmentOptions).afterDismissed().subscribe((data) => {
+      const action = data as string;
+      if (action === 'edit') this.editRedirect();
+      if (action === 'delete') this.deleteRedirect();
+      if (action === 'rate') this.ratingRedirect();
+      if (action === 'submit') this.submitRedirect();
+    }
+    );
   }
 
   getAssignment() {
@@ -53,11 +80,11 @@ export class AssignmentDetailComponent implements OnInit {
 
   handleAssignment(assData: ErrorRequest | Assignment) {
     if (!assData) {
-      Utils.snackBarError(this._snackBar, 'Erreur inconue');
+      Utils.frontError(this._snackBar, 'Erreur inconue', this.loadingService);
       return;
     }
     if (assData instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, assData);
+      Utils.frontError(this._snackBar, assData, this.loadingService);
       return;
     }
 
@@ -72,7 +99,7 @@ export class AssignmentDetailComponent implements OnInit {
         this.targetSubject = data as any as Subject;
         //todo : get teacher img path
         //this.subjectImgPath = subjectResult.imgPath;
-        this.isLoading = false;
+        this.loading = this.loadingService.changeLoadingState(false);
       });
   }
 
@@ -80,7 +107,7 @@ export class AssignmentDetailComponent implements OnInit {
     if (!this.assignmentTarget?.submission) return;
     this.file = Submission.getFile(this.assignmentTarget.submission);
     if (!this.file) {
-      Utils.snackBarError(this._snackBar, 'Impossible de récupérer le fichier');
+      Utils.frontError(this._snackBar, 'Impossible de récupérer le fichier', this.loadingService);
     }
   }
 
@@ -115,16 +142,15 @@ export class AssignmentDetailComponent implements OnInit {
 
   handleDeleteAssignment(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, data);
+      Utils.frontError(this._snackBar, data, this.loadingService);
       return;
     }
     if (!data.success) {
-      Utils.snackBarError(this._snackBar, 'Erreur lors de la suppression');
+      Utils.frontError(this._snackBar, 'Erreur lors de la suppression', this.loadingService);
       return;
     }
     Utils.snackBarSuccess(this._snackBar, 'Suppression réussie');
   }
-
 
   downloadSubmission() {
     if (!this.assignmentTarget) return;

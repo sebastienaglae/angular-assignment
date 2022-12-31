@@ -7,7 +7,7 @@ export class LoggingService {
   constructor() { }
 
   log(action: string): void {
-    let name = new Error().stack?.split('at ')[3].split(' ')[0] ?? 'unknown';
+    let name = new Error().stack?.split('at ')[2].split(' ')[0].split('.')[0] ?? 'unknown';
     console.log(`[LOG] '${name}': ${action}`);
   }
 

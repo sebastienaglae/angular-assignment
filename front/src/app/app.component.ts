@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from './shared/services/auth/auth.service';
 import { LoggingService } from './shared/services/logging/logging.service';
 import { User } from './shared/models/user.model';
+import { LoadingModel, LoadingService } from './shared/services/loading/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -15,11 +16,18 @@ export class AppComponent {
   sideMenuOpened: boolean = false;
   user?: User;
 
+  loadingModel: LoadingModel = LoadingModel.default;
+
   constructor(
     private authService: AuthService,
     private router: Router,
-    private loggingService: LoggingService
-  ) { }
+    private loggingService: LoggingService,
+    private loadingService: LoadingService
+  ) {
+    this.loadingService.getLoadingState().subscribe((data) => {
+      this.loadingModel = data;
+    });
+  }
 
   // Fonction d'initialisation
   ngOnInit(): void {

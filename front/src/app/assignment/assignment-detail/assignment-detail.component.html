@@ -1,38 +1,49 @@
 <!--Composant : Détail d'un devoir -->
 <!-- Description : Ce composant permet d'afficher les détails d'un devoir -->
 
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-
-<div *ngIf="!isLoading">
+<div *ngIf="!loading">
   <mat-card class="card-basic card-medium">
-    <img height="32px" width="32px" src="{{assignmentTarget}}" />
+    <img height="32px" width="32px" src="{{ assignmentTarget }}" />
     <mat-card-header>
       <mat-card-title>
         {{ assignmentTarget?.title }}
       </mat-card-title>
-      <mat-card-subtitle>{{ assignmentTarget?.createdAt | date }}
+      <mat-card-subtitle
+        >{{ assignmentTarget?.createdAt | date }}
       </mat-card-subtitle>
     </mat-card-header>
-    <mat-tab-group mat-stretch-tabs="true" class="fullwidth">
-      <mat-tab label="Informations">
+    <mat-tab-group
+      mat-stretch-tabs="true"
+      class="fullwidth"
+      backgroundColor="primary"
+      dynamicHeight
+    >
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>info</mat-icon>
+          Informations
+        </ng-template>
+        <br />
         <p class="center"><b>Description</b></p>
         <p class="center">{{ assignmentTarget?.description }}</p>
         <mat-list>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Créer le</b> {{
-              assignmentTarget?.createdAt | date }}</p>
+            <p class="sameline">
+              <b>Créer le</b> {{ assignmentTarget?.createdAt | date }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Mis a jour le</b> {{
-              assignmentTarget?.updatedAt | date }}</p>
+            <p class="sameline">
+              <b>Mis a jour le</b> {{ assignmentTarget?.updatedAt | date }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Pour le</b> {{ assignmentTarget?.dueDate |
-              date }}</p>
+            <p class="sameline">
+              <b>Pour le</b> {{ assignmentTarget?.dueDate | date }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
@@ -40,87 +51,123 @@
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Temps restant</b> {{ assignmentTimeRemaining }}</p>
+            <p class="sameline">
+              <b>Temps restant</b> {{ assignmentTimeRemaining }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b> Etat</b> {{ isAssignmentLate ? "Retard" : "Dans les temps" }} </p>
+            <p class="sameline">
+              <b> Etat</b> {{ isAssignmentLate ? "Retard" : "Dans les temps" }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b> Rendu</b> {{ assignmentTarget?.submission ? "Oui" : "Non" }} </p>
+            <p class="sameline">
+              <b> Rendu</b> {{ assignmentTarget?.submission ? "Oui" : "Non" }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b> Noté</b> {{ assignmentTarget?.rating ? "Oui" : "Non" }} </p>
+            <p class="sameline">
+              <b> Noté</b> {{ assignmentTarget?.rating ? "Oui" : "Non" }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
         </mat-list>
       </mat-tab>
-      <mat-tab label="Rendu" [disabled]="!assignmentTarget?.submission">
+      <mat-tab [disabled]="!assignmentTarget?.submission">
+        <ng-template mat-tab-label>
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Rendu</span>
+        </ng-template>
+        <br />
         <mat-list>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Nom du fichier</b> {{ assignmentTarget?.submission?.originalName }} </p>
+            <p class="sameline">
+              <b>Nom du fichier</b>
+              {{ assignmentTarget?.submission?.originalName }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b> Type</b> {{ assignmentTarget?.submission?.type }} </p>
+            <p class="sameline">
+              <b> Type</b> {{ assignmentTarget?.submission?.type }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b> Taille du fichier</b> {{ file?.size | size }} </p>
+            <p class="sameline">
+              <b> Taille du fichier</b> {{ file?.size | size }}
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Soumis le</b> {{ assignmentTarget?.submission?.submittedAt | date }} </p>
+            <p class="sameline">
+              <b>Soumis le</b>
+              {{ assignmentTarget?.submission?.submittedAt | date }}
+            </p>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <p class="sameline">
+              <b>Fichier</b>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="downloadSubmission()"
+              >
+                Télécharger
+              </button>
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
         </mat-list>
-        <!-- Le bouton telecharger -->
-        <br>
-        <div class="center">
-          <button mat-raised-button color="primary" (click)="downloadSubmission()">
-            Télécharger
-          </button>
-        </div>
-        <br>
+        <br />
       </mat-tab>
-      <mat-tab label="Notation" [disabled]="!assignmentTarget?.rating">
+      <mat-tab [disabled]="!assignmentTarget?.rating">
+        <ng-template mat-tab-label>
+          <mat-icon>note_add</mat-icon> <span>Notation</span>
+        </ng-template>
+        <br />
         <mat-list>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Note</b> {{ assignmentTarget?.rating?.rating }} / 20 </p>
+            <p class="sameline">
+              <b>Note</b> {{ assignmentTarget?.rating?.rating }} / 20
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
-            <p class="sameline"><b>Noté le</b> {{ assignmentTarget?.rating?.date | date }} </p>
+            <p class="sameline">
+              <b>Noté le</b> {{ assignmentTarget?.rating?.date | date }}
+            </p>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <p class="sameline">
+              <b>Professeur</b>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="teacherRedirect()"
+              >
+                Voir le professeur
+              </button>
+            </p>
           </mat-list-item>
           <mat-divider></mat-divider>
         </mat-list>
         <p class="center"><b>Commentaire</b></p>
-        <p class="center">{{ assignmentTarget?.rating?.comment }}</p><br>
-        <div class="center">
-          <button mat-raised-button color="primary" (click)="teacherRedirect()">
-            Voir le professeur
-          </button>
-        </div>
-        <br>
+        <p class="center">{{ assignmentTarget?.rating?.comment }}</p>
+        <br />
       </mat-tab>
     </mat-tab-group>
 
     <div>
-      <button mat-raised-button color="primary" (click)="submitRedirect()">
-        Rendre
-      </button>
-      <button mat-raised-button color="primary" (click)="ratingRedirect()">
-        Noter
-      </button>
-      <button mat-raised-button color="primary" (click)="editRedirect()">
-        Modifier
-      </button>
-      <button mat-raised-button color="warn" (click)="deleteRedirect()">
-        Supprimer
+      <button mat-raised-button color="primary" (click)="openBottomSheet()">
+        Plus d'options
       </button>
     </div>
   </mat-card>
@@ -128,5 +175,4 @@
   <mat-card color="warn" *ngIf="assignmentTarget === undefined">
     <h1>Oops, il a quitté notre monde.</h1>
   </mat-card>
-  <!-- Create a fab fixed -->
 </div>

@@ -1,0 +1,115 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { LoggingService } from '../logging/logging.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoadingService {
+  loadingModel = new BehaviorSubject<LoadingModel>(LoadingModel.default);
+  cooldownBeforeDisappearance = 1000;
+  timeout: any;
+
+  constructor(
+    private loggingService: LoggingService
+  ) {
+  }
+
+  changeLoadingState(state: boolean): boolean {
+    this.loggingService.log(`LoadingService: changeLoadingState(${state})`);
+    clearTimeout(this.timeout);
+
+    if (!state) {
+      this.executeSequenceLoop(LoadingModel.green, LoadingModel.green, false);
+      return false;
+    }
+    this.loadingModel.next(LoadingModel.default);
+    return true;
+  }
+
+  changeUploadState(state: boolean): boolean {
+    this.loggingService.log(`LoadingService: changeUploadState(${state})`);
+    clearTimeout(this.timeout);
+
+    if (!state) {
+      this.executeSequenceLoop(LoadingModel.green, LoadingModel.green, false);
+      return false;
+    }
+    this.loadingModel.next(LoadingModel.upload);
+    return true;
+  }
+
+  error() {
+    this.executeSequenceLoop(LoadingModel.error, LoadingModel.error, true);
+  }
+
+  errorSoft() {
+    this.executeSequenceLoop(LoadingModel.error, LoadingModel.error, false);
+  }
+
+  executeSequenceLoop(originalSequence: LoadingModel[], sequence: LoadingModel[], loop: boolean): void {
+    sequence = sequence.slice();
+    this.loggingService.log(`LoadingService: executeSequence()`);
+    this.loadingModel.next(sequence[0]);
+    sequence.shift();
+    if (sequence.length === 0 && loop) {
+      sequence = originalSequence.slice();
+    }
+    if (sequence.length === 0 && !loop) {
+      this.timeout = setTimeout(() => {
+        this.loadingModel.next(LoadingModel.disabled);
+      }, this.cooldownBeforeDisappearance);
+      return;
+    }
+
+    this.timeout = setTimeout(() => {
+      this.executeSequenceLoop(originalSequence, sequence, loop);
+    }
+      , sequence[0].timeout);
+  }
+
+  executeSequence(sequence: LoadingModel[]): void {
+    sequence = sequence.slice();
+    this.loggingService.log(`LoadingService: executeSequence()`);
+    this.loadingModel.next(sequence[0]);
+    sequence.shift();
+    if (sequence.length === 0) {
+      this.timeout = setTimeout(() => {
+        this.loadingModel.next(LoadingModel.disabled);
+      }, this.cooldownBeforeDisappearance);
+      return;
+    }
+
+    this.timeout = setTimeout(() => {
+      this.executeSequence(sequence);
+    }
+      , sequence[0].timeout);
+  }
+
+
+
+  getLoadingState(): BehaviorSubject<LoadingModel> {
+    return this.loadingModel;
+  }
+}
+
+export class LoadingModel {
+  public static default: LoadingModel = { enabled: true, color: "primary", mode: "indeterminate", value: 100, timeout: 0 };
+  public static disabled: LoadingModel = { enabled: false, color: "primary", mode: "indeterminate", value: 100, timeout: 250 };
+  public static upload: LoadingModel = { enabled: true, color: "primary", mode: "query", value: 100, timeout: 250 };
+  public static green: LoadingModel[] = [
+    { enabled: true, color: "accent", mode: "determinate", value: 100, timeout: 0 },
+    { enabled: true, color: "accent", mode: "determinate", value: 100, timeout: 1000 },
+  ];
+  public static error: LoadingModel[] = [
+    { enabled: true, color: "warn", mode: "indeterminate", value: 100, timeout: 1500 },
+    { enabled: true, color: "warn", mode: "query", value: 100, timeout: 1500 },
+    { enabled: true, color: "warn", mode: "determinate", value: 100, timeout: 1000 },
+  ];
+
+  enabled: boolean = true;
+  color: "primary" | "accent" | "warn" = "primary";
+  mode: "determinate" | "indeterminate" | "buffer" | "query" = "indeterminate";
+  value: number = 100;
+  timeout: number = 1000;
+}

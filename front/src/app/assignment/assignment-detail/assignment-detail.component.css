@@ -1,0 +1,4 @@
+mat-tab > * {
+  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+}

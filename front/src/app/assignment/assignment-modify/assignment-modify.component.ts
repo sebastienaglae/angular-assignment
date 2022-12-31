@@ -13,6 +13,7 @@ import { Teacher } from 'src/app/shared/models/teacher.model';
 import { Rating } from 'src/app/shared/models/rating.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Submission } from 'src/app/shared/models/submission.model';
+import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 
 @Component({
   selector: 'app-assignment-modify',
@@ -29,15 +30,18 @@ export class AssignmentModifyComponent implements OnInit {
   teachers: Teacher[] = [];
   selectedSubject!: Subject;
   selectedTeacher!: Teacher;
-  isLoading: boolean = true;
+  loading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private subjectService: SubjectsService,
     private assignementService: AssignmentService,
     private _snackBar: MatSnackBar,
-    private loggingService: LoggingService
-  ) { }
+    private loggingService: LoggingService,
+    private loadingService: LoadingService
+  ) {
+    this.loading = this.loadingService.changeLoadingState(true);
+  }
 
   ngOnInit(): void {
     this.getAssignment();
@@ -69,11 +73,11 @@ export class AssignmentModifyComponent implements OnInit {
   handleAssignment(assData: ErrorRequest | Assignment) {
     this.loggingService.event('AssignmentModifyComponent', 'handleAssignment');
     if (!assData) {
-      Utils.snackBarError(this._snackBar, 'Erreur inconue');
+      Utils.frontError(this._snackBar, 'Erreur inconue', this.loadingService);
       return;
     }
     if (assData instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, assData);
+      Utils.frontError(this._snackBar, assData, this.loadingService);
       return;
     }
 
@@ -96,12 +100,13 @@ export class AssignmentModifyComponent implements OnInit {
     if (subject) {
       this.editForm.subjectValue = subject;
       this.selectedSubject = subject;
-      this.isLoading = false;
+      this.loading = this.loadingService.changeLoadingState(false);
     }
   }
 
   onUpdateAssignment() {
     if (this.assignmentTarget.id === undefined) return;
+    this.loadingService.changeLoadingState(true);
     this.assignmentTarget.teacherId = this.editForm.teacherValue.id;
     this.assignmentTarget.subjectId = this.editForm.subjectValue.id;
     this.assignementService.updateAssignment(this.assignmentTarget).subscribe(
@@ -109,24 +114,25 @@ export class AssignmentModifyComponent implements OnInit {
         this.handleUpdateAssignment(data)
       }
     )
-
   }
 
   handleUpdateAssignment(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, data);
+      Utils.frontErrorSoft(this._snackBar, data, this.loadingService);
       return;
     }
     if (!data.success) {
-      Utils.snackBarError(this._snackBar, "Erreur inconnue");
+      Utils.frontErrorSoft(this._snackBar, "Erreur inconnue", this.loadingService);
       return;
     }
     Utils.snackBarSuccess(this._snackBar, 'Devoir modifié');
+    this.loadingService.changeLoadingState(false);
   }
 
 
   onUpdateRating() {
     if (this.assignmentTarget.id === undefined) return;
+    this.loadingService.changeLoadingState(true);
     let rating = Rating.createRating(this.editRatingForm.ratingValue, this.editRatingForm.commentValue);
     this.assignementService.updateRating(this.assignmentTarget.id, rating).subscribe(
       (data) => {
@@ -137,19 +143,21 @@ export class AssignmentModifyComponent implements OnInit {
 
   handleUpdateRating(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, data);
+      Utils.frontErrorSoft(this._snackBar, data, this.loadingService);
       return;
     }
     if (!data.success) {
-      Utils.snackBarError(this._snackBar, "Erreur inconnue");
+      Utils.frontErrorSoft(this._snackBar, "Erreur inconnue", this.loadingService);
       return;
     }
     Utils.snackBarSuccess(this._snackBar, 'Notation modifiée');
+    this.loadingService.changeLoadingState(false);
   }
 
   onUpdateSubmit() {
     const file = this.editSubmissionForm.fileValue;
     if (file == null) return;
+    this.loadingService.changeUploadState(true);
     Utils.fileToArrayBuffer(file, (buffer) =>
       this.handleSubmissionFile(file, buffer)
     );
@@ -167,14 +175,15 @@ export class AssignmentModifyComponent implements OnInit {
 
   handleUpdateSubmission(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this._snackBar, data);
+      Utils.frontErrorSoft(this._snackBar, data, this.loadingService);
       return;
     }
     if (!data.success) {
-      Utils.snackBarError(this._snackBar, "Erreur inconnue");
+      Utils.frontErrorSoft(this._snackBar, "Erreur inconnue", this.loadingService);
       return;
     }
     Utils.snackBarSuccess(this._snackBar, 'Fichier modifié');
+    this.loadingService.changeUploadState(false);
   }
 }
 

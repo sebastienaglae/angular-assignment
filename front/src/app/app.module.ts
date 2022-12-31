@@ -52,6 +52,8 @@ import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
 import { SizePipe } from './shared/tools/SizePipe'
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/assignment-detail.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +68,8 @@ import { SizePipe } from './shared/tools/SizePipe'
     AssignmentSubmitComponent,
     AssignmentRateComponent,
     TeacherDetailComponent,
-    SizePipe
+    SizePipe,
+    BottomSheetAssignmentOptions
   ],
   imports: [
     BrowserModule,
@@ -106,7 +109,8 @@ import { SizePipe } from './shared/tools/SizePipe'
     MatTabsModule,
     MatMenuModule,
     MatBadgeModule,
-    MatChipsModule
+    MatChipsModule,
+    MatBottomSheetModule,
   ],
   providers: [
     {
@@ -118,6 +122,6 @@ import { SizePipe } from './shared/tools/SizePipe'
     },
   ],
   bootstrap: [AppComponent],
-  exports: [AppRoutingModule, AppComponent],
+  exports: [AppRoutingModule],
 })
 export class AppModule { }

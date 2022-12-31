@@ -1,22 +1,29 @@
 <!-- Composant : Ajout d'un devoir -->
 <!-- Description : Ce composant permet d'ajouter un devoir -->
 
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-<mat-card *ngIf="!isLoading" class="card-basic card-big">
-  <mat-card-title class="title-big">
-    Ajouter un devoir
-  </mat-card-title>
+<mat-card *ngIf="!loading" class="card-basic card-big">
+  <mat-card-title class="title-big"> Ajouter un devoir </mat-card-title>
   <mat-vertical-stepper class="fullwidth">
     <!-- Etape 1 : Titre du devoir -->
-    <mat-step #stepper label="Titre du devoir" errorMessage="Le titre est requis."
-      [stepControl]="formGroups.titleFormGroup">
+    <mat-step
+      #stepper
+      label="Titre du devoir"
+      errorMessage="Le titre est requis."
+      [stepControl]="formGroups.titleFormGroup"
+    >
       <form [formGroup]="formGroups.titleFormGroup">
         <h2>Entrez le titre du devoir</h2>
         <mat-form-field class="fullwidth">
           <mat-label>Titre du devoir</mat-label>
-          <input #titleInput matInput placeholder="Ex. TD2 - Math" formControlName="titleCtrl" name="title" required
-            (input)="updateUrl('title', titleInput.value)" />
+          <input
+            #titleInput
+            matInput
+            placeholder="Ex. TD2 - Math"
+            formControlName="titleCtrl"
+            name="title"
+            required
+            (input)="updateUrl('title', titleInput.value)"
+          />
           <mat-hint>Ex. TD2 - Math</mat-hint>
         </mat-form-field>
         <div>
@@ -25,21 +32,39 @@
       </form>
     </mat-step>
     <!-- Etape 2 : La date de rendu with a calendar component -->
-    <mat-step label="Date de rendu" errorMessage="La date de rendu est requise."
-      [stepControl]="formGroups.dueDateFormGroup">
+    <mat-step
+      label="Date de rendu"
+      errorMessage="La date de rendu est requise."
+      [stepControl]="formGroups.dueDateFormGroup"
+    >
       <form [formGroup]="formGroups.dueDateFormGroup">
         <h2>Entrez la date de rendu du devoir</h2>
         <mat-form-field>
-          <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choisissez une date et une heure"
-            formControlName="dueDateCtrl" />
-          <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-          <ngx-mat-datetime-picker #picker [showSpinners]="true" [showSeconds]="true" [stepHour]="1" [stepMinute]="1"
-            [stepSecond]="1" [touchUi]="false" (closed)="
+          <input
+            matInput
+            [ngxMatDatetimePicker]="picker"
+            placeholder="Choisissez une date et une heure"
+            formControlName="dueDateCtrl"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="$any(picker)"
+          ></mat-datepicker-toggle>
+          <ngx-mat-datetime-picker
+            #picker
+            [showSpinners]="true"
+            [showSeconds]="true"
+            [stepHour]="1"
+            [stepMinute]="1"
+            [stepSecond]="1"
+            [touchUi]="false"
+            (closed)="
               updateUrl(
                 'dueDate',
                 picker._selected.toISOString().substring(0, 19)
               )
-            ">
+            "
+          >
           </ngx-mat-datetime-picker>
         </mat-form-field>
         <div>
@@ -49,15 +74,24 @@
       </form>
     </mat-step>
     <!-- Etape 3 : La description -->
-    <mat-step label="Description" errorMessage="La description est requise."
-      [stepControl]="formGroups.descriptionFormGroup">
+    <mat-step
+      label="Description"
+      errorMessage="La description est requise."
+      [stepControl]="formGroups.descriptionFormGroup"
+    >
       <form [formGroup]="formGroups.descriptionFormGroup">
         <h2>Entrez la description du devoir</h2>
         <mat-form-field class="fullwidth">
           <mat-label>Description</mat-label>
-          <textarea #descriptionInput matInput placeholder="Ex. Faire les exercices 1 à 5"
-            formControlName="descriptionCtrl" name="description" required
-            (input)="updateUrl('description', descriptionInput.value)"></textarea>
+          <textarea
+            #descriptionInput
+            matInput
+            placeholder="Ex. Faire les exercices 1 à 5"
+            formControlName="descriptionCtrl"
+            name="description"
+            required
+            (input)="updateUrl('description', descriptionInput.value)"
+          ></textarea>
           <mat-hint> Ex. Faire les exercices 1 à 5 </mat-hint>
         </mat-form-field>
         <div>
@@ -67,22 +101,35 @@
       </form>
     </mat-step>
     <!-- Etape 4 : La matiere -->
-    <mat-step label=" Matière" errorMessage="La matière est requise." [stepControl]="formGroups.subjectFormGroup">
+    <mat-step
+      label="Matière"
+      errorMessage="La matière est requise."
+      [stepControl]="formGroups.subjectFormGroup"
+    >
       <form [formGroup]="formGroups.subjectFormGroup">
-        <h2>Entrez la matière du devoir</h2>
+        <h2>Choisissez la matière du devoir</h2>
         <div>
           <mat-form-field>
             <mat-label>Matière</mat-label>
-            <mat-select #subjectInput formControlName="subjectCtrl" name="matiere" required
-              (selectionChange)="updateUrl('subject', subjectInput.value.id)">
+            <mat-select
+              #subjectInput
+              formControlName="subjectCtrl"
+              name="matiere"
+              required
+              (selectionChange)="updateUrl('subject', subjectInput.value.id)"
+            >
               <mat-option *ngFor="let subject of subjects" [value]="subject">
                 {{ subject.name }}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <img *ngIf="formGroups.subjectValue" src="{{ teacherImgPath }}" width="50%" height="100%" />
-            <img *ngIf="formGroups.subjectValue" src="{{ subjectImgPath }}" width="50%" height="100%" />
+            <img
+              *ngIf="subjectInput.value"
+              src="{{ subjectInput.value.iconUrl }}"
+              width="50%"
+              height="100%"
+            />
           </div>
         </div>
 
@@ -92,7 +139,46 @@
         </div>
       </form>
     </mat-step>
-    <!-- Etape 5 : Recapitulatif avec un bouton pour envoyer -->
+    <!-- Etape 5 : Le professeur -->
+    <mat-step
+      label=" Professeur"
+      errorMessage="Le professeur est requis."
+      [stepControl]="formGroups.teacherFormGroup"
+    >
+      <form [formGroup]="formGroups.teacherFormGroup">
+        <h2>Choisissez la Professeur du devoir</h2>
+        <div>
+          <mat-form-field>
+            <mat-label>Professeur</mat-label>
+            <mat-select
+              #teacherInput
+              formControlName="teacherCtrl"
+              name="teacher"
+              required
+              (selectionChange)="updateUrl('teacher', teacherInput.value.id)"
+            >
+              <mat-option *ngFor="let teacher of teachers" [value]="teacher">
+                {{ teacher.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div>
+            <img
+              *ngIf="teacherInput.value"
+              src="{{ teacherInput.value.iconUrl }}"
+              width="50%"
+              height="100%"
+            />
+          </div>
+        </div>
+
+        <div>
+          <button mat-button matStepperPrevious>Précédent</button>
+          <button mat-button matStepperNext>Suivant</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- Etape 6 : Recapitulatif avec un bouton pour envoyer -->
     <mat-step label="Récapitulatif">
       <h2>Récapitulatif</h2>
       <p>Titre du devoir : {{ formGroups.titleValue }}</p>
@@ -101,8 +187,12 @@
       <p>Matière : {{ formGroups.subjectValue?.name }}</p>
       <div>
         <button mat-button matStepperPrevious>Précédent</button>
-        <button #submitButton mat-button (click)="submitNewAssignment(); submitButton.disabled = true"
-          [disabled]="!stepper.completed">
+        <button
+          #submitButton
+          mat-button
+          (click)="submitNewAssignment(); submitButton.disabled = true"
+          [disabled]="!stepper.completed"
+        >
           {{ submitButtonText }}
         </button>
       </div>

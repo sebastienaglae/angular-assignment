@@ -7,6 +7,7 @@ import { LoggingService } from '../shared/services/logging/logging.service';
 import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { LoadingService } from '../shared/services/loading/loading.service';
 
 @Component({
   selector: 'app-register',
@@ -20,21 +21,25 @@ export class RegisterComponent implements OnInit {
     private authService: AuthService,
     private loggingService: LoggingService,
     private snackBar: MatSnackBar,
-    private route: Router
-  ) { }
+    private route: Router,
+    private loadingService: LoadingService
+  ) {
+    this.loadingService.changeLoadingState(false);
+  }
 
   ngOnInit(): void { }
 
   register() {
     this.loggingService.event('RegisterComponent', 'register');
     if (!this.registerForm.valid) {
-      Utils.snackBarError(this.snackBar, 'Remplissez tous les champs');
+      Utils.frontErrorSoft(this.snackBar, 'Remplissez tous les champs', this.loadingService);
       return;
     }
     if (!this.registerForm.isPasswordSame()) {
-      Utils.snackBarError(
+      Utils.frontErrorSoft(
         this.snackBar,
-        'Les mots de passe ne sont pas identiques'
+        'Les mots de passe ne sont pas identiques',
+        this.loadingService
       );
       return;
     }
@@ -54,12 +59,12 @@ export class RegisterComponent implements OnInit {
   handleRegistration(data: ErrorRequest | SuccessRequest): void {
     this.loggingService.event('RegisterComponent', 'handleRegistration');
     if (data instanceof ErrorRequest) {
-      Utils.snackBarError(this.snackBar, data);
+      Utils.frontError(this.snackBar, data, this.loadingService);
       return;
     }
     if (data.success)
       Utils.snackBarSuccess(this.snackBar, 'Inscription réussie');
-    else Utils.snackBarError(this.snackBar, 'Inscription échouée');
+    else Utils.frontErrorSoft(this.snackBar, 'Inscription échouée', this.loadingService);
   }
 
   connectionRedirect() {

@@ -1,29 +1,61 @@
 <!-- Composant : Liste des devoirs a rendre -->
 <!-- Description : Ce composant permet de lister les devoirs a rendre -->
 
-<!-- Chargement-->
-<mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="progress-bar"></mat-progress-bar>
-
-<mat-card class="card-basic card-big">
-  <mat-card-title class="title-big">
-    Devoirs
-  </mat-card-title>
-
-  <div>
+<mat-card class="card-basic card-giant">
+  <mat-card-title class="title-big center"> Devoirs </mat-card-title>
+  <div class="center fullwidth">
     <!-- Filtre de recherche -->
-    <div class="sameline">
-      <mat-chip-listbox aria-label="submit selection" [(ngModel)]="filterOptions.submitFilter" name="submit"
-        (change)="loadAssignments()">
-        <mat-chip-option value="all">Tous</mat-chip-option>
+    <div class="chipsline fullwidth">
+      <mat-chip-listbox
+        aria-label="submit selection"
+        [(ngModel)]="filterOptions.submitFilter"
+        name="submit"
+        (change)="loadAssignments()"
+      >
         <mat-chip-option value="submit" color="warn">Rendu</mat-chip-option>
-        <mat-chip-option value="notSubmited" color="accent">Non Rendu</mat-chip-option>
+        <mat-chip-option value="notSubmited" color="accent"
+          >Non Rendu</mat-chip-option
+        >
       </mat-chip-listbox>
-      <span class="space"> </span>
-      <mat-chip-listbox aria-label="rating selection" [(ngModel)]="filterOptions.ratingFilter" name="rating"
-        [minlength]="1" (change)="loadAssignments()">
-        <mat-chip-option value="all">Tous</mat-chip-option>
+      <mat-chip-listbox
+        aria-label="rating selection"
+        [(ngModel)]="filterOptions.ratingFilter"
+        name="rating"
+        (change)="loadAssignments()"
+      >
         <mat-chip-option value="rated" color="warn">Noté</mat-chip-option>
-        <mat-chip-option value="notRated" color="accent">Non noté</mat-chip-option>
+        <mat-chip-option value="notRated" color="accent"
+          >Non noté</mat-chip-option
+        >
+      </mat-chip-listbox>
+      <mat-chip-listbox
+        aria-label="year selection"
+        [(ngModel)]="filterOptions.yearFilter"
+        name="year"
+        (change)="loadAssignments()"
+      >
+        <mat-chip-option value="2022" color="warn">2022</mat-chip-option>
+        <mat-chip-option value="2023" color="accent">2023</mat-chip-option>
+        <mat-chip-option value="2024">2024</mat-chip-option>
+      </mat-chip-listbox>
+      <mat-chip-listbox
+        aria-label="month selection"
+        [(ngModel)]="filterOptions.monthFilter"
+        name="month"
+        (change)="loadAssignments()"
+      >
+        <mat-chip-option value="1" color="warn">Janvier</mat-chip-option>
+        <mat-chip-option value="2" color="warn">Février</mat-chip-option>
+        <mat-chip-option value="3" color="warn">Mars</mat-chip-option>
+        <mat-chip-option value="4" color="accent">Avril</mat-chip-option>
+        <mat-chip-option value="5" color="accent">Mai</mat-chip-option>
+        <mat-chip-option value="6" color="accent">Juin</mat-chip-option>
+        <mat-chip-option value="7" color="warn">Juillet</mat-chip-option>
+        <mat-chip-option value="8" color="warn">Août</mat-chip-option>
+        <mat-chip-option value="9" color="warn">Septembre</mat-chip-option>
+        <mat-chip-option value="10" color="accent">Octobre</mat-chip-option>
+        <mat-chip-option value="11" color="accent">Novembre</mat-chip-option>
+        <mat-chip-option value="12" color="accent">Décembre</mat-chip-option>
       </mat-chip-listbox>
     </div>
     <div class="sameline">
@@ -31,39 +63,52 @@
       <span class="space"> </span>
       <mat-form-field class="fullwidth">
         <mat-label>Rechercher</mat-label>
-        <input matInput #search placeholder="Test Assignment N" [(ngModel)]="filterOptions.searchText"
-          (keyup)="loadAssignments()" />
+        <input
+          matInput
+          #search
+          placeholder="Test Assignment N"
+          [(ngModel)]="filterOptions.searchText"
+          (keyup)="loadAssignments()"
+        />
       </mat-form-field>
     </div>
   </div>
-</mat-card>
-<!-- Le tableau de devoirs -->
-<mat-card class="card-giant">
-  <mat-table [dataSource]="datasource" matSort #agtTableSort="matSort" class="mat-elevation-z8">
+  <mat-table [dataSource]="datasource" matSort #agtTableSort="matSort">
     <!-- Le titre -->
     <ng-container matColumnDef="title">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="title">Titre</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header="title"
+        >Titre</mat-header-cell
+      >
       <mat-cell *matCellDef="let assignment">
         {{ assignment.title }}
       </mat-cell>
     </ng-container>
     <!-- La date de rendu -->
     <ng-container matColumnDef="dueDate">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate">Pour le</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header="dueDate"
+        >Pour le</mat-header-cell
+      >
       <mat-cell *matCellDef="let assignment">
         {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
       </mat-cell>
     </ng-container>
     <!-- Le rendu -->
     <ng-container matColumnDef="hasSubmission">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="hasSubmission">Rendu</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header="hasSubmission"
+        >Rendu</mat-header-cell
+      >
       <mat-cell *matCellDef="let assignment">
-        <mat-checkbox [checked]="assignment.hasSubmission" disabled></mat-checkbox>
+        <mat-checkbox
+          [checked]="assignment.hasSubmission"
+          disabled
+        ></mat-checkbox>
       </mat-cell>
     </ng-container>
     <!-- La notation -->
     <ng-container matColumnDef="hasRating">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="hasRating">Noter</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header="hasRating"
+        >Noter</mat-header-cell
+      >
       <mat-cell *matCellDef="let assignment">
         <mat-checkbox [checked]="assignment.hasRating" disabled></mat-checkbox>
       </mat-cell>
@@ -72,7 +117,11 @@
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let assignment">
-        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
@@ -80,15 +129,24 @@
             <mat-icon>more_horiz</mat-icon>
             <span>Plus de détails</span>
           </button>
-          <button mat-menu-item [routerLink]="['/assignment', assignment.id, 'edit']">
+          <button
+            mat-menu-item
+            [routerLink]="['/assignment', assignment.id, 'edit']"
+          >
             <mat-icon>edit</mat-icon>
             <span>Modifier</span>
           </button>
-          <button mat-menu-item [routerLink]="['/assignment', assignment.id, 'submit']">
+          <button
+            mat-menu-item
+            [routerLink]="['/assignment', assignment.id, 'submit']"
+          >
             <mat-icon>cloud_upload</mat-icon>
             <span>Rendre</span>
           </button>
-          <button mat-menu-item [routerLink]="['/assignment', assignment.id,'rate']">
+          <button
+            mat-menu-item
+            [routerLink]="['/assignment', assignment.id, 'rate']"
+          >
             <mat-icon>note_add</mat-icon>
             <span>Noter</span>
           </button>
@@ -99,10 +157,16 @@
         </mat-menu>
       </mat-cell>
     </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-header-row
+      *matHeaderRowDef="displayedColumns; sticky: true"
+    ></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
   </mat-table>
-  <mat-paginator class="mat-paginator-sticky" #paginator [pageSizeOptions]="[5, 10, 25, 100, 250, 500]"
-    showFirstLastButtons>
+  <mat-paginator
+    class="mat-paginator-sticky fullwidth"
+    #paginator
+    [pageSizeOptions]="[5, 10, 25, 100, 250, 500]"
+    showFirstLastButtons
+  >
   </mat-paginator>
 </mat-card>
