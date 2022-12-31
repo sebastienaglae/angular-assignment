@@ -9,9 +9,10 @@ const {StringLengthValidator, NumberValidator, ObjectIdValidator} = require('../
 
 router.get('/search', async (req, res, next) => {
     try {
-        const name = req.query.name;
+        const name = req.query.name || '';
         const limit = req.query.limit;
-        StringLengthValidator('name', name, 1, 100);
+
+        StringLengthValidator('name', name, 0, 100);
         NumberValidator('limit', limit, 1, 50);
 
         const teachers = await TeacherService.search(name, limit);

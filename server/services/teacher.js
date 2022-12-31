@@ -2,7 +2,10 @@ const { Teacher } = require('../models/db');
 
 class TeacherService {
     async search(name, limit) {
-        return Teacher.find({ name: { $regex: name, $options: 'i' } }).limit(limit).exec();
+        if (name && name.length > 0) {
+            return Teacher.find({ name: { $regex: name, $options: 'i' } }).limit(limit).exec();
+        }
+        return Teacher.find().limit(limit).exec();
     }
 
     async fetch(id) {

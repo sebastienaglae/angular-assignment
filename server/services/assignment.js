@@ -75,7 +75,8 @@ class AssignmentService {
             .find(filter)
             .sort(options.order)
             .skip((options.page - 1) * options.limit)
-            .limit(options.limit + 1);
+            .limit(options.limit + 1)
+            .projection({ 'description': 0, 'submission.content': 0, 'rating.content': 0 });
 
         const items = await query.exec();
         const result = new SearchResult();
@@ -97,7 +98,7 @@ class AssignmentService {
             const value = filter[key];
             const type = typeof value;
             const path = Assignment.schema.paths[key];
-            if (path.instance === 'String' && type === 'string') {
+            if (path.instance === 'String' && type === 'string' && value.length > 0) {
                 query[key] = { $regex: value, $options: 'i' };
             } else {
                 query[key] = value;

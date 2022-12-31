@@ -1,7 +1,3 @@
-const { AccountDto } = require('./account');
-const { SubjectDto } = require('./subject');
-const { TeacherDto } = require('./teacher');
-
 const AssignmentDto = assignment => {
     return {
         id: assignment._id,
@@ -18,7 +14,7 @@ const AssignmentDto = assignment => {
     };
 }
 
-const AssignmentSearchEntryDto = assignment => {
+const AssignmentInfoDto = assignment => {
     return {
         id: assignment._id,
         ownerId: assignment.owner,
@@ -28,25 +24,26 @@ const AssignmentSearchEntryDto = assignment => {
         createdAt: assignment.createdAt,
         updatedAt: assignment.updatedAt,
         dueDate: assignment.dueDate,
-        hasSubmission: assignment.submission !== null,
-        hasRating: assignment.rating !== null
+        hasSubmission: assignment.submission !== undefined && assignment.submission !== null,
+        hasRating: assignment.rating !== undefined && assignment.rating !== null
     };
 }
 
-const AssignmentFullDto = assignment => {
+const AssignmentSubmissionDto = submission => {
     return {
-        id: assignment._id,
-        owner: AccountDto(assignment.owner),
-        subject: SubjectDto(assignment.subject),
-        teacher: TeacherDto(assignment.teacher),
-        title: assignment.title,
-        description: assignment.description,
-        createdAt: assignment.createdAt,
-        updatedAt: assignment.updatedAt,
-        dueDate: assignment.dueDate,
-        submission: assignment.submission || null,
-        rating: assignment.rating || null
+        type: submission.type,
+        content: submission.content,
+        originalName: submission.originalName,
+        submittedAt: submission.submittedAt
     };
 }
 
-module.exports = { AssignmentDto, AssignmentSearchEntryDto, AssignmentFullDto };
+const AssignmentRatingDto = rating => {
+    return {
+        rating: rating.rating,
+        date: rating.date,
+        comment: rating.comment
+    };
+}
+
+module.exports = { AssignmentDto, AssignmentInfoDto, AssignmentSubmissionDto, AssignmentRatingDto };

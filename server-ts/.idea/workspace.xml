@@ -5,11 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb09ac4f-6157-4cca-bd61-de43a0805ead" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.cfignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/server-ts.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.prettierrc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nodemon.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/favicon-16x16.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/favicon-32x32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/oauth2-redirect.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui-bundle.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui-bundle.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui-standalone-preset.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui-standalone-preset.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui.css.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/api-explorer/swagger-ui.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/controllers/authentication/controller.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/controllers/authentication/controller.validator.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/controllers/authentication/router.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/middlewares/auth.d.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/middlewares/auth.handler.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/api/middlewares/error.handler.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/models/authentication/token.model.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/models/db/assignment.model.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/models/db/assignment.submission.model.ts" afterDir="false" />
@@ -20,7 +49,15 @@
       <change afterPath="$PROJECT_DIR$/server/api/services/authentication.service.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/services/user.service.ts" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/server/api/validators/auth.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/common/api.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/common/env.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/common/logger.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/common/server.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/routes.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../server/services/openai.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/models/dto/assignment.js" beforeDir="false" afterPath="$PROJECT_DIR$/../server/models/dto/assignment.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/models/role.js" beforeDir="false" afterPath="$PROJECT_DIR$/../server/models/role.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server/package.json" afterDir="false" />
@@ -45,22 +82,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/sakura/Documents/GitHub/angular-assignment/server-ts/server/api/controllers/authentication",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/sakura/Documents/GitHub/angular-assignment/server-ts/node_modules/prettier",
-    "ts.external.directory.path": "/Users/sakura/Documents/GitHub/angular-assignment/server-ts/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sakura/Documents/GitHub/angular-assignment/server-ts/server/api/controllers/authentication&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/sakura/Documents/GitHub/angular-assignment/server-ts/node_modules/prettier&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/sakura/Documents/GitHub/angular-assignment/server-ts/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/server/api/controllers/authentication" />
@@ -103,6 +140,7 @@
       <option name="presentableId" value="Default" />
       <updated>1672417128435</updated>
       <workItem from="1672417129437" duration="10505000" />
+      <workItem from="1672480293791" duration="26000" />
     </task>
     <servers />
   </component>

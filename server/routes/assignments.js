@@ -8,8 +8,8 @@ const TeacherService = require('../services/teacher');
 
 const Role = require('../models/role');
 const { AuthenticationRequiredError, AuthorizationError, ObjectNotFoundError } = require("../models/error");
-const { StringLengthValidator, NumberValidator, CustomValidator, ObjectIdValidator, DateTimeValidator } = require('../util/validator');
-const { AssignmentDto, AssignmentSearchEntryDto, AssignmentFullDto } = require("../models/dto/assignment");
+const { StringLengthValidator, NumberValidator, ObjectIdValidator, DateTimeValidator } = require('../util/validator');
+const { AssignmentDto, AssignmentInfoDto, AssignmentRatingDto, AssignmentSubmissionDto } = require("../models/dto/assignment");
 
 router.get('/search', async (req, res, next) => {
     try {
@@ -25,7 +25,7 @@ router.get('/search', async (req, res, next) => {
         };
         const searchResult = await AssignmentService.search(options);
 
-        searchResult.items = searchResult.items.map(AssignmentSearchEntryDto);
+        searchResult.items = searchResult.items.map(AssignmentInfoDto);
 
         res.json(searchResult);
     } catch (error) {
@@ -134,6 +134,23 @@ router.put('/:id/rating', async (req, res, next) => {
     }
 });
 
+router.get('/:id/info', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const result = await AssignmentService.find(id);
+
+        if (!result) {
+            throw new ObjectNotFoundError('Assignment not found');
+        }
+
+        res.json(AssignmentInfoDto(result));
+    } catch (error) {
+        next(error);
+    }
+});
+
 router.get('/:id', async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -146,6 +163,40 @@ router.get('/:id', async (req, res, next) => {
         }
 
         res.json(AssignmentDto(result));
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/:id/submission', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const result = await AssignmentService.find(id);
+
+        if (!result) {
+            throw new ObjectNotFoundError('Assignment not found');
+        }
+
+        res.json(result.submission ? AssignmentSubmissionDto(result) : null);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/:id/rating', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const result = await AssignmentService.find(id);
+
+        if (!result) {
+            throw new ObjectNotFoundError('Assignment not found');
+        }
+
+        res.json(result.rating ? AssignmentRatingDto(result) : null);
     } catch (error) {
         next(error);
     }

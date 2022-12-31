@@ -4,4 +4,9 @@ const Role = {
     CREATE_ASSIGNMENT: 4,
 };
 
+const RoleGroup = {
+    ADMIN: Role.DELETE_ASSIGNMENT | Role.UPDATE_ASSIGNMENT | Role.CREATE_ASSIGNMENT,
+    STUDENT: Role.UPDATE_ASSIGNMENT | Role.CREATE_ASSIGNMENT,
+}
+
 module.exports = Role;
