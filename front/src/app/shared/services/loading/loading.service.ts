@@ -15,7 +15,7 @@ export class LoadingService {
   ) {
   }
 
-  changeLoadingState(state: boolean): boolean {
+  setLoadingState(state: boolean): boolean {
     this.loggingService.log(`LoadingService: changeLoadingState(${state})`);
     clearTimeout(this.timeout);
 
@@ -27,7 +27,7 @@ export class LoadingService {
     return true;
   }
 
-  changeUploadState(state: boolean): boolean {
+  setUploadState(state: boolean): boolean {
     this.loggingService.log(`LoadingService: changeUploadState(${state})`);
     clearTimeout(this.timeout);
 
@@ -39,15 +39,15 @@ export class LoadingService {
     return true;
   }
 
-  error() {
+  enabledError() {
     this.executeSequenceLoop(LoadingModel.error, LoadingModel.error, true);
   }
 
-  errorSoft() {
+  enabledErrorSoft() {
     this.executeSequenceLoop(LoadingModel.error, LoadingModel.error, false);
   }
 
-  executeSequenceLoop(originalSequence: LoadingModel[], sequence: LoadingModel[], loop: boolean): void {
+  private executeSequenceLoop(originalSequence: LoadingModel[], sequence: LoadingModel[], loop: boolean): void {
     sequence = sequence.slice();
     this.loggingService.log(`LoadingService: executeSequence()`);
     this.loadingModel.next(sequence[0]);
@@ -68,7 +68,7 @@ export class LoadingService {
       , sequence[0].timeout);
   }
 
-  executeSequence(sequence: LoadingModel[]): void {
+  private executeSequence(sequence: LoadingModel[]): void {
     sequence = sequence.slice();
     this.loggingService.log(`LoadingService: executeSequence()`);
     this.loadingModel.next(sequence[0]);

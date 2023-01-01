@@ -8,36 +8,36 @@ import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingService } from '../shared/services/loading/loading.service';
+import { BaseComponent } from '../base/base.component';
 
 @Component({
   selector: 'app-connexion',
   templateUrl: './connexion.component.html',
   styleUrls: ['./connexion.component.css'],
 })
-export class ConnexionComponent implements OnInit {
+export class ConnexionComponent extends BaseComponent {
   loginForm: RegisterAccountFromGroup = new RegisterAccountFromGroup();
 
   constructor(
-    private authService: AuthService,
-    private loggingService: LoggingService,
-    private snackBar: MatSnackBar,
-    private route: Router,
-    private loadingService: LoadingService
+    private _authService: AuthService,
+    private _loggingService: LoggingService,
+    snackBar: MatSnackBar,
+    private _route: Router,
+    loadingService: LoadingService
   ) {
-    this.loadingService.changeLoadingState(true);
+    super(loadingService, snackBar)
+    this.loadingState(false);
   }
-
-  ngOnInit(): void { }
 
   // Fonction qui gère la connexion
   login() {
-    this.loggingService.event('ConnexionComponent', 'login');
+    this._loggingService.event('ConnexionComponent', 'login');
     if (!this.loginForm.valid) {
-      Utils.frontError(this.snackBar, 'Remplissez tous les champs', this.loadingService);
+      this.handleErrorSoft('Remplissez tous les champs')
       return;
     }
 
-    this.authService
+    this._authService
       .login(
         this.loginForm.value.username,
         this.loginForm.value.password,
@@ -50,19 +50,19 @@ export class ConnexionComponent implements OnInit {
 
   // Fonction qui gère la connexion
   handleLogin(data: ErrorRequest | TokenAuth) {
-    this.loggingService.event('ConnexionComponent', 'handleLogin');
+    this._loggingService.event('ConnexionComponent', 'handleLogin');
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this.snackBar, data.message, this.loadingService);
+      this.handleErrorSoft(data)
       return;
     }
-    Utils.snackBarSuccess(this.snackBar, 'Connexion réussie');
+    Utils.snackBarSuccess(this._snackBar, 'Connexion réussie');
 
-    this.route.navigate(['/home']);
+    this._route.navigate(['/home']);
   }
 
   // Fonction qui gère le lien vers la page d'inscription
   registerRedirect() {
-    this.route.navigate(['/register']);
+    this._route.navigate(['/register']);
   }
 }
 

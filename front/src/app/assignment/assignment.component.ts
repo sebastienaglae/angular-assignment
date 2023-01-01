@@ -14,12 +14,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentSearch } from '../shared/models/assignment.search.model';
 import { SuccessRequest } from '../shared/api/success.model';
 import { LoadingService } from '../shared/services/loading/loading.service';
+import { BaseComponent } from '../base/base.component';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
   styleUrls: ['./assignment.component.css'],
 })
-export class AssignmentComponent implements OnInit {
+export class AssignmentComponent extends BaseComponent {
   searchAssignment!: SearchAssignment;
   datasource: MatTableDataSource<AssignmentSearch> = new MatTableDataSource();
 
@@ -34,16 +35,17 @@ export class AssignmentComponent implements OnInit {
 
   // Add ref of AppComponent to use it in the template
   constructor(
-    private assignementService: AssignmentService,
-    private loggingService: LoggingService,
-    private snackBar: MatSnackBar,
-    private loadingService: LoadingService,
+    private _assignementService: AssignmentService,
+    private _loggingService: LoggingService,
+    snackBar: MatSnackBar,
+    loadingService: LoadingService,
   ) {
-    this.loadingService.changeLoadingState(true);
+    super(loadingService, snackBar);
+    this.loadingState(true);
   }
 
 
-  ngOnInit(): void {
+  onInit(): void {
     this.datasource.paginator = this.paginator;
     this.datasource.sort = this.sort;
   }
@@ -54,34 +56,34 @@ export class AssignmentComponent implements OnInit {
 
   // Fonction qui permet de supprimer une devoir
   onDeleteAssignment(id: string) {
-    this.loggingService.event('AssignmentComponent', 'onDeleteAssignment');
-    this.assignementService.delete(id).subscribe((data) => {
+    this._loggingService.event();
+    this._assignementService.delete(id).subscribe((data) => {
       this.handleDeleteAssignment(data);
     });
   }
 
   handleDeleteAssignment(data: SuccessRequest | ErrorRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this.snackBar, data, this.loadingService)
+      this.handleErrorSoft(data)
       return;
     }
     if (!data.success) {
-      Utils.frontError(this.snackBar, 'Une erreur est survenue', this.loadingService);
+      this.handleErrorSoft('Une erreur est survenue')
       return;
     }
 
-    Utils.snackBarSuccess(this.snackBar, 'Devoir supprimé avec succès');
+    Utils.snackBarSuccess(this._snackBar, 'Devoir supprimé avec succès');
     this.loadAssignments();
   }
 
   loadAssignments(): void {
-    this.loggingService.event('AssignmentComponent', 'loadAssignments');
+    this._loggingService.event();
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(
         startWith({}),
         switchMap(() => {
-          this.loadingService.changeLoadingState(true);
-          return this.assignementService.search(this.getFilter(), this.getOrder(), {
+          this.loadingState(true)
+          return this._assignementService.search(this.getFilter(), this.getOrder(), {
             page: this.paginator.pageIndex,
             limit: this.paginator.pageSize,
           });
@@ -89,11 +91,11 @@ export class AssignmentComponent implements OnInit {
         map((data) => {
           if (data instanceof ErrorRequest) {
             this.paginator.length = 0;
-            Utils.frontError(this.snackBar, data, this.loadingService)
+            this.handleError(data)
             return [];
           }
           this.paginator.length = data.totalItems;
-          this.loadingService.changeLoadingState(false);
+          this.loadingState(false)
           return data.items;
         }),
         catchError(() => {

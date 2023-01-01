@@ -8,43 +8,40 @@ import { Utils } from '../shared/tools/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { LoadingService } from '../shared/services/loading/loading.service';
+import { BaseComponent } from '../base/base.component';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent extends BaseComponent {
   registerForm: RegisterAccountFromGroup = new RegisterAccountFromGroup();
 
   constructor(
-    private authService: AuthService,
-    private loggingService: LoggingService,
-    private snackBar: MatSnackBar,
-    private route: Router,
-    private loadingService: LoadingService
+    private _authService: AuthService,
+    private _loggingService: LoggingService,
+    snackBar: MatSnackBar,
+    private _route: Router,
+    loadingService: LoadingService
   ) {
-    this.loadingService.changeLoadingState(false);
+    super(loadingService, snackBar)
+    this.loadingState(false);
   }
 
-  ngOnInit(): void { }
 
   register() {
-    this.loggingService.event('RegisterComponent', 'register');
+    this._loggingService.event('RegisterComponent', 'register');
     if (!this.registerForm.valid) {
-      Utils.frontErrorSoft(this.snackBar, 'Remplissez tous les champs', this.loadingService);
+      this.handleErrorSoft('Remplissez tous les champs')
       return;
     }
     if (!this.registerForm.isPasswordSame()) {
-      Utils.frontErrorSoft(
-        this.snackBar,
-        'Les mots de passe ne sont pas identiques',
-        this.loadingService
-      );
+      this.handleErrorSoft('Les mots de passe ne sont pas identiques')
       return;
     }
 
-    this.authService
+    this._authService
       .register(
         this.registerForm.usernameValue,
         this.registerForm.passwordValue,
@@ -57,20 +54,21 @@ export class RegisterComponent implements OnInit {
 
   // Fonction qui gère l'inscription
   handleRegistration(data: ErrorRequest | SuccessRequest): void {
-    this.loggingService.event('RegisterComponent', 'handleRegistration');
+    this._loggingService.event();
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this.snackBar, data, this.loadingService);
+      this.handleErrorSoft(data)
       return;
     }
     if (data.success)
-      Utils.snackBarSuccess(this.snackBar, 'Inscription réussie');
-    else Utils.frontErrorSoft(this.snackBar, 'Inscription échouée', this.loadingService);
+      Utils.snackBarSuccess(this._snackBar, 'Inscription réussie');
+    else {
+      this.handleErrorSoft('Inscription échouée')
+    }
   }
 
   connectionRedirect() {
-    this.route.navigate(['/login']);
+    this._route.navigate(['/login']);
   }
-
 }
 
 class RegisterAccountFromGroup extends FormGroup {

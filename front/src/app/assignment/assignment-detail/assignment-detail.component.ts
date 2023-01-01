@@ -12,6 +12,7 @@ import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
+import { BaseComponent } from 'src/app/base/base.component';
 
 @Component({
   selector: 'assignment-options.sheet',
@@ -30,31 +31,30 @@ export class BottomSheetAssignmentOptions {
   templateUrl: './assignment-detail.component.html',
   styleUrls: ['./assignment-detail.component.css'],
 })
-export class AssignmentDetailComponent implements OnInit {
+export class AssignmentDetailComponent extends BaseComponent {
   assignmentTarget?: Assignment;
   file: File | undefined;
   isAssignmentLate: boolean = false;
   assignmentTimeRemaining: string = '';
-  loading: boolean = true;
-
   targetSubject?: Subject;
   teacherImgPath!: string;
   subjectImgPath!: string;
 
   constructor(
-    private assignementService: AssignmentService,
-    private subjectsService: SubjectsService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService,
-    private _snackBar: MatSnackBar,
+    private _assignementService: AssignmentService,
+    private _subjectsService: SubjectsService,
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _authService: AuthService,
+    snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
-    private loadingService: LoadingService
+    loadingService: LoadingService
   ) {
-    this.loading = this.loadingService.changeLoadingState(true);
+    super(loadingService, snackBar);
+    this.loadingState(true);
   }
 
-  ngOnInit(): void {
+  onInit(): void {
     this.getAssignment();
   }
 
@@ -70,9 +70,9 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   getAssignment() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this._route.snapshot.paramMap.get('id');
     if (id) {
-      this.assignementService.get(id).subscribe((data) => {
+      this._assignementService.get(id).subscribe((data) => {
         this.handleAssignment(data);
       });
     }
@@ -80,11 +80,11 @@ export class AssignmentDetailComponent implements OnInit {
 
   handleAssignment(assData: ErrorRequest | Assignment) {
     if (!assData) {
-      Utils.frontError(this._snackBar, 'Erreur inconue', this.loadingService);
+      this.handleError('Erreur inconue');
       return;
     }
     if (assData instanceof ErrorRequest) {
-      Utils.frontError(this._snackBar, assData, this.loadingService);
+      this.handleError(assData);
       return;
     }
 
@@ -94,12 +94,12 @@ export class AssignmentDetailComponent implements OnInit {
     this.handleFileSubmission();
     //todo : subject check
     if (assData.subjectId)
-      this.subjectsService.get(assData.subjectId).subscribe((data) => {
+      this._subjectsService.get(assData.subjectId).subscribe((data) => {
         if (!data) return;
         this.targetSubject = data as any as Subject;
         //todo : get teacher img path
         //this.subjectImgPath = subjectResult.imgPath;
-        this.loading = this.loadingService.changeLoadingState(false);
+        this.loadingState(false);
       });
   }
 
@@ -107,7 +107,7 @@ export class AssignmentDetailComponent implements OnInit {
     if (!this.assignmentTarget?.submission) return;
     this.file = Submission.getFile(this.assignmentTarget.submission);
     if (!this.file) {
-      Utils.frontError(this._snackBar, 'Impossible de récupérer le fichier', this.loadingService);
+      this.handleErrorSoft('Impossible de récupérer le fichier')
     }
   }
 
@@ -116,25 +116,25 @@ export class AssignmentDetailComponent implements OnInit {
   }
 
   teacherRedirect() {
-    this.router.navigate(['/teacher', this.assignmentTarget?.teacherId]);
+    this._router.navigate(['/teacher', this.assignmentTarget?.teacherId]);
   }
 
   submitRedirect() {
-    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'submit']);
+    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'submit']);
   }
 
   ratingRedirect() {
-    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'rate']);
+    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'rate']);
   }
 
   editRedirect() {
-    this.router.navigate(['/assignment', this.assignmentTarget?.id, 'edit']);
+    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'edit']);
   }
 
   deleteRedirect() {
     if (!this.assignmentTarget) return;
     if (!this.assignmentTarget.id) return;
-    this.assignementService.delete(this.assignmentTarget?.id).subscribe((data) => {
+    this._assignementService.delete(this.assignmentTarget?.id).subscribe((data) => {
       this.handleDeleteAssignment(data);
     });
 
@@ -142,11 +142,11 @@ export class AssignmentDetailComponent implements OnInit {
 
   handleDeleteAssignment(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this._snackBar, data, this.loadingService);
+      this.handleError(data);
       return;
     }
     if (!data.success) {
-      Utils.frontError(this._snackBar, 'Erreur lors de la suppression', this.loadingService);
+      this.handleErrorSoft('Erreur lors de la suppression');
       return;
     }
     Utils.snackBarSuccess(this._snackBar, 'Suppression réussie');

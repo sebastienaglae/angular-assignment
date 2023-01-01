@@ -18,21 +18,13 @@ export class TeacherService {
     private http: HttpClient
   ) { }
 
-  search(pagi?: {
-    page: number;
-    limit: number;
-  }): Observable<SearchTeacher | ErrorRequest> {
+  getAll(): Observable<Teacher[] | ErrorRequest> {
     this.loggingService.log(
       `GET SEARCH`
     );
-    //TODO OFFSET
-    if (pagi !== undefined)
-      pagi.page += 1;
-
-    const query = Utils.searchFilterOrderPagination(null, null, pagi);
 
     return this.http
-      .get<SearchTeacher>(`${this.apiUrl}/search${query}`)
+      .get<Teacher[]>(`${this.apiUrl}/search`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentSearch')));
   }
 

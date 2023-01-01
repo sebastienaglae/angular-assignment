@@ -54,6 +54,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { SizePipe } from './shared/tools/SizePipe'
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/assignment-detail.component';
+import { BaseComponent } from './base/base.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/ass
     AssignmentRateComponent,
     TeacherDetailComponent,
     SizePipe,
-    BottomSheetAssignmentOptions
+    BottomSheetAssignmentOptions,
+    BaseComponent
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { BaseComponent } from 'src/app/base/base.component';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Assignment } from 'src/app/shared/models/assignment.model';
@@ -16,31 +17,30 @@ import { Utils } from 'src/app/shared/tools/Utils';
   templateUrl: './assignment-rate.component.html',
   styleUrls: ['./assignment-rate.component.css'],
 })
-export class AssignmentRateComponent {
+export class AssignmentRateComponent extends BaseComponent {
   rateForm: RateFormGroup = new RateFormGroup();
-  loading: boolean = false;
   assignmentId!: string | null;
   assignmentTarget?: Assignment;
 
   constructor(
-    private loggingService: LoggingService,
-    private assignmentService: AssignmentService,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-    private loadingService: LoadingService,
-    private _snackBar: MatSnackBar,
+    private _loggingService: LoggingService,
+    private _assignmentService: AssignmentService,
+    private _route: ActivatedRoute,
+    snackBar: MatSnackBar,
+    loadingService: LoadingService,
   ) {
-    this.loading = this.loadingService.changeLoadingState(true);
+    super(loadingService, snackBar);
+    this.loadingState(true);
   }
 
-  ngOnInit(): void {
+  onInit(): void {
     this.getAssignment();
   }
 
   getAssignment() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this._route.snapshot.paramMap.get('id');
     if (id) {
-      this.assignmentService.get(id).subscribe((data) => {
+      this._assignmentService.get(id).subscribe((data) => {
         this.handleAssignment(data);
       });
     }
@@ -48,18 +48,18 @@ export class AssignmentRateComponent {
 
   handleAssignment(assData: ErrorRequest | Assignment) {
     if (assData instanceof ErrorRequest) {
-      Utils.frontError(this._snackBar, assData, this.loadingService);
+      this.handleError(assData)
       return;
     }
 
     this.assignmentTarget = assData;
-    this.loading = this.loadingService.changeLoadingState(false);
+    this.loadingState(false);
   }
 
   onUpdatingRate() {
     if (this.assignmentId === null) return;
     let rating = Rating.createRating(this.rateForm.rateValue, this.rateForm.commentValue);
-    this.assignmentService.updateRating(
+    this._assignmentService.updateRating(
       this.assignmentId,
       rating,
     ).subscribe((res) => {
@@ -69,14 +69,14 @@ export class AssignmentRateComponent {
 
   handleRate(data: SuccessRequest | ErrorRequest) {
     if (data instanceof ErrorRequest) {
-      Utils.frontError(this.snackBar, data, this.loadingService);
+      this.handleError(data);
       return;
     }
     if (data.success) {
-      Utils.snackBarSuccess(this.snackBar, "Votre note a bien été prise en compte");
+      Utils.snackBarSuccess(this._snackBar, "Votre note a bien été prise en compte");
     }
     else {
-      Utils.frontError(this.snackBar, "Une erreur est survenue", this.loadingService);
+      this.handleErrorSoft("Une erreur est survenue")
     }
   }
 }
