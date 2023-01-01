@@ -76,7 +76,7 @@ class AssignmentService {
             .sort(options.order)
             .skip((options.page - 1) * options.limit)
             .limit(options.limit + 1)
-            .projection({ 'description': 0, 'submission.content': 0, 'rating.content': 0 });
+            .select({ 'description': 0, 'submission.content': 0, 'rating.content': 0 });
 
         const items = await query.exec();
         const result = new SearchResult();
