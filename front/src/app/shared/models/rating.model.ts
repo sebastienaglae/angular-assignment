@@ -6,9 +6,7 @@ export class Rating {
   date!: Date;
   comment!: string;
 
-  public static createRating(
-    rating: number, comment: string
-  ): Rating {
+  public static createRating(rating: number, comment: string): Rating {
     let ratingObj = new Rating();
     ratingObj.rating = rating;
     ratingObj.comment = comment;
@@ -26,8 +24,6 @@ export class Rating {
   }
 
   public static getCommentValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.maxLength(1000),
-    ]);
+    return Validators.compose([Validators.maxLength(1000)]);
   }
 }

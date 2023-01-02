@@ -6,83 +6,95 @@ import { AssignmentService } from 'src/app/shared/services/assignment/assignment
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
 import { Submission } from 'src/app/shared/models/submission.model';
-import { Utils } from 'src/app/shared/tools/Utils';
+import { Utils } from 'src/app/shared/utils/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 import { BaseComponent } from 'src/app/base/base.component';
-
-@Component({
-  selector: 'assignment-options.sheet',
-  templateUrl: './assignment-options.sheet.html',
-})
-export class BottomSheetAssignmentOptions {
-  constructor(private _bottomSheetRef: MatBottomSheetRef<AssignmentDetailComponent>) { }
-
-  openLink(event: string): void {
-    this._bottomSheetRef.dismiss(event);
-  }
-}
+import { Teacher } from 'src/app/shared/models/teacher.model';
+import { TeacherService } from 'src/app/shared/services/teacher/teacher.service';
+import { LoggingService } from 'src/app/shared/services/logging/logging.service';
+import { MatDialog } from '@angular/material/dialog';
+import { BottomSheetAssignmentOptions } from './bottomSheetOptions/assignment-options.sheet';
 
 @Component({
   selector: 'app-assignment-detail',
   templateUrl: './assignment-detail.component.html',
   styleUrls: ['./assignment-detail.component.css'],
 })
-export class AssignmentDetailComponent extends BaseComponent {
+export class AssignmentDetailComponent extends BaseComponent implements OnInit {
+  // Informations sur l'assignment
   assignmentTarget?: Assignment;
-  file: File | undefined;
   isAssignmentLate: boolean = false;
   assignmentTimeRemaining: string = '';
+  finishLoadCount: number = 0;
+
+  // Fichier de l'assignment
+  file: File | undefined;
+
   targetSubject?: Subject;
-  teacherImgPath!: string;
-  subjectImgPath!: string;
+  targetTeacher?: Teacher;
 
   constructor(
     private _assignementService: AssignmentService,
     private _subjectsService: SubjectsService,
     private _route: ActivatedRoute,
-    private _router: Router,
-    private _authService: AuthService,
-    snackBar: MatSnackBar,
+    private _teacherService: TeacherService,
     private _bottomSheet: MatBottomSheet,
-    loadingService: LoadingService
+    loadingService: LoadingService,
+    snackBar: MatSnackBar,
+    loggingService: LoggingService,
+    dialog: MatDialog
   ) {
-    super(loadingService, snackBar);
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(true);
   }
 
-  onInit(): void {
+  ngOnInit(): void {
     this.getAssignment();
   }
 
+  // Ouvre le bottom sheet pour les options de l'assignment
   openBottomSheet(): void {
-    this._bottomSheet.open(BottomSheetAssignmentOptions).afterDismissed().subscribe((data) => {
-      const action = data as string;
-      if (action === 'edit') this.editRedirect();
-      if (action === 'delete') this.deleteRedirect();
-      if (action === 'rate') this.ratingRedirect();
-      if (action === 'submit') this.submitRedirect();
-    }
-    );
+    this._loggingService.event();
+    this._bottomSheet
+      .open(BottomSheetAssignmentOptions, {
+        data: {
+          assignmentTarget: this.assignmentTarget,
+        },
+      })
+      .afterDismissed()
+      .subscribe((data) => {
+        const action = data as string;
+        if (action === 'delete') this.deleteRedirect();
+        this._loggingService.event(action);
+      });
   }
 
+  // Recupere l'assignment
   getAssignment() {
     const id = this._route.snapshot.paramMap.get('id');
-    if (id) {
-      this._assignementService.get(id).subscribe((data) => {
-        this.handleAssignment(data);
-      });
+    this._loggingService.event(id ?? 'undefined');
+    if (!id) {
+      this.handleError("L'identifiant de l'assignment n'est pas valide ! ");
+      return;
+    }
+    this._assignementService.get(id).subscribe((data) => {
+      this.handleAssignmentResponse(data);
+    });
+  }
+
+  isFinishLoad() {
+    this.finishLoadCount++;
+    if (this.finishLoadCount === 2) {
+      this.loadingState(false);
     }
   }
 
-  handleAssignment(assData: ErrorRequest | Assignment) {
-    if (!assData) {
-      this.handleError('Erreur inconue');
-      return;
-    }
+  // Gere la reponse de l'api pour les assignments & les rendus & les matieres
+  handleAssignmentResponse(assData: ErrorRequest | Assignment) {
     if (assData instanceof ErrorRequest) {
       this.handleError(assData);
       return;
@@ -92,55 +104,65 @@ export class AssignmentDetailComponent extends BaseComponent {
     this.isAssignmentLate = Assignment.isTooLate(assData);
     this.assignmentTimeRemaining = Assignment.getTimeRemaining(assData);
     this.handleFileSubmission();
-    //todo : subject check
     if (assData.subjectId)
       this._subjectsService.get(assData.subjectId).subscribe((data) => {
-        if (!data) return;
-        this.targetSubject = data as any as Subject;
-        //todo : get teacher img path
-        //this.subjectImgPath = subjectResult.imgPath;
-        this.loadingState(false);
+        this.handleSubjectResponse(data);
       });
+
+    if (assData.teacherId) {
+      this._teacherService.get(assData.teacherId).subscribe((data) => {
+        this.handleTeacherResponse(data);
+      });
+    }
   }
 
+  // Obtient le fichier de l'assignment
   handleFileSubmission() {
     if (!this.assignmentTarget?.submission) return;
     this.file = Submission.getFile(this.assignmentTarget.submission);
     if (!this.file) {
-      this.handleErrorSoft('Impossible de récupérer le fichier')
+      this.handleErrorSoft('Impossible de récupérer le fichier');
     }
   }
 
-  isAdmin(): boolean {
-    throw new Error('Method not implemented.');
+  // Gere la reponse de l'api pour les matieres
+  handleSubjectResponse(subjectData: ErrorRequest | Subject) {
+    if (subjectData instanceof ErrorRequest) {
+      this.handleError(subjectData);
+      return;
+    }
+
+    this.targetSubject = subjectData;
+    this.isFinishLoad();
   }
 
-  teacherRedirect() {
-    this._router.navigate(['/teacher', this.assignmentTarget?.teacherId]);
+  // Gere la reponse de l'api pour les enseignants
+  handleTeacherResponse(teacherData: ErrorRequest | Teacher) {
+    if (teacherData instanceof ErrorRequest) {
+      this.handleError(teacherData);
+      return;
+    }
+
+    this.targetTeacher = teacherData;
+    this.isFinishLoad();
   }
 
-  submitRedirect() {
-    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'submit']);
-  }
-
-  ratingRedirect() {
-    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'rate']);
-  }
-
-  editRedirect() {
-    this._router.navigate(['/assignment', this.assignmentTarget?.id, 'edit']);
-  }
-
+  // Supprime l'assignment
   deleteRedirect() {
-    if (!this.assignmentTarget) return;
-    if (!this.assignmentTarget.id) return;
-    this._assignementService.delete(this.assignmentTarget?.id).subscribe((data) => {
-      this.handleDeleteAssignment(data);
-    });
-
+    this._loggingService.event();
+    if (!this.assignmentTarget || !this.assignmentTarget.id) {
+      this.handleErrorSoft("Impossible de supprimer l'assignment");
+      return;
+    }
+    this._assignementService
+      .delete(this.assignmentTarget?.id)
+      .subscribe((data) => {
+        this.handleDeleteAssignmentResponse(data);
+      });
   }
 
-  handleDeleteAssignment(data: ErrorRequest | SuccessRequest) {
+  // Gestion de la suppression
+  handleDeleteAssignmentResponse(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
       this.handleError(data);
       return;
@@ -152,9 +174,12 @@ export class AssignmentDetailComponent extends BaseComponent {
     Utils.snackBarSuccess(this._snackBar, 'Suppression réussie');
   }
 
+  // Redirections vers la liste des assignments
   downloadSubmission() {
-    if (!this.assignmentTarget) return;
-    if (!this.assignmentTarget.submission) return;
+    if (!this.assignmentTarget || !this.assignmentTarget.submission) {
+      this.handleErrorSoft('Impossible de télécharger le fichier');
+      return;
+    }
     Submission.downloadContentToUser(this.assignmentTarget);
   }
 }

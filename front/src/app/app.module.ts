@@ -1,4 +1,4 @@
-import { Injectable, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCardModule } from '@angular/material/card';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RouterModule } from '@angular/router';
@@ -51,10 +51,19 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
-import { SizePipe } from './shared/tools/SizePipe'
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/assignment-detail.component';
+import { SizePipe } from './shared/utils/SizePipe';
+import {
+  MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+  MatBottomSheetModule,
+} from '@angular/material/bottom-sheet';
 import { BaseComponent } from './base/base.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {
+  MAT_DIALOG_DEFAULT_OPTIONS,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import { BaseDialog } from './base/base.dialog';
+import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/bottomSheetOptions/assignment-options.sheet';
 
 @NgModule({
   declarations: [
@@ -71,7 +80,8 @@ import { BaseComponent } from './base/base.component';
     TeacherDetailComponent,
     SizePipe,
     BottomSheetAssignmentOptions,
-    BaseComponent
+    BaseComponent,
+    BaseDialog,
   ],
   imports: [
     BrowserModule,
@@ -113,6 +123,8 @@ import { BaseComponent } from './base/base.component';
     MatBadgeModule,
     MatChipsModule,
     MatBottomSheetModule,
+    MatAutocompleteModule,
+    MatDialogModule,
   ],
   providers: [
     {
@@ -122,8 +134,14 @@ import { BaseComponent } from './base/base.component';
     {
       provide: CdkColumnDef,
     },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } },
+    {
+      provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+      useValue: { hasBackdrop: true },
+    },
   ],
   bootstrap: [AppComponent],
   exports: [AppRoutingModule],
+  entryComponents: [BaseDialog, BottomSheetAssignmentOptions],
 })
-export class AppModule { }
+export class AppModule {}

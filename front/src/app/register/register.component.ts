@@ -4,11 +4,12 @@ import { AuthService } from 'src/app/shared/services/auth/auth.service';
 import { ErrorRequest } from '../shared/api/error.model';
 import { SuccessRequest } from '../shared/api/success.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
-import { Utils } from '../shared/tools/Utils';
+import { Utils } from '../shared/utils/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { LoadingService } from '../shared/services/loading/loading.service';
 import { BaseComponent } from '../base/base.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-register',
@@ -20,24 +21,25 @@ export class RegisterComponent extends BaseComponent {
 
   constructor(
     private _authService: AuthService,
-    private _loggingService: LoggingService,
-    snackBar: MatSnackBar,
     private _route: Router,
-    loadingService: LoadingService
+    loadingService: LoadingService,
+    loggingService: LoggingService,
+    snackBar: MatSnackBar,
+    dialog: MatDialog
   ) {
-    super(loadingService, snackBar)
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(false);
   }
 
-
+  // Fonction qui permet de s'inscrire
   register() {
     this._loggingService.event('RegisterComponent', 'register');
     if (!this.registerForm.valid) {
-      this.handleErrorSoft('Remplissez tous les champs')
+      this.handleErrorSoft('Remplissez tous les champs');
       return;
     }
     if (!this.registerForm.isPasswordSame()) {
-      this.handleErrorSoft('Les mots de passe ne sont pas identiques')
+      this.handleErrorSoft('Les mots de passe ne sont pas identiques');
       return;
     }
 
@@ -56,16 +58,17 @@ export class RegisterComponent extends BaseComponent {
   handleRegistration(data: ErrorRequest | SuccessRequest): void {
     this._loggingService.event();
     if (data instanceof ErrorRequest) {
-      this.handleErrorSoft(data)
+      this.handleErrorSoft(data);
       return;
     }
     if (data.success)
       Utils.snackBarSuccess(this._snackBar, 'Inscription réussie');
     else {
-      this.handleErrorSoft('Inscription échouée')
+      this.handleErrorSoft('Inscription échouée');
     }
   }
 
+  // Fonction qui permet de se connecter
   connectionRedirect() {
     this._route.navigate(['/login']);
   }

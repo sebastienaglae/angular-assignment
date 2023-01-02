@@ -2,30 +2,33 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ErrorRequest } from '../../api/error.model';
 import { BehaviorSubject, Observable, catchError } from 'rxjs';
-import { Utils } from '../../tools/Utils';
+import { Utils } from '../../utils/Utils';
 import { TokenAuth } from '../../api/auth/token.auth.model';
-import { Config } from '../../tools/Config';
-import { User } from '../../models/user.model';
+import { Config } from '../../utils/Config';
+import { Role, User } from '../../models/user.model';
 import { LoggingService } from '../logging/logging.service';
 import { SuccessRequest } from '../../api/success.model';
+import { PermissionState, PermissionUtils } from '../../utils/PermissionUtils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  apiUrl = `${Config.getServerUrl()}/${Config.auth.route}`;
+  private apiUrl = `${Config.getServerUrl()}/${Config.auth.route}`;
 
   // Token de l'utilisateur
-  jwtToken: string | null = null;
+  private jwtToken: string | null = null;
 
   // Etat de la connexion
   // BehaviorSubject est un Observable qui permet de stocker une valeur et de la partager avec tous les abonnés
-  loggedState = new BehaviorSubject<boolean>(false);
+  private loggedState = new BehaviorSubject<boolean>(false);
+
+  private user?: User;
 
   constructor(
     private http: HttpClient,
     private loggingService: LoggingService
-  ) { }
+  ) {}
 
   // Fonction qui permet de s'inscrire
   register(
@@ -59,9 +62,11 @@ export class AuthService {
 
     request.subscribe((result) => {
       if (result instanceof ErrorRequest) return;
+      if (this.loggedState.getValue()) this.logout();
       this.jwtToken = result.token;
-      this.setLoggedState(true);
+      this.user = this.getUser();
       this.saveToken(result.token, rememberMe);
+      this.setLoggedState(true);
     });
     return request;
   }
@@ -101,6 +106,7 @@ export class AuthService {
     return Utils.decodeJWTToken(this.jwtToken) as User;
   }
 
+  // Fonction qui permet de récupérer le token de l'utilisateur
   getToken(): string | null {
     return this.jwtToken;
   }
@@ -114,22 +120,40 @@ export class AuthService {
     this.setLoggedState(false);
   }
 
-  isAdmin() {
-    // TODO : Check if the user is admin
-    const isUserAdmin = new Promise((resolve, reject) => {
-      resolve(false);
-    });
-
-    return isUserAdmin;
+  // Fonction qui permet de savoir si l'utilisateur est connecté
+  isAdmin(): boolean {
+    if (!this.user || !this.isLogged()) return false;
+    return User.hasRole(Role.DELETE_ASSIGNMENT, this.user.roles);
   }
 
   // Fonction qui permet de modifier l'état de la connexion
-  setLoggedState(state: boolean): void {
+  private setLoggedState(state: boolean): void {
     this.loggedState.next(state);
   }
 
   // Fonction qui permet de récupérer l'état de la connexion
   getLoggedState(): Observable<boolean> {
     return this.loggedState.asObservable();
+  }
+
+  // Fonction qui permet de savoir si l'utilisateur est connecté
+  isLogged(): boolean {
+    return this.loggedState.value;
+  }
+
+  // Fonction qui permet de savoir si l'utilisateur a la permission d'accéder à la page
+  hasPermission(path: string): boolean {
+    const perms = PermissionUtils.getPerms(
+      path,
+      this.isAdmin(),
+      this.isLogged()
+    );
+    switch (perms) {
+      case PermissionState.ALLOWED:
+        return true;
+      case PermissionState.DENIED_NOT_ADMIN:
+      case PermissionState.DENIED_NOT_LOGGED:
+        return false;
+    }
   }
 }

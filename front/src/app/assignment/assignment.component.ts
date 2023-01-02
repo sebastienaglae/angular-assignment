@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { AssignmentService } from '../shared/services/assignment/assignment.service';
 import { Assignment } from '../shared/models/assignment.model';
 import { MatSort, Sort, SortDirection } from '@angular/material/sort';
@@ -8,19 +15,21 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 import { SearchAssignment } from '../shared/api/assignment/search.assignment.model';
 import { ErrorRequest } from '../shared/api/error.model';
 import { LoggingService } from '../shared/services/logging/logging.service';
-import { Utils } from '../shared/tools/Utils';
+import { Utils } from '../shared/utils/Utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentSearch } from '../shared/models/assignment.search.model';
 import { SuccessRequest } from '../shared/api/success.model';
 import { LoadingService } from '../shared/services/loading/loading.service';
 import { BaseComponent } from '../base/base.component';
+import { MatDialog } from '@angular/material/dialog';
+import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-assignment',
   templateUrl: './assignment.component.html',
   styleUrls: ['./assignment.component.css'],
 })
-export class AssignmentComponent extends BaseComponent {
+export class AssignmentComponent extends BaseComponent implements OnInit {
   searchAssignment!: SearchAssignment;
   datasource: MatTableDataSource<AssignmentSearch> = new MatTableDataSource();
 
@@ -31,26 +40,32 @@ export class AssignmentComponent extends BaseComponent {
   //@ts-ignore
   @ViewChild(MatSort) sort: MatSort;
   //@ts-ignore
-  displayedColumns: string[] = ['title', 'dueDate', 'hasSubmission', 'hasRating', 'actions'];
+  displayedColumns: string[] = [
+    'title',
+    'dueDate',
+    'hasSubmission',
+    'hasRating',
+    'actions',
+  ];
 
   // Add ref of AppComponent to use it in the template
   constructor(
     private _assignementService: AssignmentService,
-    private _loggingService: LoggingService,
+    loggingService: LoggingService,
     snackBar: MatSnackBar,
     loadingService: LoadingService,
+    dialog: MatDialog
   ) {
-    super(loadingService, snackBar);
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(true);
   }
 
-
-  onInit(): void {
+  ngOnInit(): void {
     this.datasource.paginator = this.paginator;
     this.datasource.sort = this.sort;
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.loadAssignments();
   }
 
@@ -62,40 +77,54 @@ export class AssignmentComponent extends BaseComponent {
     });
   }
 
+  // Fonction qui permet de gérer la suppression d'un devoir
   handleDeleteAssignment(data: SuccessRequest | ErrorRequest) {
     if (data instanceof ErrorRequest) {
-      this.handleErrorSoft(data)
+      this.handleErrorSoft(data);
       return;
     }
     if (!data.success) {
-      this.handleErrorSoft('Une erreur est survenue')
+      this.handleErrorSoft('Une erreur est survenue');
       return;
     }
 
     Utils.snackBarSuccess(this._snackBar, 'Devoir supprimé avec succès');
-    this.loadAssignments();
+    this.paginator.page.emit();
   }
 
+  // Fonction qui permet de charger les devoirs
   loadAssignments(): void {
     this._loggingService.event();
-    merge(this.sort.sortChange, this.paginator.page)
+    merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.filterOptions.submitFilter,
+      this.filterOptions.ratingFilter,
+      this.filterOptions.searchText,
+      this.filterOptions.yearFilter,
+      this.filterOptions.monthFilter
+    )
       .pipe(
         startWith({}),
         switchMap(() => {
-          this.loadingState(true)
-          return this._assignementService.search(this.getFilter(), this.getOrder(), {
-            page: this.paginator.pageIndex,
-            limit: this.paginator.pageSize,
-          });
+          this.loadingState(true);
+          return this._assignementService.search(
+            this.getFilter(),
+            this.getOrder(),
+            {
+              page: this.paginator.pageIndex,
+              limit: this.paginator.pageSize,
+            }
+          );
         }),
         map((data) => {
           if (data instanceof ErrorRequest) {
             this.paginator.length = 0;
-            this.handleError(data)
+            this.handleError(data);
             return [];
           }
           this.paginator.length = data.totalItems;
-          this.loadingState(false)
+          this.loadingState(false);
           return data.items;
         }),
         catchError(() => {
@@ -119,24 +148,81 @@ export class AssignmentComponent extends BaseComponent {
     return { [column]: direction };
   }
 
+  onNewSearch(state: any) {
+    if (!state) state = '';
+    this._loggingService.event(state);
+
+    this.filterOptions.searchText.next(state);
+  }
+
+  onFilterSubmit(state: any) {
+    if (!state) state = '';
+    this._loggingService.event(state);
+
+    this.filterOptions.submitFilter.next(state);
+  }
+
+  onFilterRate(state: any) {
+    if (!state) state = '';
+    this._loggingService.event(state);
+
+    this.filterOptions.ratingFilter.next(state);
+  }
+
+  onFilterYear(state: any) {
+    if (!state) state = -1;
+    this._loggingService.event(state);
+
+    this.filterOptions.yearFilter.next(state);
+  }
+
+  onFilterMonth(state: any) {
+    if (!state) state = -1;
+    this._loggingService.event(state);
+
+    this.filterOptions.monthFilter.next(state);
+  }
+
   // Fonction qui permet de filtrer les données
   getFilter() {
-    let json = {}
-    if (this.filterOptions.searchText !== '') {
-      json = { ...json, ...{ title: this.filterOptions.searchText } }
+    let json = {};
+    if (this.filterOptions.searchText.getValue() !== '') {
+      json = {
+        ...json,
+        ...{ title: this.filterOptions.searchText.getValue() },
+      };
     }
-    if (this.filterOptions.submitFilter !== undefined) {
-      json = { ...json, ...{ submission: this.filterOptions.submitFilter === 'submit' ? null : false } }
+    if (this.filterOptions.submitFilter.getValue() !== '') {
+      json = {
+        ...json,
+        ...{
+          submission:
+            this.filterOptions.submitFilter.getValue() === 'submit'
+              ? null
+              : false,
+        },
+      };
     }
-    if (this.filterOptions.ratingFilter !== undefined) {
-      json = { ...json, ...{ rating: this.filterOptions.ratingFilter === 'rated' ? null : false } }
+    if (this.filterOptions.ratingFilter.getValue() !== '') {
+      json = {
+        ...json,
+        ...{
+          rating:
+            this.filterOptions.ratingFilter.getValue() === 'rated'
+              ? null
+              : false,
+        },
+      };
     }
     // todo check if it's right
-    if (this.filterOptions.yearFilter !== undefined) {
-      json = { ...json, ...{ year: this.filterOptions.yearFilter } }
+    if (this.filterOptions.yearFilter.getValue() !== -1) {
+      json = { ...json, ...{ year: this.filterOptions.yearFilter.getValue() } };
     }
-    if (this.filterOptions.monthFilter !== undefined) {
-      json = { ...json, ...{ month: this.filterOptions.monthFilter } }
+    if (this.filterOptions.monthFilter.getValue() !== -1) {
+      json = {
+        ...json,
+        ...{ month: this.filterOptions.monthFilter.getValue() },
+      };
     }
 
     return json;
@@ -144,13 +230,13 @@ export class AssignmentComponent extends BaseComponent {
 }
 
 class FilterOptions {
-  searchText: string = '';
-  submitFilter: string | undefined = undefined;
-  ratingFilter: string | undefined = undefined;
-  yearFilter: number | undefined = undefined;
-  monthFilter: number | undefined = undefined;
+  searchText: BehaviorSubject<string> = new BehaviorSubject('');
+  submitFilter: BehaviorSubject<string> = new BehaviorSubject('');
+  ratingFilter: BehaviorSubject<string> = new BehaviorSubject('');
+  yearFilter: BehaviorSubject<number> = new BehaviorSubject(-1);
+  monthFilter: BehaviorSubject<number> = new BehaviorSubject(-1);
 
   getSearchFilter(): string {
-    return this.searchText.trim().toLowerCase();
+    return this.searchText.getValue().trim().toLowerCase();
   }
 }

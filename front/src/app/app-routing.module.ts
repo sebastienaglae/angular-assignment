@@ -12,37 +12,59 @@ import { AssignmentGenComponent } from './assignment/assignment-gen/assignment-g
 import { AssignmentSubmitComponent } from './assignment/assignment-submit/assignment-submit.component';
 import { AssignmentRateComponent } from './assignment/assignment-rate/assignment-rate.component';
 import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.component';
+import { Config } from './shared/utils/Config';
 
 const routes: Routes = [
-  { path: '', component: AssignmentComponent },
-  { path: 'home', component: AssignmentComponent },
+  { path: Config.permsPath['home'].path, component: AssignmentComponent },
   {
-    path: 'assignment/add',
+    path: Config.permsPath['addAss'].path,
     component: AssignmentAddComponent,
+    canActivate: [AuthGuard],
   },
-  { path: 'assignment/:id', component: AssignmentDetailComponent },
-  { path: 'gen', component: AssignmentGenComponent },
   {
-    path: 'assignment/:id/edit',
+    path: Config.permsPath['getAss'].path,
+    component: AssignmentDetailComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: Config.permsPath['gen'].path,
+    component: AssignmentGenComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: Config.permsPath['editAss'].path,
     component: AssignmentModifyComponent,
+    canActivate: [AuthGuard],
   },
   {
-    path: 'assignment/:id/submit',
+    path: Config.permsPath['submitAss'].path,
     component: AssignmentSubmitComponent,
+    canActivate: [AuthGuard],
   },
   {
-    path: 'assignment/:id/rate',
+    path: Config.permsPath['rateAss'].path,
     component: AssignmentRateComponent,
+    canActivate: [AuthGuard],
   },
-  { path: 'connection', component: ConnexionComponent },
-  { path: 'register', component: RegisterComponent },
   {
-    path: 'teacher/:id', component: TeacherDetailComponent,
-  }
+    path: Config.permsPath['login'].path,
+    component: ConnexionComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: Config.permsPath['register'].path,
+    component: RegisterComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: Config.permsPath['getTeacher'].path,
+    component: TeacherDetailComponent,
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
   imports: [BrowserModule, RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

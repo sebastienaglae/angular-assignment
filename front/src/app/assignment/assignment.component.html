@@ -7,10 +7,10 @@
     <!-- Filtre de recherche -->
     <div class="chipsline fullwidth">
       <mat-chip-listbox
+        #submit
         aria-label="submit selection"
-        [(ngModel)]="filterOptions.submitFilter"
         name="submit"
-        (change)="loadAssignments()"
+        (change)="onFilterSubmit(submit.value)"
       >
         <mat-chip-option value="submit" color="warn">Rendu</mat-chip-option>
         <mat-chip-option value="notSubmited" color="accent"
@@ -18,10 +18,10 @@
         >
       </mat-chip-listbox>
       <mat-chip-listbox
+        #rating
         aria-label="rating selection"
-        [(ngModel)]="filterOptions.ratingFilter"
         name="rating"
-        (change)="loadAssignments()"
+        (change)="onFilterRate(rating.value)"
       >
         <mat-chip-option value="rated" color="warn">Noté</mat-chip-option>
         <mat-chip-option value="notRated" color="accent"
@@ -29,20 +29,20 @@
         >
       </mat-chip-listbox>
       <mat-chip-listbox
+        #year
         aria-label="year selection"
-        [(ngModel)]="filterOptions.yearFilter"
         name="year"
-        (change)="loadAssignments()"
+        (change)="onFilterYear(year.value)"
       >
         <mat-chip-option value="2022" color="warn">2022</mat-chip-option>
         <mat-chip-option value="2023" color="accent">2023</mat-chip-option>
         <mat-chip-option value="2024">2024</mat-chip-option>
       </mat-chip-listbox>
       <mat-chip-listbox
+        #month
         aria-label="month selection"
-        [(ngModel)]="filterOptions.monthFilter"
         name="month"
-        (change)="loadAssignments()"
+        (change)="onFilterMonth(month.value)"
       >
         <mat-chip-option value="1" color="warn">Janvier</mat-chip-option>
         <mat-chip-option value="2" color="warn">Février</mat-chip-option>
@@ -67,8 +67,7 @@
           matInput
           #search
           placeholder="Test Assignment N"
-          [(ngModel)]="filterOptions.searchText"
-          (keyup)="loadAssignments()"
+          (input)="onNewSearch(search.value)"
         />
       </mat-form-field>
     </div>

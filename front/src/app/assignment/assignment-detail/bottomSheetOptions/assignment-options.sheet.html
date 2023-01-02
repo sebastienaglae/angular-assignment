@@ -1,0 +1,22 @@
+<mat-nav-list>
+  <a [disabled]="!teacherEnabled" mat-list-item (click)="openLink('teacher')">
+    <span matListItemTitle>Profile du professeur</span>
+    <span matLine>Montre le profile du professeur</span>
+  </a>
+  <a [disabled]="!submitEnabled" mat-list-item (click)="openLink('submit')">
+    <span matListItemTitle>Rendre</span>
+    <span matLine>Rendre le devoir pour etre noté</span>
+  </a>
+  <a [disabled]="!rateEnabled" mat-list-item (click)="openLink('rate')">
+    <span matListItemTitle>Noter</span>
+    <span matLine>Noter le devoir</span>
+  </a>
+  <a [disabled]="!editEnabled" mat-list-item (click)="openLink('edit')">
+    <span matListItemTitle>Modifier</span>
+    <span matLine>Modifier le devoir </span>
+  </a>
+  <a [disabled]="!deleteEnabled" mat-list-item (click)="openLink('delete')">
+    <span matListItemTitle>Supprimer</span>
+    <span matLine>Supprimer le devoir</span>
+  </a>
+</mat-nav-list>

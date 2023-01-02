@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { LoggingService } from '../logging/logging.service';
 import { Observable, catchError } from 'rxjs';
 import { Subject } from '../../models/subject.model';
-import { Config } from '../../tools/Config';
-import { Utils } from '../../tools/Utils';
+import { Config } from '../../utils/Config';
+import { Utils } from '../../utils/Utils';
 import { ErrorRequest } from '../../api/error.model';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class SubjectsService {
   constructor(
     private loggingService: LoggingService,
     private http: HttpClient
-  ) { }
+  ) {}
 
   // Fonction qui permet de récupérer tous les matieres
   getAll(): Observable<Subject[] | ErrorRequest> {

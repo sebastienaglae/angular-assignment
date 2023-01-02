@@ -1,12 +1,8 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { Router } from '@angular/router';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
-import { Utils } from 'src/app/shared/tools/Utils';
+import { Utils } from 'src/app/shared/utils/Utils';
 import { FormBuilder, Validators } from '@angular/forms';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
 import { Subject } from 'src/app/shared/models/subject.model';
@@ -17,6 +13,8 @@ import { Teacher } from 'src/app/shared/models/teacher.model';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 import { BaseComponent } from 'src/app/base/base.component';
 import { TeacherService } from 'src/app/shared/services/teacher/teacher.service';
+import { SuccessRequest } from 'src/app/shared/api/success.model';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-assignment-add',
@@ -33,23 +31,28 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
   // Informations sur le stepper
   submitButtonText: string = 'Ajouter le devoir';
 
+  // Toutes les matières et tous les professeurs
   subjects: Subject[] = [];
   teachers: Teacher[] = [];
 
+  // Datepicker
   @ViewChild('picker') picker: any;
+
+  finishLoadCount: number = 0;
 
   constructor(
     private _assignmentService: AssignmentService,
     private _subjectService: SubjectsService,
     private _teacherService: TeacherService,
     private _router: Router,
-    _snackBar: MatSnackBar,
-    private _loggingService: LoggingService,
     private _formBuilder: FormBuilder,
 
-    _loadingService: LoadingService,
+    loadingService: LoadingService,
+    snackBar: MatSnackBar,
+    loggingService: LoggingService,
+    dialog: MatDialog
   ) {
-    super(_loadingService, _snackBar);
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(true);
   }
 
@@ -62,15 +65,15 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
   initSubjectTeacher() {
     this._loggingService.event();
     this._subjectService.getAll().subscribe((res) => {
-      this.handleSubject(res);
+      this.handleSubjectResponse(res);
     });
     this._teacherService.getAll().subscribe((res) => {
-      this.handleTeacher(res);
+      this.handleTeacherResponse(res);
     });
   }
 
   // Gère la réponse de l'api pour les matières
-  handleSubject(res: Subject[] | ErrorRequest) {
+  handleSubjectResponse(res: Subject[] | ErrorRequest) {
     if (res instanceof ErrorRequest) {
       this.handleError(res);
       return;
@@ -83,10 +86,11 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
       );
     }
 
-    this.loadingState(false);
+    this.isFinishLoad();
   }
 
-  handleTeacher(res: Teacher[] | ErrorRequest) {
+  // Gère la réponse de l'api pour les professeurs
+  handleTeacherResponse(res: Teacher[] | ErrorRequest) {
     if (res instanceof ErrorRequest) {
       this.handleError(res);
       return;
@@ -94,14 +98,20 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
     this.teachers = res;
     const teacherId = Utils.getParam(Utils.getParams(), 'teacher');
     if (teacherId) {
-      this.formGroups.subjectValue = this.subjects.find(
+      this.formGroups.teacherValue = this.teachers.find(
         (teacher) => teacher.id === teacherId
       );
     }
 
-    this.loadingState(false);
+    this.isFinishLoad();
   }
 
+  isFinishLoad() {
+    this.finishLoadCount++;
+    if (this.finishLoadCount === 2) {
+      this.loadingState(false);
+    }
+  }
 
   // Rempli le formulaire avec les paramètres de l'url
   fillForm() {
@@ -112,7 +122,8 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
       this.formGroups.dueDateValue = new Date(
         Utils.getParam(params, 'dueDate') ?? ''
       );
-      this.formGroups.descriptionValue = Utils.getParam(params, 'description') ?? '';
+      this.formGroups.descriptionValue =
+        Utils.getParam(params, 'description') ?? '';
     }
   }
 
@@ -123,18 +134,31 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
 
   // Valide le formulaire et ajoute le devoir
   submitNewAssignment() {
-    if (!this.formGroups.isAllValid()) return;
+    this._loggingService.event();
+    this.loadingStateNoUpdate(true);
     const newAssignment = new Assignment();
     newAssignment.title = this.formGroups.titleValue;
     newAssignment.dueDate = this.formGroups.dueDateValue;
-    console.log(this.formGroups.dueDateValue.toUTCString());
-    // newAssignment.author = this.formGroups.authorValue;
-    // newAssignment.subject = this.formGroups.subjectValue;
-    //todo : add to service
+    newAssignment.description = this.formGroups.descriptionValue;
+    newAssignment.subjectId = this.formGroups.subjectValue?.id;
+    newAssignment.teacherId = this.formGroups.teacherValue?.id;
+    this._assignmentService.updateAssignment(newAssignment).subscribe((res) => {
+      this.handleSubmissionResponse(res);
+    });
   }
 
   // Redirige l'utilisateur vers la page d'accueil dans 5 secondes
-  handleSubmission() {
+  handleSubmissionResponse(data: ErrorRequest | SuccessRequest) {
+    if (data instanceof ErrorRequest) {
+      this.handleError(data);
+      return;
+    }
+    if (!data.success) {
+      this.handleError("Une erreur s'est produite");
+      return;
+    }
+    this.loadingStateNoUpdate(false);
+    Utils.snackBarSuccess(this._snackBar, 'Le devoir a été ajouté avec succès');
     let i = this.timeBeforeRedirect;
     let interval = setInterval(() => {
       this.submitButtonText = `Redirection dans ${i} secondes`;
@@ -148,7 +172,7 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
 }
 
 class StepperAssignmentFromGroup {
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder) {}
   titleFormGroup = this._formBuilder.group({
     titleCtrl: ['', Assignment.getTitleValidators()],
   });
@@ -218,4 +242,3 @@ class StepperAssignmentFromGroup {
     this.teacherFormGroup.get('teacherCtrl')?.setValue(value as any as never);
   }
 }
-

@@ -1,5 +1,5 @@
 import { ValidatorFn, Validators } from '@angular/forms';
-import { Utils } from '../tools/Utils';
+import { Utils } from '../utils/Utils';
 import { Rating } from './rating.model';
 import { Submission } from './submission.model';
 
@@ -18,39 +18,27 @@ export class Assignment {
   public teacherId?: string;
 
   public static getOwnerIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public static getSubjectIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public static getTitleValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public static getDescriptionValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public static getDueDateValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public static geTeacherIdValidators(): ValidatorFn | null {
-    return Validators.compose([
-      Validators.required,
-    ]);
+    return Validators.compose([Validators.required]);
   }
 
   public isValid() {
@@ -65,8 +53,7 @@ export class Assignment {
   }
   // Fonction qui retourne true si la date de rendu est dépassée
   public static isTooLate(ass: Assignment): boolean {
-    if (!ass || !ass.dueDate)
-      return false;
+    if (!ass || !ass.dueDate) return false;
     let today = new Date();
     let rendu = new Date(ass.dueDate);
     return today > rendu;
@@ -74,8 +61,7 @@ export class Assignment {
 
   // Fonction qui retourne le temps restant avant la date de rendu
   public static getTimeRemaining(ass: Assignment): string {
-    if (!ass || !ass.dueDate)
-      return 'Erreur: date de rendu non définie';
+    if (!ass || !ass.dueDate) return 'Erreur: date de rendu non définie';
     let today = new Date();
     let rendu = new Date(ass.dueDate);
     let diff = rendu.getTime() - today.getTime();
