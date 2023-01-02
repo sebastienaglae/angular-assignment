@@ -126,7 +126,7 @@ class AssignmentService {
         }
 
         // check if values inside filter are valid
-        for (const key in options.filter) {
+        /*for (const key in options.filter) {
             const value = options.filter[key];
             const type = typeof value;
             if (type !== 'string' && type !== 'number' && type !== 'boolean') {
@@ -136,7 +136,7 @@ class AssignmentService {
             if (!keyExists) {
                 return new SearchBadRequestError('Invalid filter. Unknown key.');
             }
-        }
+        }*/
 
         // check if values inside order are valid
         for (const key in options.order) {
