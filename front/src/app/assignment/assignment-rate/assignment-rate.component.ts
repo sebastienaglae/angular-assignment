@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BaseComponent } from 'src/app/base/base.component';
@@ -10,33 +11,35 @@ import { Rating } from 'src/app/shared/models/rating.model';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
-import { Utils } from 'src/app/shared/tools/Utils';
+import { Utils } from 'src/app/shared/utils/Utils';
 
 @Component({
   selector: 'app-assignment-rate',
   templateUrl: './assignment-rate.component.html',
   styleUrls: ['./assignment-rate.component.css'],
 })
-export class AssignmentRateComponent extends BaseComponent {
+export class AssignmentRateComponent extends BaseComponent implements OnInit {
   rateForm: RateFormGroup = new RateFormGroup();
-  assignmentId!: string | null;
+  assignmentId!: string | undefined;
   assignmentTarget?: Assignment;
 
   constructor(
-    private _loggingService: LoggingService,
     private _assignmentService: AssignmentService,
     private _route: ActivatedRoute,
     snackBar: MatSnackBar,
     loadingService: LoadingService,
+    loggingService: LoggingService,
+    dialog: MatDialog
   ) {
-    super(loadingService, snackBar);
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(true);
   }
 
-  onInit(): void {
+  ngOnInit(): void {
     this.getAssignment();
   }
 
+  // Fonction qui récupère l'assignment
   getAssignment() {
     const id = this._route.snapshot.paramMap.get('id');
     if (id) {
@@ -46,37 +49,49 @@ export class AssignmentRateComponent extends BaseComponent {
     }
   }
 
+  // Fonction qui gère la réponse de l'API
   handleAssignment(assData: ErrorRequest | Assignment) {
     if (assData instanceof ErrorRequest) {
-      this.handleError(assData)
+      this.handleError(assData);
       return;
     }
 
+    this.assignmentId = assData.id;
     this.assignmentTarget = assData;
     this.loadingState(false);
   }
 
+  // Fonction qui met à jour la note
   onUpdatingRate() {
-    if (this.assignmentId === null) return;
-    let rating = Rating.createRating(this.rateForm.rateValue, this.rateForm.commentValue);
-    this._assignmentService.updateRating(
-      this.assignmentId,
-      rating,
-    ).subscribe((res) => {
-      this.handleRate(res)
-    });
+    if (this.assignmentId === undefined) return;
+    this._loggingService.event();
+    this.loadingStateNoUpdate(true);
+    let rating = Rating.createRating(
+      this.rateForm.rateValue,
+      this.rateForm.commentValue
+    );
+    console.log(this.assignmentId);
+    this._assignmentService
+      .updateRating(this.assignmentId, rating)
+      .subscribe((res) => {
+        this.handleRate(res);
+      });
   }
 
+  // Fonction qui gère la réponse de l'API
   handleRate(data: SuccessRequest | ErrorRequest) {
     if (data instanceof ErrorRequest) {
       this.handleError(data);
       return;
     }
     if (data.success) {
-      Utils.snackBarSuccess(this._snackBar, "Votre note a bien été prise en compte");
-    }
-    else {
-      this.handleErrorSoft("Une erreur est survenue")
+      this.loadingStateNoUpdate(false);
+      Utils.snackBarSuccess(
+        this._snackBar,
+        'Votre note a bien été prise en compte'
+      );
+    } else {
+      this.handleErrorSoft('Une erreur est survenue');
     }
   }
 }

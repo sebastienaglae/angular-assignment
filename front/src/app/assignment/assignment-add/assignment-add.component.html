@@ -146,7 +146,7 @@
       [stepControl]="formGroups.teacherFormGroup"
     >
       <form [formGroup]="formGroups.teacherFormGroup">
-        <h2>Choisissez la Professeur du devoir</h2>
+        <h2>Choisissez le professeur du devoir</h2>
         <div>
           <mat-form-field>
             <mat-label>Professeur</mat-label>
@@ -185,6 +185,7 @@
       <p>Date de rendu : {{ formGroups.dueDateValue }}</p>
       <p>Description : {{ formGroups.descriptionValue }}</p>
       <p>Matière : {{ formGroups.subjectValue?.name }}</p>
+      <p>Professeur : {{ formGroups.teacherValue?.name }}</p>
       <div>
         <button mat-button matStepperPrevious>Précédent</button>
         <button

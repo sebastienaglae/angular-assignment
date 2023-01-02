@@ -5,9 +5,9 @@ import { Observable, catchError, of } from 'rxjs';
 import { Assignment } from '../../models/assignment.model';
 import { LoggingService } from '../logging/logging.service';
 import { SearchAssignment } from '../../api/assignment/search.assignment.model';
-import { Config } from '../../tools/Config';
+import { Config } from '../../utils/Config';
 import { ErrorRequest } from '../../api/error.model';
-import { Utils } from '../../tools/Utils';
+import { Utils } from '../../utils/Utils';
 import { SuccessRequest } from '../../api/success.model';
 import { AuthService } from '../auth/auth.service';
 import { Rating } from '../../models/rating.model';
@@ -22,21 +22,20 @@ export class AssignmentService {
     private loggingService: LoggingService,
     private authService: AuthService,
     private http: HttpClient
-  ) { }
+  ) {}
 
   // Fonction qui permet de récupérer tous les assignments avec pagination et tri
   search(
     filter?: any,
-    order?: any, pagi?: {
+    order?: any,
+    pagi?: {
       page: number;
       limit: number;
-    }): Observable<SearchAssignment | ErrorRequest> {
-    this.loggingService.log(
-      `GET SEARCH`
-    );
+    }
+  ): Observable<SearchAssignment | ErrorRequest> {
+    this.loggingService.log(`GET SEARCH`);
     //TODO OFFSET
-    if (pagi !== undefined)
-      pagi.page += 1;
+    if (pagi !== undefined) pagi.page += 1;
 
     const query = Utils.searchFilterOrderPagination(filter, order, pagi);
 
@@ -57,15 +56,22 @@ export class AssignmentService {
   create(assignment: Assignment): Observable<Assignment | ErrorRequest> {
     this.loggingService.log(`POST ${assignment.id}`);
     return this.http
-      .post<Assignment>(`${this.apiUrl}/create`, assignment,
-        Utils.httpOptionsToken(this.authService.getToken()))
+      .post<Assignment>(
+        `${this.apiUrl}/create`,
+        assignment,
+        Utils.httpOptionsToken(this.authService.getToken())
+      )
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentAdd')));
   }
 
+  // Fonction qui permet de delete un assignment
   delete(id: string): Observable<SuccessRequest | ErrorRequest> {
     this.loggingService.log(`DELETE ${id}`);
     return this.http
-      .delete<SuccessRequest>(`${this.apiUrl}/${id}`, Utils.httpOptionsToken(this.authService.getToken()))
+      .delete<SuccessRequest>(
+        `${this.apiUrl}/${id}`,
+        Utils.httpOptionsToken(this.authService.getToken())
+      )
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentDelete')));
   }
 
@@ -86,11 +92,12 @@ export class AssignmentService {
     }
     this.loggingService.log(`PUT ASSIGNMENT ${assignment.id}`);
     return this.http
-      .put<SuccessRequest>(
-        `${this.apiUrl}/${assignment.id}/info`,
-        assignment
-      )
-      .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentUpdateAssignment')));
+      .put<SuccessRequest>(`${this.apiUrl}/${assignment.id}/info`, assignment)
+      .pipe(
+        catchError(
+          Utils.handleError<ErrorRequest>('assignmentUpdateAssignment')
+        )
+      );
   }
 
   // Fonction qui permet de mettre à jour un assignment
@@ -102,7 +109,9 @@ export class AssignmentService {
         rating,
         Utils.httpOptionsToken(this.authService.getToken())
       )
-      .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentUpdateRating')));
+      .pipe(
+        catchError(Utils.handleError<ErrorRequest>('assignmentUpdateRating'))
+      );
   }
 
   // Fonction qui permet de mettre à jour un assignment
@@ -119,15 +128,15 @@ export class AssignmentService {
     formData.append('submission', JSON.stringify(submission));
 
     return this.http
-      .put<SuccessRequest>(
-        `${this.apiUrl}/${id}/submission`,
-        formData,
-        {
-          headers: new HttpHeaders({
-            'Authorization': `Bearer ${this.authService.getToken()}`
-          })
-        }).pipe(
-          catchError(Utils.handleError<ErrorRequest>('assignmentUpdateSubmission'))
-        );
+      .put<SuccessRequest>(`${this.apiUrl}/${id}/submission`, formData, {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${this.authService.getToken()}`,
+        }),
+      })
+      .pipe(
+        catchError(
+          Utils.handleError<ErrorRequest>('assignmentUpdateSubmission')
+        )
+      );
   }
 }

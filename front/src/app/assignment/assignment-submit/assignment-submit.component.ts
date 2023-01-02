@@ -1,6 +1,7 @@
 import { ThisReceiver } from '@angular/compiler';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BaseComponent } from 'src/app/base/base.component';
@@ -13,39 +14,41 @@ import { AssignmentService } from 'src/app/shared/services/assignment/assignment
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
 import { SubjectsService } from 'src/app/shared/services/subject/subjects.service';
-import { Utils } from 'src/app/shared/tools/Utils';
+import { Utils } from 'src/app/shared/utils/Utils';
 
 @Component({
   selector: 'app-assignment-submit',
   templateUrl: './assignment-submit.component.html',
   styleUrls: ['./assignment-submit.component.css'],
 })
-export class AssignmentSubmitComponent extends BaseComponent {
+export class AssignmentSubmitComponent extends BaseComponent implements OnInit {
   submitForm = new SubmitFormGroup();
   assignmentTarget?: Assignment;
   subjectTarget?: Subject;
 
   constructor(
-    private route: ActivatedRoute,
-    private assignementService: AssignmentService,
-    private loggingService: LoggingService,
-    private subjectsService: SubjectsService,
+    private _route: ActivatedRoute,
+    private _assignementService: AssignmentService,
+    private _subjectsService: SubjectsService,
     snackBar: MatSnackBar,
-    loadingService: LoadingService
+    loadingService: LoadingService,
+    loggingService: LoggingService,
+    dialog: MatDialog
   ) {
-    super(loadingService, snackBar);
+    super(loadingService, snackBar, loggingService, dialog);
     this.loadingState(true);
   }
 
-  onInit() {
+  ngOnInit() {
     this.getAssignment();
   }
 
   // Fonction qui permet de récupérer l'assignment
   getAssignment() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this._route.snapshot.paramMap.get('id');
+    this._loggingService.event(id ?? 'undefined');
     if (id) {
-      this.assignementService.get(id).subscribe((data) => {
+      this._assignementService.get(id).subscribe((data) => {
         this.handleAssignment(data);
       });
     }
@@ -59,9 +62,8 @@ export class AssignmentSubmitComponent extends BaseComponent {
     }
 
     this.assignmentTarget = assData;
-    //todo : check if assignment is not already submitted
     if (assData.subjectId == null) return;
-    this.subjectsService.get(assData.subjectId).subscribe((subData) => {
+    this._subjectsService.get(assData.subjectId).subscribe((subData) => {
       this.handleSubject(subData);
     });
   }
@@ -74,14 +76,15 @@ export class AssignmentSubmitComponent extends BaseComponent {
     }
 
     this.subjectTarget = subData;
-    this.loadingState(false)
+    this.loadingState(false);
   }
 
   // Fonction qui permet de soumettre le rendu
   submit() {
-    this.loggingService.event('AssignmentSubmitComponent', 'submit');
+    this._loggingService.event();
     const file = this.submitForm.file;
     if (file == null) return;
+    this.loadingStateNoUpdate(true);
     Utils.fileToArrayBuffer(file, (buffer) =>
       this.handleSubmission(file, buffer)
     );
@@ -89,13 +92,11 @@ export class AssignmentSubmitComponent extends BaseComponent {
 
   // Fonction qui permet de créer le rendu
   handleSubmission(file: File, buffer: Buffer) {
-    this.loggingService.event('AssignmentSubmitComponent', 'handleSubmission');
     if (this.assignmentTarget == null) return;
-    this.loadingState(true)
 
     const sub = Submission.createSubmission(file, buffer);
 
-    this.assignementService
+    this._assignementService
       .updateSubmission(this.assignmentTarget.id, sub, file)
       .subscribe((data) => {
         this.handleUpdate(data);
@@ -105,10 +106,6 @@ export class AssignmentSubmitComponent extends BaseComponent {
   // Fonction qui permet de gérer la réponse de la création du rendu
   handleUpdate(data: ErrorRequest | SuccessRequest) {
     if (data instanceof ErrorRequest) {
-      this.loggingService.event(
-        'AssignmentSubmitComponent',
-        'handleUpdateError'
-      );
       this.handleErrorSoft(data);
       return;
     }
@@ -118,7 +115,7 @@ export class AssignmentSubmitComponent extends BaseComponent {
     }
 
     Utils.snackBarSuccess(this._snackBar, 'Votre devoir a bien été envoyé !');
-    this.loadingState(false)
+    this.loadingStateNoUpdate(false);
   }
 }
 

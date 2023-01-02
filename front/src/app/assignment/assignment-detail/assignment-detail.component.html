@@ -3,15 +3,15 @@
 
 <div *ngIf="!loading">
   <mat-card class="card-basic card-medium">
-    <img height="32px" width="32px" src="{{ assignmentTarget }}" />
     <mat-card-header>
-      <mat-card-title>
-        {{ assignmentTarget?.title }}
-      </mat-card-title>
-      <mat-card-subtitle
-        >{{ assignmentTarget?.createdAt | date }}
+      <mat-card-title class="title-big"> Détails du devoir </mat-card-title>
+      <mat-card-subtitle class="center"
+        >{{ assignmentTarget?.title }}
       </mat-card-subtitle>
     </mat-card-header>
+    <div class="space">
+      <img height="64px" width="64px" src="{{ targetSubject?.iconUrl }}" />
+    </div>
     <mat-tab-group
       mat-stretch-tabs="true"
       class="fullwidth"
@@ -72,6 +72,10 @@
             <p class="sameline">
               <b> Noté</b> {{ assignmentTarget?.rating ? "Oui" : "Non" }}
             </p>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <p class="sameline"><b> Noté par</b> {{ targetTeacher?.name }}</p>
           </mat-list-item>
           <mat-divider></mat-divider>
         </mat-list>
@@ -142,19 +146,6 @@
           <mat-list-item>
             <p class="sameline">
               <b>Noté le</b> {{ assignmentTarget?.rating?.date | date }}
-            </p>
-          </mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>
-            <p class="sameline">
-              <b>Professeur</b>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="teacherRedirect()"
-              >
-                Voir le professeur
-              </button>
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>

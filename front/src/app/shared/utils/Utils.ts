@@ -3,8 +3,8 @@ import { Observable, of } from 'rxjs';
 import { ErrorRequest } from '../api/error.model';
 import { Buffer } from 'buffer';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LoadingService } from '../services/loading/loading.service';
-import { LoggingService } from '../services/logging/logging.service';
+import { MatDialog } from '@angular/material/dialog';
+import { BaseDialog } from 'src/app/base/base.dialog';
 
 export abstract class Utils {
   // Fonction qui permet de recupperer les parametres de l'url dans une map
@@ -46,6 +46,7 @@ export abstract class Utils {
     return date;
   }
 
+  // Fonction qui permet de mettre à jour les parametres de l'url
   public static updateParam(key: string, value: string): void {
     key = encodeURIComponent(key);
     value = encodeURIComponent(value);
@@ -74,12 +75,16 @@ export abstract class Utils {
   }
 
   // Fonction qui retourne un paramètre de l'url
-  public static getParam(params: Map<string, string>, key: string): string | undefined {
+  public static getParam(
+    params: Map<string, string>,
+    key: string
+  ): string | undefined {
     let value = params.get(key);
     if (value === undefined) return '';
     return decodeURIComponent(value);
   }
 
+  // Fonction qui retourne un paramètre de l'url
   static getParamNumber(params: Map<string, string>, key: string) {
     let value = params.get(key);
     if (value === undefined) return undefined;
@@ -143,6 +148,7 @@ export abstract class Utils {
     return errorRequest;
   }
 
+  // Fonction qui retourne un texte tronqué
   public static textPreview(text: string, length: number): string {
     if (text.length > length) {
       return text.substring(0, length) + '...';
@@ -150,11 +156,13 @@ export abstract class Utils {
     return text;
   }
 
+  // Fonction qui converti un buffer en fichier
   public static bufferToFile(buffer: ArrayBuffer): File {
     let blob = new Blob([buffer]);
     return new File([blob], 'file');
   }
 
+  // Fonction qui converti un fichier en buffer
   public static fileToArrayBuffer(
     file: File,
     callback: (buffer: Buffer) => void
@@ -169,6 +177,7 @@ export abstract class Utils {
     reader.readAsArrayBuffer(file);
   }
 
+  // Fonction qui affiche un snackbar d'erreur
   public static snackBarError(
     snackBar: MatSnackBar,
     message: string | ErrorRequest
@@ -180,6 +189,7 @@ export abstract class Utils {
     });
   }
 
+  // Fonction qui affiche un snackbar de succès
   public static snackBarSuccess(_snackBar: MatSnackBar, message: string) {
     _snackBar.open(message, 'Fermer', {
       duration: 5000,
@@ -187,6 +197,7 @@ export abstract class Utils {
     });
   }
 
+  // Fonction qui retourne les options http avec le token
   public static httpOptionsToken(token: string | null): {
     headers: HttpHeaders;
   } {
@@ -199,6 +210,7 @@ export abstract class Utils {
     };
   }
 
+  // Fonction qui converti un map en query params
   public static searchFilterOrderPagination(
     filter?: any,
     order?: any,
@@ -223,6 +235,7 @@ export abstract class Utils {
     return Utils.mapToQueryParams(query);
   }
 
+  // Fonction qui converti un map en query params
   public static mapToQueryParams(map: Map<string, string>): string {
     let queryString = '?';
     map.forEach((value, key) => {
@@ -232,9 +245,16 @@ export abstract class Utils {
     return queryString;
   }
 
-  public test(this: LoggingService) {
-    console.log('test ' + this);
+  // Fonction qui ouvre une boite de dialogue
+  public static openDialog(
+    dialog: MatDialog,
+    title: string,
+    content: string,
+    yesNo: boolean = false
+  ) {
+    return dialog.open(BaseDialog, {
+      width: '250px',
+      data: { title, content, yesNo },
+    });
   }
-
-
 }
