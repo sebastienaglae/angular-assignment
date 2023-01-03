@@ -25,6 +25,7 @@ export class AssignmentSubmitComponent extends BaseComponent implements OnInit {
   submitForm = new SubmitFormGroup();
   assignmentTarget?: Assignment;
   subjectTarget?: Subject;
+  locked: boolean = false;
 
   constructor(
     private _route: ActivatedRoute,
@@ -68,6 +69,24 @@ export class AssignmentSubmitComponent extends BaseComponent implements OnInit {
     });
   }
 
+  checkSubmission(): boolean {
+    if (this.assignmentTarget == null) return false;
+    if (this.assignmentTarget.rating) {
+      this.openDialog(
+        'Deja noté',
+        'Ce devoir a déjà une note, vous ne pouvez plus faire de rendu'
+      );
+      return false;
+    }
+
+    if (Assignment.isTooLate(this.assignmentTarget)) {
+      this.openDialog('Trop tard', 'La date de rendu du devoir a été dépassé');
+      return false;
+    }
+
+    return true;
+  }
+
   // Fonction qui permet de récupérer le sujet
   handleSubject(subData: Subject | ErrorRequest) {
     if (subData instanceof ErrorRequest) {
@@ -76,6 +95,13 @@ export class AssignmentSubmitComponent extends BaseComponent implements OnInit {
     }
 
     this.subjectTarget = subData;
+
+    if (!this.checkSubmission()) {
+      this.locked = true;
+      this.loadingState(false);
+      return;
+    }
+
     this.loadingState(false);
   }
 

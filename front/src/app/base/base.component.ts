@@ -21,7 +21,12 @@ export class BaseComponent implements FrontService {
   ) {}
 
   // Ouvre une boite de dialogue
-  openDialog(title: string, content: string, yesNo: boolean = false) {
+  openDialog(
+    title: string | undefined,
+    content: string | any | undefined,
+    yesNo: boolean = false
+  ) {
+    if (title === undefined || content === undefined) return;
     return Utils.openDialog(this._dialog, title, content, yesNo);
   }
 

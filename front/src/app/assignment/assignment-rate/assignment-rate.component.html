@@ -3,7 +3,21 @@
 
 <div *ngIf="!loading">
   <mat-card class="card-basic card-medium center">
-    <h2>Notation</h2>
+    <mat-card-title class="title-big"> Notation </mat-card-title>
+    <mat-card-subtitle>
+      {{ assignmentTarget?.title }}
+    </mat-card-subtitle>
+
+    <div>
+      <button mat-raised-button color="primary" (click)="downloadSubmission()">
+        Télécharger
+      </button>
+      <span class="space"></span>
+      <button mat-raised-button color="primary" (click)="openDialogDetails()">
+        Détails
+      </button>
+    </div>
+    <br />
     <form [formGroup]="rateForm" (submit)="onUpdatingRate()">
       <!-- Note -->
       <mat-form-field class="fullwidth">

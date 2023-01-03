@@ -70,7 +70,7 @@ export class RegisterComponent extends BaseComponent {
 
   // Fonction qui permet de se connecter
   connectionRedirect() {
-    this._route.navigate(['/login']);
+    this._route.navigate(['/connection']);
   }
 }
 

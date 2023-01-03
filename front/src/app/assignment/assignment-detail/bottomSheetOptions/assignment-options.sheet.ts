@@ -7,8 +7,8 @@ import {
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
-import { Config } from 'src/app/shared/utils/Config';
 import { AssignmentDetailComponent } from '../assignment-detail.component';
+import { ConfigService } from 'src/app/shared/services/config/config.service';
 
 @Component({
   selector: 'assignment-options.sheet',
@@ -27,25 +27,26 @@ export class BottomSheetAssignmentOptions implements OnInit {
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any,
     private _authService: AuthService,
     private _router: Router,
-    private _loggingService: LoggingService
+    private _loggingService: LoggingService,
+    private _config: ConfigService
   ) {}
 
   ngOnInit(): void {
     this.assignmentTarget = this.data.assignmentTarget;
     this.teacherEnabled = this._authService.hasPermission(
-      Config.permsPath.getTeacher.path
+      this._config.getPermsPath().getTeacher.path
     );
     this.submitEnabled = this._authService.hasPermission(
-      Config.permsPath.submitAss.path
+      this._config.getPermsPath().submitAss.path
     );
     this.rateEnabled = this._authService.hasPermission(
-      Config.permsPath.rateAss.path
+      this._config.getPermsPath().rateAss.path
     );
     this.editEnabled = this._authService.hasPermission(
-      Config.permsPath.editAss.path
+      this._config.getPermsPath().editAss.path
     );
     this.deleteEnabled = this._authService.hasPermission(
-      Config.permsPath.deleteAss.path
+      this._config.getPermsPath().deleteAss.path
     );
   }
 

@@ -7,6 +7,7 @@ import {
   LoadingModel,
   LoadingService,
 } from './shared/services/loading/loading.service';
+import { Utils } from './shared/utils/Utils';
 
 @Component({
   selector: 'app-root',

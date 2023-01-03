@@ -3,7 +3,7 @@
 
 <div *ngIf="!loading">
   <mat-card class="card-basic card-big">
-    <mat-card-title>Envoyer un devoir</mat-card-title>
+    <mat-card-title class="title-big">Envoyer un devoir</mat-card-title>
     <mat-card-subtitle> {{ assignmentTarget?.title }} </mat-card-subtitle>
     <br />
     <p class="center"><b>Description</b></p>
@@ -13,7 +13,7 @@
       <mat-list-item>
         <p class="sameline">
           <b>Date limite</b>
-          {{ assignmentTarget?.dueDate | date : "dd/MM/yyyy" }}
+          {{ assignmentTarget?.dueDate | date : "medium" }}
         </p>
       </mat-list-item>
       <mat-divider></mat-divider>
@@ -44,7 +44,7 @@
           <b lass="center">4 Mo max</b>
         </p>
         <br /><br />
-        <div class="center">
+        <div class="center" *ngIf="!locked">
           <button
             mat-raised-button
             mat

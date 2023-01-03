@@ -30,19 +30,21 @@
           <mat-divider></mat-divider>
           <mat-list-item>
             <p class="sameline">
-              <b>Créer le</b> {{ assignmentTarget?.createdAt | date }}
+              <b>Créer le</b>
+              {{ assignmentTarget?.createdAt | date : "medium" }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
             <p class="sameline">
-              <b>Mis a jour le</b> {{ assignmentTarget?.updatedAt | date }}
+              <b>Mis a jour le</b>
+              {{ assignmentTarget?.updatedAt | date : "medium" }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <mat-list-item>
             <p class="sameline">
-              <b>Pour le</b> {{ assignmentTarget?.dueDate | date }}
+              <b>Pour le</b> {{ assignmentTarget?.dueDate | date : "medium" }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>
@@ -52,7 +54,7 @@
           <mat-divider></mat-divider>
           <mat-list-item>
             <p class="sameline">
-              <b>Temps restant</b> {{ assignmentTimeRemaining }}
+              <b>Temps restant</b> {{ assignmentTarget?.dueDate | remaining }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>
@@ -110,7 +112,7 @@
           <mat-list-item>
             <p class="sameline">
               <b>Soumis le</b>
-              {{ assignmentTarget?.submission?.submittedAt | date }}
+              {{ assignmentTarget?.submission?.submittedAt | date : "medium" }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>
@@ -145,7 +147,8 @@
           <mat-divider></mat-divider>
           <mat-list-item>
             <p class="sameline">
-              <b>Noté le</b> {{ assignmentTarget?.rating?.date | date }}
+              <b>Noté le</b>
+              {{ assignmentTarget?.rating?.date | date : "medium" }}
             </p>
           </mat-list-item>
           <mat-divider></mat-divider>

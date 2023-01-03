@@ -28,7 +28,10 @@
     >
       S'inscrire
     </button>
-    <!-- Bouton de deconnexion -->
+    <!-- Nom du compte TODO -->
+    <button disabled="true" *ngIf="isUserLogged" mat-button>
+      {{ "" }}
+    </button>
     <button
       color="warn"
       *ngIf="isUserLogged"
@@ -46,6 +49,8 @@
       <button mat-button class="fullwidth" routerLink="assignment/add">
         Ajout d'un devoir
       </button>
+      <!-- Le bouton de deboggage -->
+      <button mat-button class="fullwidth" routerLink="debug">Debbogage</button>
       <!-- Le bouton de génération de données de test -->
       <button mat-button class="fullwidth" routerLink="/gen">
         Génération de données de test
@@ -62,7 +67,7 @@
       ></mat-progress-bar>
       <mat-toolbar class="footer" color="primary">
         <span class="example-spacer"></span>
-        <span>© 2022 - Miage M1 - Sébastien Aglaé | Mike Chiappe</span>
+        <span>© 2023 - Miage M1 - Sébastien Aglaé | Mike Chiappe</span>
         <span class="example-spacer"></span>
       </mat-toolbar>
     </mat-sidenav-content>

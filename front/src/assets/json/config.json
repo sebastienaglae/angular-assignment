@@ -1,0 +1,66 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost",
+    "transport": "http"
+  },
+  "auth": {
+    "route": "auth",
+    "token": "token"
+  },
+  "subject": {
+    "route": "subjects"
+  },
+  "teacher": {
+    "route": "teachers"
+  },
+  "assignment": {
+    "route": "assignments"
+  },
+  "permsPath": {
+    "home": { "path": "", "needAdmin": false, "needLogged": false },
+    "addAss": {
+      "path": "assignment/add",
+      "needAdmin": true,
+      "needLogged": true
+    },
+    "getAss": {
+      "path": "assignment/:id",
+      "needAdmin": false,
+      "needLogged": false
+    },
+    "gen": { "path": "gen", "needAdmin": true, "needLogged": true },
+    "editAss": {
+      "path": "assignment/:id/edit",
+      "needAdmin": true,
+      "needLogged": true
+    },
+    "submitAss": {
+      "path": "assignment/:id/submit",
+      "needAdmin": false,
+      "needLogged": true
+    },
+    "rateAss": {
+      "path": "assignment/:id/rate",
+      "needAdmin": true,
+      "needLogged": true
+    },
+    "login": { "path": "connection", "needAdmin": false, "needLogged": false },
+    "register": { "path": "register", "needAdmin": false, "needLogged": false },
+    "getTeacher": {
+      "path": "teacher/:id",
+      "needAdmin": false,
+      "needLogged": false
+    },
+    "deleteAss": {
+      "path": "$deleteAssignment$",
+      "needAdmin": true,
+      "needLogged": true
+    },
+    "debug": {
+      "path": "debug",
+      "needAdmin": false,
+      "needLogged": false
+    }
+  }
+}

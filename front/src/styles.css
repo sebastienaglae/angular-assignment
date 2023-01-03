@@ -121,7 +121,7 @@ mat-progress-bar.progress-bar {
   position: fixed;
   top: 64px;
   left: 0;
-  zindex: 25000;
+  z-index: 25000;
 }
 
 /* Calendar fixer */

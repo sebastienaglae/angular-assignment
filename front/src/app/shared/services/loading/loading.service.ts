@@ -10,11 +10,11 @@ export class LoadingService {
   cooldownBeforeDisappearance = 1000;
   timeout: any;
 
-  constructor(private loggingService: LoggingService) {}
+  constructor(private _loggingService: LoggingService) {}
 
   // Fonction qui set l'état de loading
   setLoadingState(state: boolean): boolean {
-    this.loggingService.log(`LoadingService: changeLoadingState(${state})`);
+    this._loggingService.log(`LoadingService: changeLoadingState(${state})`);
     clearTimeout(this.timeout);
 
     if (!state) {
@@ -27,7 +27,7 @@ export class LoadingService {
 
   // Fonction qui set l'état de l'upload
   setUploadState(state: boolean): boolean {
-    this.loggingService.log(`LoadingService: changeUploadState(${state})`);
+    this._loggingService.log(`LoadingService: changeUploadState(${state})`);
     clearTimeout(this.timeout);
 
     if (!state) {
@@ -55,7 +55,7 @@ export class LoadingService {
     loop: boolean
   ): void {
     sequence = sequence.slice();
-    this.loggingService.log(`LoadingService: executeSequence()`);
+    this._loggingService.log();
     this.loadingModel.next(sequence[0]);
     sequence.shift();
     if (sequence.length === 0 && loop) {
@@ -76,7 +76,7 @@ export class LoadingService {
   // Fonction qui permet de faire une séquence de loading
   private executeSequence(sequence: LoadingModel[]): void {
     sequence = sequence.slice();
-    this.loggingService.log(`LoadingService: executeSequence()`);
+    this._loggingService.log();
     this.loadingModel.next(sequence[0]);
     sequence.shift();
     if (sequence.length === 0) {

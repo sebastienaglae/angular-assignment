@@ -1,20 +1,18 @@
-import { Config } from './Config';
-
 export abstract class PermissionUtils {
   static getPerms(
     path: string | undefined,
     isAdmin: boolean,
-    isLogged: boolean
+    isLogged: boolean,
+    permsPath: any
   ): PermissionState {
     if (!path) {
       throw new Error('DENIED NO PATH PROVIDED');
     }
     let perm = undefined;
-    let perms = Config.permsPath as any;
-    let keys = Object.keys(perms);
+    let keys = Object.keys(permsPath);
     for (let i = 0; i < keys.length; i++) {
       let key = keys[i];
-      let value = perms[key];
+      let value = permsPath[key];
       if (path === value.path) {
         perm = value;
         break;

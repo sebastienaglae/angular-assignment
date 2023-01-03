@@ -1,0 +1,146 @@
+<mat-card class="card-basic card-medium">
+  <mat-card-header>
+    <mat-card-title class="title-big">Debogage</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="openSnackBarSuccess()"
+    >
+      Snackbar success
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="openSnackBarError()"
+    >
+      Snackbar error
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="openDialogOk()"
+    >
+      Dialog ok
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="openDialogYesNo()"
+    >
+      Dialog Yes / No
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loading0()"
+    >
+      Loading progress bar
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loading1()"
+    >
+      Loading progress bar no update
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="error()"
+    >
+      Error progress bar loop
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="errorSoft()"
+    >
+      Error progress bar
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="uploadProgress()"
+    >
+      Upload progress bar
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="stopLoading()"
+    >
+      Stop progress bar
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loggingLog()"
+    >
+      Log (LOGGING)
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loggingEvent()"
+    >
+      Event (LOGGING)
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loggingError()"
+    >
+      Error (LOGGING)
+    </button>
+    <button
+      mat-button
+      mat-raised-button
+      class="fullwidth"
+      color="primary"
+      (click)="loggingWarn()"
+    >
+      Warn (LOGGING)
+    </button>
+
+    <div class="center">
+      <p><b>SizePipe</b> {{ sizeTest0 | size }}</p>
+      <p><b>RemainingPipe</b> {{ dateTest0 | remaining }}</p>
+      <p><b>DecodeJWT</b> {{ decodeJWTToken }}</p>
+      <p><b>TextPreview</b> {{ textPreview }}</p>
+      <p><b>IntervalTime</b> {{ intervalTime }}</p>
+      <p><b>Logged</b> {{ isLogged }}</p>
+      <p><b>Admin</b> {{ isAdmin }}</p>
+      <p><b>User</b> {{ isUser }}</p>
+      <p><b>JWT</b> {{ jwtToken }}</p>
+      <p><b>User</b> {{ user }}</p>
+    </div>
+  </mat-card-content>
+</mat-card>

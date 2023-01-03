@@ -2,34 +2,37 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 import { ErrorRequest } from '../../api/error.model';
-import { Config } from '../../utils/Config';
 import { Utils } from '../../utils/Utils';
 import { LoggingService } from '../logging/logging.service';
 import { Teacher } from '../../models/teacher.model';
+import { ConfigService } from '../config/config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TeacherService {
-  apiUrl = `${Config.getServerUrl()}/${Config.teacher.route}`;
+  apiUrl = '';
   constructor(
-    private loggingService: LoggingService,
-    private http: HttpClient
-  ) {}
+    private _loggingService: LoggingService,
+    private _http: HttpClient,
+    private _config: ConfigService
+  ) {
+    this.apiUrl = `${_config.getServerUrl()}/${_config.getTeacher().route}`;
+  }
 
   // Fonction qui permet de récupérer tout les professeurs
   getAll(): Observable<Teacher[] | ErrorRequest> {
-    this.loggingService.log(`GET SEARCH`);
+    this._loggingService.log(`GET SEARCH`);
 
-    return this.http
+    return this._http
       .get<Teacher[]>(`${this.apiUrl}/search`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentSearch')));
   }
 
   // Fonction qui permet de récupérer une matiere en fonction de son id
   get(id: string): Observable<Teacher | ErrorRequest> {
-    this.loggingService.log(`GET ${id}`);
-    return this.http
+    this._loggingService.log(`GET ${id}`);
+    return this._http
       .get<Teacher>(`${this.apiUrl}/${id}`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('teacherGet')));
   }

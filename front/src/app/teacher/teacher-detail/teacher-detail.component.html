@@ -3,7 +3,7 @@
     <h2>{{ teacherTarget?.name }}</h2>
   </mat-card-title>
   <mat-card-subtitle>
-    {{ teacherTarget?.createdAt | date }}
+    {{ teacherTarget?.createdAt | date : "medium" }}
   </mat-card-subtitle>
   <img
     src="{{ teacherTarget?.iconUrl }}"

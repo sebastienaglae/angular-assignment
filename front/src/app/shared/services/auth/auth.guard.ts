@@ -7,11 +7,11 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import { Config } from '../../utils/Config';
 import { LoggingService } from '../logging/logging.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Utils } from '../../utils/Utils';
 import { PermissionState, PermissionUtils } from '../../utils/PermissionUtils';
+import { ConfigService } from '../config/config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,8 @@ export class AuthGuard implements CanActivate {
   constructor(
     private _authService: AuthService,
     private _loggingService: LoggingService,
-    public _dialog: MatDialog
+    public _dialog: MatDialog,
+    private _config: ConfigService
   ) {}
 
   // Fonction qui permet de vérifier si l'utilisateur est connecté
@@ -35,7 +36,8 @@ export class AuthGuard implements CanActivate {
     const permState = PermissionUtils.getPerms(
       route.routeConfig?.path,
       this._authService.isAdmin(),
-      this._authService.isLogged()
+      this._authService.isLogged(),
+      this._config.getPermsPath()
     );
     switch (permState) {
       case PermissionState.ALLOWED:
