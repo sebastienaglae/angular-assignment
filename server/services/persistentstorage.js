@@ -6,6 +6,10 @@ class PersistentStorage {
 
     constructor() {
         this._directory = process.env.PERSISTENT_STORAGE_DIRECTORY || '_storage';
+        
+        if (!fs.existsSync(this._directory)) {
+            fs.mkdirSync(this._directory);
+        }
     }
 
     async saveFile(filename, localPath) {
