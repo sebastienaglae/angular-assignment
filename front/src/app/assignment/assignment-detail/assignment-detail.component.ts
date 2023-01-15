@@ -26,6 +26,7 @@ import { BottomSheetAssignmentOptions } from './bottomSheetOptions/assignment-op
 })
 export class AssignmentDetailComponent extends BaseComponent implements OnInit {
   // Informations sur l'assignment
+  id?: string | null;
   assignmentTarget?: Assignment;
   isAssignmentLate: boolean = false;
   finishLoadCount: number = 0;
@@ -74,13 +75,13 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
 
   // Recupere l'assignment
   getAssignment() {
-    const id = this._route.snapshot.paramMap.get('id');
-    this._loggingService.event(id ?? 'undefined');
-    if (!id) {
+    this.id = this._route.snapshot.paramMap.get('id');
+    this._loggingService.event(this.id ?? 'undefined');
+    if (!this.id) {
       this.handleError("L'identifiant de l'assignment n'est pas valide ! ");
       return;
     }
-    this._assignementService.get(id).subscribe((data) => {
+    this._assignementService.get(this.id).subscribe((data) => {
       this.handleAssignmentResponse(data);
     });
   }
@@ -101,7 +102,6 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
 
     this.assignmentTarget = assData;
     this.isAssignmentLate = Assignment.isTooLate(assData);
-    this.handleFileSubmission();
     if (assData.subjectId)
       this._subjectsService.get(assData.subjectId).subscribe((data) => {
         this.handleSubjectResponse(data);
@@ -111,15 +111,6 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
       this._teacherService.get(assData.teacherId).subscribe((data) => {
         this.handleTeacherResponse(data);
       });
-    }
-  }
-
-  // Obtient le fichier de l'assignment
-  handleFileSubmission() {
-    if (!this.assignmentTarget?.submission) return;
-    this.file = Submission.getFile(this.assignmentTarget.submission);
-    if (!this.file) {
-      this.handleErrorSoft('Impossible de récupérer le fichier');
     }
   }
 
@@ -173,11 +164,41 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
   }
 
   // Redirections vers la liste des assignments
+  // downloadSubmission() {
+  //   if (!this.assignmentTarget || !this.assignmentTarget.submission) {
+  //     this.handleErrorSoft('Impossible de télécharger le fichier');
+  //     return;
+  //   }
+  //   Submission.downloadContentToUser(this.assignmentTarget);
+  // }
+
   downloadSubmission() {
-    if (!this.assignmentTarget || !this.assignmentTarget.submission) {
-      this.handleErrorSoft('Impossible de télécharger le fichier');
+    if (this.id == null) {
+      this.handleErrorSoft("Impossible de télécharger le fichier");
       return;
     }
-    Submission.downloadContentToUser(this.assignmentTarget);
+
+    this._assignementService.downloadSubmission(this.id).subscribe(
+      (data) => {
+        this.handleDownloadSubmissionResponse(data);
+      },
+      (error) => {
+        this.handleErrorSoft(error);
+      }
+    );
+  }
+
+  handleDownloadSubmissionResponse(data: ErrorRequest | Blob) {
+    if (data instanceof ErrorRequest) {
+      this.handleError(data);
+      return;
+    }
+    if (this.assignmentTarget == null) {
+      this.handleErrorSoft("Impossible de télécharger le fichier");
+      return;
+    }
+
+    const blob = data as Blob;
+    Utils.downloadContentToUser(blob, this.assignmentTarget.submission);
   }
 }

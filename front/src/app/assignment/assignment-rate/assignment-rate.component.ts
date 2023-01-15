@@ -98,11 +98,33 @@ export class AssignmentRateComponent extends BaseComponent implements OnInit {
 
   // Redirections vers la liste des assignments
   downloadSubmission() {
-    if (!this.assignmentTarget || !this.assignmentTarget.submission) {
-      this.handleErrorSoft('Impossible de télécharger le fichier');
+    if (this.assignmentId == null) {
+      this.handleErrorSoft("Impossible de télécharger le fichier");
       return;
     }
-    Submission.downloadContentToUser(this.assignmentTarget);
+
+    this._assignmentService.downloadSubmission(this.assignmentId).subscribe(
+      (data) => {
+        this.handleDownloadSubmissionResponse(data);
+      },
+      (error) => {
+        this.handleErrorSoft(error);
+      }
+    );
+  }
+
+  handleDownloadSubmissionResponse(data: ErrorRequest | Blob) {
+    if (data instanceof ErrorRequest) {
+      this.handleError(data);
+      return;
+    }
+    if (this.assignmentTarget == null) {
+      this.handleErrorSoft("Impossible de télécharger le fichier");
+      return;
+    }
+
+    const blob = data as Blob;
+    Utils.downloadContentToUser(blob, this.assignmentTarget.submission);
   }
 
   openDialogDetails() {

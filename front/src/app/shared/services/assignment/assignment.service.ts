@@ -54,6 +54,17 @@ export class AssignmentService {
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentGet')));
   }
 
+  // Fonction qui permet de télécharger un assignment en fonction de son id
+  downloadSubmission(id: string): Observable<Blob | ErrorRequest> {
+    this._loggingService.log(`DONWLOAD ${id}`);
+    return this._http
+      .get(`${this.apiUrl}/${id}/submission/download`, {
+        responseType: 'blob',
+        headers: Utils.httpOptionsToken(this._authService.getToken()).headers,
+      })
+      .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentGet')));
+  }
+
   // Fonction qui permet de créer un assignment
   create(assignment: Assignment): Observable<Assignment | ErrorRequest> {
     this._loggingService.log(`POST ${assignment.id}`);

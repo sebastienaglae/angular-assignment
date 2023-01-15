@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseDialog } from 'src/app/base/base.dialog';
 import { Assignment } from '../models/assignment.model';
+import { Submission } from '../models/submission.model';
 
 export abstract class Utils {
   // Fonction qui permet de recupperer les parametres de l'url dans une map
@@ -293,5 +294,14 @@ export abstract class Utils {
     });
 
     return formattedAssignment;
+  }
+
+  public static downloadContentToUser(blob: Blob, submission?: Submission): void {
+    const url = window.URL.createObjectURL(blob);
+    // Trick to force download, see https://stackoverflow.com/a/32226068 but it's not clean :(
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${submission?.originalName ?? 'file'}`;
+    link.click();
   }
 }
