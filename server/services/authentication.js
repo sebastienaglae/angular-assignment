@@ -6,8 +6,8 @@ class AuthenticationService {
     _tokenSignatureKey;
 
     constructor() {
-        this._passwordHashKey = process.env.PASSWORD_HASH_KEY;
-        this._tokenSignatureKey = process.env.TOKEN_SIGNATURE_KEY;
+        this._passwordHashKey = process.env.PASSWORD_HASH_KEY || 'default-password-hash-key';
+        this._tokenSignatureKey = process.env.TOKEN_SIGNATURE_KEY || 'default-token-signature-key';
     }
 
     async login(username, password) {

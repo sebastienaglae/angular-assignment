@@ -32,7 +32,6 @@ const AssignmentInfoDto = assignment => {
 const AssignmentSubmissionDto = submission => {
     return {
         type: submission.type,
-        content: submission.content,
         originalName: submission.originalName,
         submittedAt: submission.submittedAt
     };

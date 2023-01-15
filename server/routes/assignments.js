@@ -5,6 +5,7 @@ const router = express.Router();
 const AssignmentService = require('../services/assignment');
 const SubjectService = require('../services/subject');
 const TeacherService = require('../services/teacher');
+const PersistentStorage = require('../services/persistentstorage');
 
 const Role = require('../models/role');
 const { AuthenticationRequiredError, AuthorizationError, ObjectNotFoundError } = require("../models/error");
@@ -75,7 +76,7 @@ router.put('/:id/info', async (req, res, next) => {
             throw new ObjectNotFoundError('Teacher not found');
         }
 
-        const success = await AssignmentService.updateInformation(id, subjectId, title, description, dueDate);
+        const success = await AssignmentService.updateInformation(id, subjectId, teacherId, title, description, dueDate);
 
         res.json({ success });
     } catch (error) {
@@ -100,9 +101,12 @@ router.put('/:id/submission', async (req, res, next) => {
         StringLengthValidator('name', name, 1, 255);
         NumberValidator('size', size, 1, AssignmentService.maxSubmissionSize);
 
-        // open the file and read the content
-        const submission = fs.readFileSync(tempFilePath);
-        const success = await AssignmentService.updateSubmission(id, { type: mimetype, originalName: name, content: submission });
+        const localFileName = await PersistentStorage.saveFile(name, tempFilePath);
+        const success = await AssignmentService.updateSubmission(id, { type: mimetype, originalName: name, name: localFileName });
+
+        if (!success) {
+            await PersistentStorage.deleteFile(localFileName);
+        }
 
         res.json({ success });
     } catch (error) {
@@ -180,6 +184,33 @@ router.get('/:id/submission', async (req, res, next) => {
         }
 
         res.json(result.submission ? AssignmentSubmissionDto(result) : null);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/:id/submission/download', async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        ObjectIdValidator('id', id);
+
+        const result = await AssignmentService.find(id);
+
+        if (!result) {
+            throw new ObjectNotFoundError('Assignment not found');
+        }
+
+        if (!result.submission) {
+            throw new ObjectNotFoundError('No submission found');
+        }
+
+        const { name, originalName } = result.submission;
+        const file = await PersistentStorage.loadFile(name);
+
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+        res.setHeader('Content-Length', file.length);
+        res.end(file);
     } catch (error) {
         next(error);
     }

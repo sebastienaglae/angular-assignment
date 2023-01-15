@@ -71,8 +71,8 @@ const AssignmentSubmissionSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    content: {
-        type: Buffer,
+    name: {
+        type: String,
         required: true,
     },
     originalName: {
