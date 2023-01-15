@@ -8,6 +8,7 @@ import { ErrorRequest } from 'src/app/shared/api/error.model';
 import { SuccessRequest } from 'src/app/shared/api/success.model';
 import { Assignment } from 'src/app/shared/models/assignment.model';
 import { Rating } from 'src/app/shared/models/rating.model';
+import { Submission } from 'src/app/shared/models/submission.model';
 import { AssignmentService } from 'src/app/shared/services/assignment/assignment.service';
 import { LoadingService } from 'src/app/shared/services/loading/loading.service';
 import { LoggingService } from 'src/app/shared/services/logging/logging.service';
@@ -70,7 +71,7 @@ export class AssignmentRateComponent extends BaseComponent implements OnInit {
       this.rateForm.rateValue,
       this.rateForm.commentValue
     );
-    console.log(this.assignmentId);
+
     this._assignmentService
       .updateRating(this.assignmentId, rating)
       .subscribe((res) => {
@@ -93,6 +94,27 @@ export class AssignmentRateComponent extends BaseComponent implements OnInit {
     } else {
       this.handleErrorSoft('Une erreur est survenue');
     }
+  }
+
+  // Redirections vers la liste des assignments
+  downloadSubmission() {
+    if (!this.assignmentTarget || !this.assignmentTarget.submission) {
+      this.handleErrorSoft('Impossible de télécharger le fichier');
+      return;
+    }
+    Submission.downloadContentToUser(this.assignmentTarget);
+  }
+
+  openDialogDetails() {
+    if (!this.assignmentTarget) {
+      this.handleErrorSoft("Impossible d'afficher les détails");
+      return;
+    }
+    this.openDialog(
+      'Plus de détails',
+      Utils.formatAssignment(this.assignmentTarget),
+      false
+    );
   }
 }
 

@@ -3,9 +3,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'size' })
 export class SizePipe implements PipeTransform {
   transform(value: number | undefined): string {
-    let unit = "O";
-    if (value === undefined)
-      return '0 ' + unit;
+    let unit = 'o';
+    if (value === undefined || value === null) return '0 ' + unit;
     let result = value;
     let unitName = unit;
     if (value >= 1024) {

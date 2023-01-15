@@ -5,6 +5,7 @@ import { Buffer } from 'buffer';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseDialog } from 'src/app/base/base.dialog';
+import { Assignment } from '../models/assignment.model';
 
 export abstract class Utils {
   // Fonction qui permet de recupperer les parametres de l'url dans une map
@@ -89,18 +90,6 @@ export abstract class Utils {
     let value = params.get(key);
     if (value === undefined) return undefined;
     return parseInt(decodeURIComponent(value));
-  }
-
-  // Fonction qui converti un timestamp en temps restant
-  public static convertTimestampToTimeRemaining(timestamp: number): string {
-    let hours = Math.floor(timestamp / 3600000);
-    let minutes = Math.floor((timestamp % 3600000) / 60000);
-    let result = '';
-    if (hours > 0) result += hours + ' heure' + (hours > 1 ? 's' : '') + ' ';
-    if (minutes > 0)
-      result += minutes + ' minute' + (minutes > 1 ? 's' : '') + ' ';
-    if (result === '') result = 'Terminé';
-    return result;
   }
 
   // Fonction qui converti un string en date
@@ -217,7 +206,7 @@ export abstract class Utils {
     pagination?: any
   ): string {
     let query: Map<string, string> = new Map();
-    if (filter) {
+    if (filter && Object.keys(filter).length !== 0) {
       query.set('filter', encodeURIComponent(JSON.stringify(filter)));
     }
     if (order) {
@@ -249,12 +238,60 @@ export abstract class Utils {
   public static openDialog(
     dialog: MatDialog,
     title: string,
-    content: string,
+    content: string | any,
     yesNo: boolean = false
   ) {
     return dialog.open(BaseDialog, {
       width: '250px',
       data: { title, content, yesNo },
     });
+  }
+
+  // Fonction qui permet de retourner selon une année ou un mois l'interval de temps en data
+  public static getIntervalTime(year: any, month: any = null): any {
+    if (year < 1970) return null;
+    if (!year) return null;
+    year = parseInt(year);
+
+    let start;
+    let end;
+    if (month) {
+      month = parseInt(month);
+      start = new Date(year, month - 1, 1);
+      end = new Date(year, month, 0);
+    } else {
+      start = new Date(year, 0, 1);
+      end = new Date(year, 11, 31);
+    }
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    if (
+      start.toString() === 'Invalid Date' ||
+      end.toString() === 'Invalid Date'
+    )
+      return null;
+
+    return { start, end };
+  }
+
+  // Fonction qui formatte un devoir
+  public static formatAssignment(assignment: Assignment): any[] {
+    let formattedAssignment = [];
+    formattedAssignment.push({ title: 'Titre', value: assignment.title });
+    formattedAssignment.push({
+      title: 'Date de rendu',
+      value: assignment.dueDate,
+    });
+    formattedAssignment.push({
+      title: 'Date de création',
+      value: assignment.createdAt,
+    });
+    formattedAssignment.push({
+      title: 'Date de modification',
+      value: assignment.updatedAt,
+    });
+
+    return formattedAssignment;
   }
 }

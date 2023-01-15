@@ -20,13 +20,4 @@ export class AssignmentSearch {
     let rendu = new Date(ass.dueDate);
     return today > rendu;
   }
-
-  // Fonction qui retourne le temps restant avant la date de rendu
-  public static getTimeRemaining(ass: AssignmentSearch): string {
-    if (!ass || !ass.dueDate) return 'Erreur: date de rendu non définie';
-    let today = new Date();
-    let rendu = new Date(ass.dueDate);
-    let diff = rendu.getTime() - today.getTime();
-    return Utils.convertTimestampToTimeRemaining(diff);
-  }
 }

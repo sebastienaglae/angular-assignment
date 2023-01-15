@@ -1,8 +1,29 @@
 <h1 mat-dialog-title>{{ title }}</h1>
-<div mat-dialog-content>
+<div *ngIf="!isContentArray" mat-dialog-content class="mat-typography">
   {{ content }}
 </div>
+<div *ngIf="isContentArray" mat-dialog-content class="mat-typography">
+  <ul>
+    <li *ngFor="let item of content">
+      <div>
+        <b>{{ item.title }}</b>
+        <p *ngIf="item.value">{{ item.value }}</p>
+        <p *ngIf="!item.value">Pas de données</p>
+      </div>
+    </li>
+  </ul>
+</div>
 <div mat-dialog-actions>
-  <button *ngIf="yesNo" (click)="onClick('no')" mat-button color="warn" mat-dialog-close>Non</button>
-  <button mat-button mat-dialog-close cdkFocusInitial (click)="onClick('yes')"> {{ yes }}</button>
+  <button
+    *ngIf="yesNo"
+    (click)="onClick('no')"
+    mat-button
+    color="warn"
+    mat-dialog-close
+  >
+    Non
+  </button>
+  <button mat-button mat-dialog-close cdkFocusInitial (click)="onClick('yes')">
+    {{ yes }}
+  </button>
 </div>

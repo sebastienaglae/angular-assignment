@@ -7,10 +7,10 @@
     <!-- Filtre de recherche -->
     <div class="chipsline fullwidth">
       <mat-chip-listbox
-        #submit
+        #submitChips
         aria-label="submit selection"
         name="submit"
-        (change)="onFilterSubmit(submit.value)"
+        (change)="onFilter()"
       >
         <mat-chip-option value="submit" color="warn">Rendu</mat-chip-option>
         <mat-chip-option value="notSubmited" color="accent"
@@ -18,10 +18,10 @@
         >
       </mat-chip-listbox>
       <mat-chip-listbox
-        #rating
+        #ratingChips
         aria-label="rating selection"
         name="rating"
-        (change)="onFilterRate(rating.value)"
+        (change)="onFilter()"
       >
         <mat-chip-option value="rated" color="warn">Noté</mat-chip-option>
         <mat-chip-option value="notRated" color="accent"
@@ -29,33 +29,30 @@
         >
       </mat-chip-listbox>
       <mat-chip-listbox
-        #year
+        #yearChips
         aria-label="year selection"
         name="year"
-        (change)="onFilterYear(year.value)"
+        (change)="onYearFilter()"
       >
-        <mat-chip-option value="2022" color="warn">2022</mat-chip-option>
-        <mat-chip-option value="2023" color="accent">2023</mat-chip-option>
-        <mat-chip-option value="2024">2024</mat-chip-option>
+        <mat-chip-option
+          *ngFor="let year of years"
+          [value]="year.value"
+          [color]="year.color"
+          >{{ year.viewValue }}</mat-chip-option
+        >
       </mat-chip-listbox>
       <mat-chip-listbox
-        #month
+        #monthChips
         aria-label="month selection"
         name="month"
-        (change)="onFilterMonth(month.value)"
+        (change)="onMonthFilter()"
       >
-        <mat-chip-option value="1" color="warn">Janvier</mat-chip-option>
-        <mat-chip-option value="2" color="warn">Février</mat-chip-option>
-        <mat-chip-option value="3" color="warn">Mars</mat-chip-option>
-        <mat-chip-option value="4" color="accent">Avril</mat-chip-option>
-        <mat-chip-option value="5" color="accent">Mai</mat-chip-option>
-        <mat-chip-option value="6" color="accent">Juin</mat-chip-option>
-        <mat-chip-option value="7" color="warn">Juillet</mat-chip-option>
-        <mat-chip-option value="8" color="warn">Août</mat-chip-option>
-        <mat-chip-option value="9" color="warn">Septembre</mat-chip-option>
-        <mat-chip-option value="10" color="accent">Octobre</mat-chip-option>
-        <mat-chip-option value="11" color="accent">Novembre</mat-chip-option>
-        <mat-chip-option value="12" color="accent">Décembre</mat-chip-option>
+        <mat-chip-option
+          *ngFor="let month of months"
+          [value]="month.value"
+          [color]="month.color"
+          >{{ month.viewValue }}</mat-chip-option
+        >
       </mat-chip-listbox>
     </div>
     <div class="sameline">
@@ -88,12 +85,12 @@
         >Pour le</mat-header-cell
       >
       <mat-cell *matCellDef="let assignment">
-        {{ assignment.dueDate | date : "dd/MM/yyyy hh:mm" }}
+        {{ assignment.dueDate | date : "medium" }}
       </mat-cell>
     </ng-container>
     <!-- Le rendu -->
-    <ng-container matColumnDef="hasSubmission">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="hasSubmission"
+    <ng-container matColumnDef="submission">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="submission"
         >Rendu</mat-header-cell
       >
       <mat-cell *matCellDef="let assignment">
@@ -104,8 +101,8 @@
       </mat-cell>
     </ng-container>
     <!-- La notation -->
-    <ng-container matColumnDef="hasRating">
-      <mat-header-cell *matHeaderCellDef mat-sort-header="hasRating"
+    <ng-container matColumnDef="rating">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="rating"
         >Noter</mat-header-cell
       >
       <mat-cell *matCellDef="let assignment">

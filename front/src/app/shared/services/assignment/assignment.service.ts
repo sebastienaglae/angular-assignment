@@ -5,24 +5,27 @@ import { Observable, catchError, of } from 'rxjs';
 import { Assignment } from '../../models/assignment.model';
 import { LoggingService } from '../logging/logging.service';
 import { SearchAssignment } from '../../api/assignment/search.assignment.model';
-import { Config } from '../../utils/Config';
 import { ErrorRequest } from '../../api/error.model';
 import { Utils } from '../../utils/Utils';
 import { SuccessRequest } from '../../api/success.model';
 import { AuthService } from '../auth/auth.service';
 import { Rating } from '../../models/rating.model';
 import { Submission } from '../../models/submission.model';
+import { ConfigService } from '../config/config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssignmentService {
-  apiUrl = `${Config.getServerUrl()}/${Config.assignment.route}`;
+  apiUrl = '';
   constructor(
-    private loggingService: LoggingService,
-    private authService: AuthService,
-    private http: HttpClient
-  ) {}
+    private _loggingService: LoggingService,
+    private _authService: AuthService,
+    private _http: HttpClient,
+    private _config: ConfigService
+  ) {
+    this.apiUrl = `${_config.getServerUrl()}/${_config.getAssignment().route}`;
+  }
 
   // Fonction qui permet de récupérer tous les assignments avec pagination et tri
   search(
@@ -33,44 +36,43 @@ export class AssignmentService {
       limit: number;
     }
   ): Observable<SearchAssignment | ErrorRequest> {
-    this.loggingService.log(`GET SEARCH`);
-    //TODO OFFSET
+    this._loggingService.log(`GET SEARCH`);
     if (pagi !== undefined) pagi.page += 1;
 
     const query = Utils.searchFilterOrderPagination(filter, order, pagi);
 
-    return this.http
+    return this._http
       .get<SearchAssignment>(`${this.apiUrl}/search${query}`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentSearch')));
   }
 
   // Fonction qui permet de récupérer un assignment en fonction de son id
   get(id: string): Observable<Assignment | ErrorRequest> {
-    this.loggingService.log(`GET ${id}`);
-    return this.http
+    this._loggingService.log(`GET ${id}`);
+    return this._http
       .get<Assignment>(`${this.apiUrl}/${id}`)
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentGet')));
   }
 
   // Fonction qui permet de créer un assignment
   create(assignment: Assignment): Observable<Assignment | ErrorRequest> {
-    this.loggingService.log(`POST ${assignment.id}`);
-    return this.http
+    this._loggingService.log(`POST ${assignment.id}`);
+    return this._http
       .post<Assignment>(
         `${this.apiUrl}/create`,
         assignment,
-        Utils.httpOptionsToken(this.authService.getToken())
+        Utils.httpOptionsToken(this._authService.getToken())
       )
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentAdd')));
   }
 
   // Fonction qui permet de delete un assignment
   delete(id: string): Observable<SuccessRequest | ErrorRequest> {
-    this.loggingService.log(`DELETE ${id}`);
-    return this.http
+    this._loggingService.log(`DELETE ${id}`);
+    return this._http
       .delete<SuccessRequest>(
         `${this.apiUrl}/${id}`,
-        Utils.httpOptionsToken(this.authService.getToken())
+        Utils.httpOptionsToken(this._authService.getToken())
       )
       .pipe(catchError(Utils.handleError<ErrorRequest>('assignmentDelete')));
   }
@@ -90,9 +92,16 @@ export class AssignmentService {
       error.message = 'Assignment is undefined';
       return of(error);
     }
-    this.loggingService.log(`PUT ASSIGNMENT ${assignment.id}`);
-    return this.http
-      .put<SuccessRequest>(`${this.apiUrl}/${assignment.id}/info`, assignment)
+    assignment.submission = undefined;
+    assignment.rating = undefined;
+
+    this._loggingService.log(`PUT ASSIGNMENT ${assignment.id}`);
+    return this._http
+      .put<SuccessRequest>(
+        `${this.apiUrl}/${assignment.id}/info`,
+        assignment,
+        Utils.httpOptionsToken(this._authService.getToken())
+      )
       .pipe(
         catchError(
           Utils.handleError<ErrorRequest>('assignmentUpdateAssignment')
@@ -102,12 +111,12 @@ export class AssignmentService {
 
   // Fonction qui permet de mettre à jour un assignment
   updateRating(id: string, rating: Rating) {
-    this.loggingService.log(`PUT RATING ${id}`);
-    return this.http
+    this._loggingService.log(`PUT RATING ${id}`);
+    return this._http
       .put<SuccessRequest>(
         `${this.apiUrl}/${id}/rating`,
         rating,
-        Utils.httpOptionsToken(this.authService.getToken())
+        Utils.httpOptionsToken(this._authService.getToken())
       )
       .pipe(
         catchError(Utils.handleError<ErrorRequest>('assignmentUpdateRating'))
@@ -122,15 +131,15 @@ export class AssignmentService {
       error.message = 'Assignment id is undefined';
       return of(error);
     }
-    this.loggingService.log(`PUT SUBMISSION ${id}`);
+    this._loggingService.log(`PUT SUBMISSION ${id}`);
     let formData = new FormData();
     formData.append('submission', file, file.name);
     formData.append('submission', JSON.stringify(submission));
 
-    return this.http
+    return this._http
       .put<SuccessRequest>(`${this.apiUrl}/${id}/submission`, formData, {
         headers: new HttpHeaders({
-          Authorization: `Bearer ${this.authService.getToken()}`,
+          Authorization: `Bearer ${this._authService.getToken()}`,
         }),
       })
       .pipe(

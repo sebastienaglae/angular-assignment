@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -51,7 +51,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { TeacherDetailComponent } from './teacher/teacher-detail/teacher-detail.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
-import { SizePipe } from './shared/utils/SizePipe';
+import { SizePipe } from './shared/pipes/SizePipe';
 import {
   MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
   MatBottomSheetModule,
@@ -64,6 +64,15 @@ import {
 } from '@angular/material/dialog';
 import { BaseDialog } from './base/base.dialog';
 import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/bottomSheetOptions/assignment-options.sheet';
+import {
+  ConfigService,
+  configFactory,
+} from './shared/services/config/config.service';
+import { DebugComponent } from './debug/debug/debug.component';
+import { RemainingTimePipe } from './shared/pipes/RemainingTime';
+import localeFr from '@angular/common/locales/fr';
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -79,9 +88,11 @@ import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/bot
     AssignmentRateComponent,
     TeacherDetailComponent,
     SizePipe,
+    RemainingTimePipe,
     BottomSheetAssignmentOptions,
     BaseComponent,
     BaseDialog,
+    DebugComponent,
   ],
   imports: [
     BrowserModule,
@@ -127,6 +138,13 @@ import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/bot
     MatDialogModule,
   ],
   providers: [
+    ConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: configFactory,
+      deps: [ConfigService],
+      multi: true,
+    },
     {
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: { showError: true },
@@ -139,6 +157,7 @@ import { BottomSheetAssignmentOptions } from './assignment/assignment-detail/bot
       provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
       useValue: { hasBackdrop: true },
     },
+    { provide: LOCALE_ID, useValue: 'fr-FR' },
   ],
   bootstrap: [AppComponent],
   exports: [AppRoutingModule],

@@ -28,7 +28,6 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
   // Informations sur l'assignment
   assignmentTarget?: Assignment;
   isAssignmentLate: boolean = false;
-  assignmentTimeRemaining: string = '';
   finishLoadCount: number = 0;
 
   // Fichier de l'assignment
@@ -102,7 +101,6 @@ export class AssignmentDetailComponent extends BaseComponent implements OnInit {
 
     this.assignmentTarget = assData;
     this.isAssignmentLate = Assignment.isTooLate(assData);
-    this.assignmentTimeRemaining = Assignment.getTimeRemaining(assData);
     this.handleFileSubmission();
     if (assData.subjectId)
       this._subjectsService.get(assData.subjectId).subscribe((data) => {
