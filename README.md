@@ -6,7 +6,7 @@ CHIAPPE Mike
 TD03
 
 ## Vidéo
-https://youtu.be/cHUTZQNY3BE
+https://youtu.be/cHUTZQNY3BE (1440p60)
 
 ## Hébergement
 - Site Web : https://seb.angular.bdemiagenice.fr/
