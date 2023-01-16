@@ -182,7 +182,7 @@
     <mat-step label="Récapitulatif">
       <h2>Récapitulatif</h2>
       <p>Titre du devoir : {{ formGroups.titleValue }}</p>
-      <p>Date de rendu : {{ formGroups.dueDateValue | date : "medium" }}</p>
+      <p>Date de rendu : {{ formGroups.dueDateValue }}</p>
       <p>Description : {{ formGroups.descriptionValue }}</p>
       <p>Matière : {{ formGroups.subjectValue?.name }}</p>
       <p>Professeur : {{ formGroups.teacherValue?.name }}</p>

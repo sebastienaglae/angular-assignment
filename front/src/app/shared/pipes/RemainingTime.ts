@@ -3,6 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'remaining' })
 export class RemainingTimePipe implements PipeTransform {
   transform(value: any | undefined): string {
+    console.log(value)
     if (value === undefined) {
       return '';
     }

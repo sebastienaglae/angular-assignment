@@ -142,19 +142,15 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
     newAssignment.description = this.formGroups.descriptionValue;
     newAssignment.subjectId = this.formGroups.subjectValue?.id;
     newAssignment.teacherId = this.formGroups.teacherValue?.id;
-    this._assignmentService.updateAssignment(newAssignment).subscribe((res) => {
+    this._assignmentService.create(newAssignment).subscribe((res) => {
       this.handleSubmissionResponse(res);
     });
   }
 
   // Redirige l'utilisateur vers la page d'accueil dans 5 secondes
-  handleSubmissionResponse(data: ErrorRequest | SuccessRequest) {
+  handleSubmissionResponse(data: ErrorRequest | Assignment) {
     if (data instanceof ErrorRequest) {
       this.handleError(data);
-      return;
-    }
-    if (!data.success) {
-      this.handleError("Une erreur s'est produite");
       return;
     }
     this.loadingStateNoUpdate(false);
@@ -165,14 +161,14 @@ export class AssignmentAddComponent extends BaseComponent implements OnInit {
       i--;
       if (i < 0) {
         clearInterval(interval);
-        this._router.navigate(['/home']);
+        this._router.navigate(['/']);
       }
     }, 1000);
   }
 }
 
 class StepperAssignmentFromGroup {
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: FormBuilder) { }
   titleFormGroup = this._formBuilder.group({
     titleCtrl: ['', Assignment.getTitleValidators()],
   });
