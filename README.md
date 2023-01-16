@@ -1,4 +1,5 @@
 # Angular assignment
+Nous avons implémenté, toutes les fonctionnalités obligatoire, optionnel et en AVANCEE++. Nous n'avons pas ajouté de choses supplémentaire. Par contre nous nous sommes plus attardé sur le code
 
 ## Binome
 AGLAE Sébastien
