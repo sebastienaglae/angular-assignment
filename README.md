@@ -15,11 +15,33 @@ https://youtu.be/cHUTZQNY3BE (1440p60)
 - Config du front : https://seb.angular.bdemiagenice.fr/assets/json/config.json
 
 ## Faire tourner !
+Le lien vers notre de base de données est dans le mail.
+Le lien pour votre base de données local : mongodb://localhost:27017/assignment
 ### Serveur
+Le serveur utilise une variable d'environnement pour lien vers la base de données mongo
+#### Sur windows
+##### Méthode 1 sans variable d'environnement
+- 1. Allez dans le fichier ./server/app.js
+- 2. Modifier la ligne 45 et changer `mongoose.connect(<nouveau lien>)`
 ```
 $ cd server
 $ npm i
 $ npm run start
+```
+
+##### Méthode 2 avec variable d'environnement
+Ajouter une variable d'environnement MONGO_URL=<Lien base de données> .
+```
+$ cd server
+$ npm i
+$ npm run start
+```
+#### Sur mac
+```
+$ cd server
+$ npm i
+# Si vous voulez utiliser notre base de données
+$ MONGO_URL=<nouveau lien> node bin/www
 ```
 
 ### Client
